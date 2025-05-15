@@ -1,0 +1,17 @@
+{
+    "name": "formbondhu",
+    "version": "1.0.0",
+    "description": "Formbondhu Chatbot",
+    "main": "index.js",
+    "scripts": {
+        "start": "http-server -p 8080"
+    },
+    "dependencies": {
+        "jquery": "^3.6.0",
+        "jspdf": "^2.5.1",
+        "firebase": "^8.10.1"
+    },
+    "devDependencies": {
+        "http-server": "^14.1.1"
+    }
+}
