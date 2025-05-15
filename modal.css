@@ -159,4 +159,36 @@
         padding: 6px 15px;
         font-size: 10px;
     }
+
+            /* ফ্লোটিং মোড ব্যানারের স্টাইল */
+        .mode-banner {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Tiro Bangla', sans-serif;
+            display: none;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-in-out, pulse 2s infinite;
+        }
+
+        /* স্লাইড-ইন অ্যানিমেশন */
+        @keyframes slideInRight {
+            from { right: -100px; opacity: 0; }
+            to { right: 20px; opacity: 1; }
+        }
+
+        /* পালস ইফেক্ট অ্যানিমেশন */
+        @keyframes pulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.05); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
 }
