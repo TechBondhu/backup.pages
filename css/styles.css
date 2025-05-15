@@ -1,0 +1,308 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #E5E7EB;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.chat-container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+.header {
+    background-color: #1E3A8A;
+    color: #fff;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #ddd;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-icons {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 15px;
+}
+
+.header-right-icons {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 15px;
+}
+
+.history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon {
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.history-icon:hover, .new-chat-icon:hover, .home-icon:hover, .settings-icon:hover, .account-icon:hover {
+    color: #3B82F6;
+    transform: scale(1.1);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background: linear-gradient(135deg, #1E3A8A, #3B82F6);
+    color: #fff;
+    padding: 20px;
+    transition: left 0.3s ease;
+    z-index: 10;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-icon, .close-sidebar {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.history-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-top: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+.history-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #f9f9f9, #E5E7EB);
+}
+
+.welcome-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+    width: 100%;
+    padding: 20px;
+}
+
+.welcome-message h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.welcome-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.welcome-buttons button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.welcome-buttons button:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.welcome-buttons button i {
+    margin-right: 5px;
+}
+
+.welcome-buttons button#moreOptionsBtn {
+    color: #6B7280;
+}
+
+.messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 60px;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.user-message, .bot-message {
+    padding: 15px 20px;
+    border-radius: 12px;
+    max-width: 60%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+
+.user-message {
+    background-color: #f9f9f9;
+    color: #1e3a8a;
+    text-align: right;
+    margin-left: auto;
+}
+
+.bot-message {
+    background-color: #E5E7EB;
+    color: #333;
+    text-align: left;
+    margin-right: auto;
+}
+
+.input-area {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin-top: auto;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#userInput {
+    flex-grow: 1;
+    padding: 10px 50px 10px 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background: transparent;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+
+#sendBtn {
+    position: absolute;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #1E3A8A;
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#sendBtn:hover {
+    background-color: #3B82F6;
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .header { font-size: 20px; padding: 10px; }
+    .welcome-message h2 { font-size: 24px; }
+    .welcome-buttons button { padding: 8px 16px; font-size: 12px; }
+    .user-message, .bot-message { max-width: 75%; font-size: 16px; }
+}
