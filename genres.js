@@ -100,35 +100,7 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-// Rasa API কল করার ফাংশন
-async function callRasaAPI(message, metadata = {}) {
-    try {
-        const response = await fetch('http://localhost:5005/webhooks/rest/webhook', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                sender: 'user',
-                message: message,
-                metadata: metadata
-            })
-        });
-        const data = await response.json();
-        if (data && data.length > 0) {
-            data.forEach(item => {
-                if (item.text) {
-                    displayMessage(item.text, 'bot'); // বটের প্রতিক্রিয়া UI-তে দেখানো
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Rasa API call failed:', error);
-        displayMessage('দুঃখিত, সার্ভারের সাথে সংযোগ করতে সমস্যা হচ্ছে।', 'bot');
-    }
-}
-
-// UI-তে মেসেজ দেখানোর ফাংশন (ধরে নিচ্ছি এটি অন্য ফাইলে সংজ্ঞায়িত, কিন্তু এখানে ইন্টিগ্রেট করছি)
+// UI-তে মেসেজ দেখানোর ফাংশন (ধরে নিচ্ছি এটি আছে)
 function displayMessage(text, sender) {
     const chatBox = document.getElementById('chatBox');
     const messageDiv = document.createElement('div');
@@ -138,61 +110,83 @@ function displayMessage(text, sender) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// UI-এ মোড ব্যানার আপডেট করার ফাংশন
-function updateGenreHeader(genreName) {
+// Rasa API কল করার ফাংশন
+async function callRasaAPI(message, metadata = {}) {
+    try {
+        const response = await fetch('http://localhost:5005/webhooks/rest/webhook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: 'user', message: message, metadata: metadata })
+        });
+        const data = await response.json();
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                if (item.text) displayMessage(item.text, 'bot');
+            });
+        }
+    } catch (error) {
+        console.error('Rasa API call failed:', error);
+        displayMessage('দুঃখিত, সার্ভারের সাথে সংযোগ করতে সমস্যা হচ্ছে।', 'bot');
+    }
+}
+
+// UI-এ মোড ব্যানার আপডেট এবং নতুন সেকশন তৈরি
+function updateGenreHeaderAndCreateSection(genreName) {
     const modeBanner = document.getElementById('modeBanner');
     if (modeBanner) {
         modeBanner.textContent = `${genreName} মোড অন`;
         modeBanner.style.display = 'block';
     }
+
+    // নতুন সেকশন তৈরি (ট্যাবের মতো)
+    let applicationSection = document.getElementById('applicationSection');
+    if (!applicationSection) {
+        applicationSection = document.createElement('div');
+        applicationSection.id = 'applicationSection';
+        applicationSection.className = 'application-section';
+        document.body.appendChild(applicationSection);
+    }
+    applicationSection.innerHTML = `
+        <h2>${genreName}</h2>
+        <i class="fas fa-toggle-on" style="color: green; font-size: 20px;"></i>
+        <p>আবেদন চালু হয়েছে। দয়া করে নির্দেশাবলী অনুসরণ করুন...</p>
+    `;
+    applicationSection.style.display = 'block';
 }
 
-// ইনটেন্ট ট্রিগার করার ফাংশন
+// ক্লিক হ্যান্ডলার আপডেট
 function triggerIntent(genre) {
-    const message = genre.message; // জনরার নির্দিষ্ট মেসেজ
-    callRasaAPI(message, { genre: genre.name }); // Rasa-তে মেসেজ পাঠানো, UI-তে দেখানো হবে না
+    const button = event.target.closest('button'); // ক্লিক করা বোতাম
+    if (button) {
+        button.classList.add('clicked'); // ক্লিকের প্রতিক্রিয়া
+        setTimeout(() => button.classList.remove('clicked'), 500); // 0.5 সেকেন্ড পর প্রতিক্রিয়া সরানো
+    }
+
+    updateGenreHeaderAndCreateSection(genre.name); // নতুন সেকশন তৈরি
+    callRasaAPI(genre.message, { genre: genre.name }); // Rasa-তে মেসেজ পাঠানো
 }
 
-const moreOptionsBtn = document.getElementById('moreOptionsBtn');
-const genresModal = document.getElementById('genresModal');
-const closeGenresModal = document.getElementById('closeGenresModal');
-const genresList = document.getElementById('genresList');
+// Welcome Buttons
+document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+    button.addEventListener('click', (event) => {
+        const genreName = button.getAttribute('data-genre');
+        const genre = genres.find(g => g.name === genreName);
+        if (genre) triggerIntent(genre);
+    });
+});
 
+// "More Options" মডাল
 function renderGenresList() {
     genresList.innerHTML = '';
     genres.forEach(genre => {
         const genreItem = document.createElement('div');
         genreItem.className = 'genre-item';
         genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
-        genreItem.addEventListener('click', () => {
-            updateGenreHeader(genre.name); // মোড ব্যানার আপডেট
-            triggerIntent(genre); // জনরার নির্দিষ্ট মেসেজ পাঠানো
+        genreItem.addEventListener('click', (event) => {
+            updateGenreHeaderAndCreateSection(genre.name);
+            triggerIntent(genre);
             genresModal.style.display = 'none';
         });
         genresList.appendChild(genreItem);
     });
 }
-
-function openGenresModal() {
-    renderGenresList();
-    genresModal.style.display = 'flex';
-}
-
-function closeGenresModalFunc() {
-    genresModal.style.display = 'none';
-}
-
-moreOptionsBtn.addEventListener('click', openGenresModal);
-closeGenresModal.addEventListener('click', closeGenresModalFunc);
-
-// Welcome Buttons
-document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
-    button.addEventListener('click', () => {
-        const genreName = button.getAttribute('data-genre');
-        const genre = genres.find(g => g.name === genreName);
-        if (genre) {
-            updateGenreHeader(genre.name); // মোড ব্যানার আপডেট
-            triggerIntent(genre); // জনরার নির্দিষ্ট মেসেজ পাঠানো
-        }
-    });
-});
