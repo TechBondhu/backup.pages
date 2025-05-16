@@ -109,10 +109,28 @@ const welcomeMessage = document.getElementById('welcomeMessage');
 const messagesDiv = document.getElementById('messages');
 const userInput = document.getElementById('userInput');
 
+// Debug function to log element status
+function debugElement(element, elementName) {
+    if (!element) {
+        console.error(`${elementName} element not found in the DOM! Please check your HTML.`);
+    } else {
+        console.log(`${elementName} element found:`, element);
+    }
+}
+
+// Initial debug checks for DOM elements
+debugElement(moreOptionsBtn, 'moreOptionsBtn');
+debugElement(genresModal, 'genresModal');
+debugElement(closeGenresModal, 'closeGenresModal');
+debugElement(genresList, 'genresList');
+debugElement(welcomeMessage, 'welcomeMessage');
+debugElement(messagesDiv, 'messagesDiv');
+debugElement(userInput, 'userInput');
+
 // Render Genres List
 function renderGenresList() {
     if (!genresList) {
-        console.error('genresList element not found!');
+        console.error('genresList element is missing, cannot render genres!');
         return;
     }
     genresList.innerHTML = '';
@@ -121,10 +139,19 @@ function renderGenresList() {
         genreItem.className = 'genre-item';
         genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
         genreItem.addEventListener('click', () => {
+            console.log(`Genre clicked: ${genre.name}, sending message: ${genre.message}`);
             triggerIntent(genre.message);
-            genresModal.style.display = 'none';
+            // Close the modal
+            if (genresModal) {
+                genresModal.style.display = 'none';
+                console.log('Genres modal closed');
+            }
+            // Hide welcome message
             if (welcomeMessage) {
                 welcomeMessage.style.display = 'none';
+                console.log('Welcome message hidden');
+            } else {
+                console.error('welcomeMessage element not found, cannot hide it!');
             }
         });
         genresList.appendChild(genreItem);
@@ -133,29 +160,40 @@ function renderGenresList() {
 
 // Trigger Intent and Send to Rasa
 function triggerIntent(message) {
-    if (message) {
-        // Display user message
+    if (!message) {
+        console.error('No message provided to triggerIntent!');
+        return;
+    }
+    console.log('Triggering intent with message:', message);
+    
+    // Display user message in chat
+    if (messagesDiv) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('user-message');
         messageDiv.innerText = message;
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-        // Clear input
-        if (userInput) {
-            userInput.value = '';
-        }
-
-        // Save to chat history
-        saveChatHistory(message, 'user');
-
-        // Call Rasa API
-        callRasaAPI(message);
+        console.log('User message displayed in chat');
+    } else {
+        console.error('messagesDiv not found, cannot display user message!');
     }
+
+    // Clear input if exists
+    if (userInput) {
+        userInput.value = '';
+        console.log('User input cleared');
+    }
+
+    // Save to chat history
+    saveChatHistory(message, 'user');
+
+    // Call Rasa API
+    callRasaAPI(message);
 }
 
 // Call Rasa API
 function callRasaAPI(message) {
+    console.log('Sending message to Rasa API:', message);
     const loadingDiv = displayLoading();
     $.ajax({
         url: 'http://localhost:5005/webhooks/rest/webhook',
@@ -163,35 +201,51 @@ function callRasaAPI(message) {
         contentType: 'application/json',
         data: JSON.stringify({ sender: 'user', message: message }),
         success: (data) => {
+            console.log('Rasa API response received:', data);
             removeLoading(loadingDiv);
-            data.forEach(response => {
-                if (response.text) {
-                    const botMessageDiv = document.createElement('div');
-                    botMessageDiv.classList.add('bot-message');
-                    botMessageDiv.innerText = response.text;
-                    messagesDiv.appendChild(botMessageDiv);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                    saveChatHistory(response.text, 'bot');
-                }
-                if (response.custom && response.custom.review_data) {
-                    displayReview(response.custom.review_data);
-                }
-            });
+            if (data && data.length > 0) {
+                data.forEach(response => {
+                    if (response.text) {
+                        const botMessageDiv = document.createElement('div');
+                        botMessageDiv.classList.add('bot-message');
+                        botMessageDiv.innerText = response.text;
+                        messagesDiv.appendChild(botMessageDiv);
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                        console.log('Bot message displayed:', response.text);
+                        saveChatHistory(response.text, 'bot');
+                    }
+                    if (response.custom && response.custom.review_data) {
+                        displayReview(response.custom.review_data);
+                        console.log('Review data displayed:', response.custom.review_data);
+                    }
+                });
+            } else {
+                console.warn('No response from Rasa API');
+                const noResponseDiv = document.createElement('div');
+                noResponseDiv.classList.add('bot-message');
+                noResponseDiv.innerText = 'কোনো উত্তর পাওয়া যায়নি। আবার চেষ্টা করুন।';
+                messagesDiv.appendChild(noResponseDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
         },
         error: (error) => {
+            console.error('Rasa API call failed:', error);
             removeLoading(loadingDiv);
             const errorMessageDiv = document.createElement('div');
             errorMessageDiv.classList.add('bot-message');
             errorMessageDiv.innerText = 'বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।';
             messagesDiv.appendChild(errorMessageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            console.error('Rasa API Error:', error);
         }
     });
 }
 
 // Display Loading Animation
 function displayLoading() {
+    if (!messagesDiv) {
+        console.error('messagesDiv not found, cannot display loading animation!');
+        return null;
+    }
     const loadingDiv = document.createElement('div');
     loadingDiv.classList.add('loading');
     loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
@@ -202,7 +256,10 @@ function displayLoading() {
 
 // Remove Loading Animation
 function removeLoading(loadingDiv) {
-    if (loadingDiv) loadingDiv.remove();
+    if (loadingDiv) {
+        loadingDiv.remove();
+        console.log('Loading animation removed');
+    }
 }
 
 // Save Chat History
@@ -213,20 +270,25 @@ function saveChatHistory(message, sender) {
     }
     chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
     localStorage.setItem('chatHistory', JSON.stringify(chats));
+    console.log('Chat history saved:', { message, sender });
 }
 
 // Open Genres Modal
 function openGenresModal() {
+    console.log('Opening genres modal');
     renderGenresList();
     if (genresModal) {
         genresModal.style.display = 'flex';
+        console.log('Genres modal opened');
     }
 }
 
 // Close Genres Modal
 function closeGenresModalFunc() {
+    console.log('Closing genres modal');
     if (genresModal) {
         genresModal.style.display = 'none';
+        console.log('Genres modal closed');
     }
 }
 
@@ -234,13 +296,13 @@ function closeGenresModalFunc() {
 if (moreOptionsBtn) {
     moreOptionsBtn.addEventListener('click', openGenresModal);
 } else {
-    console.error('moreOptionsBtn element not found!');
+    console.error('moreOptionsBtn event listener could not be added!');
 }
 
 if (closeGenresModal) {
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
 } else {
-    console.error('closeGenresModal element not found!');
+    console.error('closeGenresModal event listener could not be added!');
 }
 
 // Welcome Buttons
@@ -251,9 +313,11 @@ if (welcomeButtonsList.length > 0) {
             const genreName = button.getAttribute('data-genre');
             const genre = genres.find(g => g.name === genreName);
             if (genre) {
+                console.log(`Welcome button clicked: ${genreName}, sending message: ${genre.message}`);
                 triggerIntent(genre.message);
                 if (welcomeMessage) {
                     welcomeMessage.style.display = 'none';
+                    console.log('Welcome message hidden via welcome button');
                 }
             }
         });
