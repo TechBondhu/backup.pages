@@ -128,7 +128,7 @@ function renderGenresList() {
 
 function triggerIntent(message) {
     console.log(`Triggering intent with message: ${message}`);
-    sendMessage(message, true); // মেসেজ পাঠাও, UI-এ দেখাবে না
+    sendMessage(message, false); // মেসেজ পাঠাও, UI-এ দেখাবে না
     if (welcomeButtons) {
         console.log('Hiding welcome buttons');
         welcomeButtons.style.display = 'none';
