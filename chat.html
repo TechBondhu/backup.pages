@@ -6,11 +6,14 @@
     <title>Formbondhu Chatbot</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        /* Previous styles remain unchanged except for welcome message and button updates */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: "Segoe UI", sans-serif; background-color: #E5E7EB; color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
         .chat-container { width: 100vw; height: 100vh; background-color: #ffffff; color: #000000; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); transition: margin-left 0.3s ease, width 0.3s ease; position: relative; z-index: 1; }
@@ -52,13 +55,12 @@
         @keyframes slideUp { from { transform: translate(-50%, -30%); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
         .welcome-message h2 { font-size: 28px; color: #333; margin-bottom: 20px; }
         .welcome-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-        .welcome-buttons button { padding: 10px 20px; border: 1px solid #ccc; border-radius: 20px; background: #fff; color: #333; font-size: 14px; display: flex; align-items: center; gap: 5px; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
+        .welcome-buttons button { padding: 10px 20px; border: 1px solid #ccc; border-radius: 20px; background: #fff; color: #333; font-size: 14px; display: flex; align-items: center; gap: 5px; }
         .welcome-buttons button:hover { background-color: #f0f0f0; transform: scale(1.05); }
         .welcome-buttons button i { margin-right: 5px; }
         .welcome-buttons button:nth-child(1) { color: #FF6F61; }
         .welcome-buttons button:nth-child(2) { color: #6B7280; }
         .welcome-buttons button:nth-child(3) { color: #F59E0B; }
-        .welcome-buttons button#moreOptionsBtn { color: #6B7280; }
         .messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 60px; padding-right: 16px; scrollbar-width: thin; scrollbar-color: #888 #f1f1f1; }
         .messages::-webkit-scrollbar { width: 8px; }
         .messages::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -153,118 +155,128 @@
         .rename-modal-buttons .cancel:hover { background: #4B5563; transform: translateY(-2px); }
         .rename-modal-buttons .save { background: #3B82F6; color: #fff; }
         .rename-modal-buttons .save:hover { background: #2563EB; transform: translateY(-2px); }
-        .genres-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .genres-modal-content { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 15px; padding: 25px; width: 350px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; text-align: center; animation: slideIn 0.3s ease-out; }
-        .genres-modal-content h3 { font-size: 20px; margin-bottom: 15px; color: #3B82F6; font-family: 'Tiro Bangla', serif; font-weight: 700; }
-        .genres-list { display: flex; flex-direction: column; gap: 10px; }
-        .genre-item { padding: 10px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; cursor: pointer; transition: background 0.3s ease; display: flex; align-items: center; gap: 10px; }
-        .genre-item:hover { background: rgba(255, 255, 255, 0.3); }
-        .genre-item i { font-size: 18px; }
-        .genre-item span { font-size: 16px; font-family: 'Tiro Bangla', serif; font-weight: 700; }
-        .genres-modal-buttons { margin-top: 20px; }
-        .genres-modal-buttons button { padding: 10px 25px; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-family: 'Tiro Bangla', serif; font-weight: 700; transition: transform 0.2s ease, background 0.3s ease; }
-        .genres-modal-buttons .cancel { background: #6B7280; color: #fff; }
-        .genres-modal-buttons .cancel:hover { background: #4B5563; transform: translateY(-2px); }
-        @media (max-width: 768px) {
-            .chat-container { width: 100vw; height: 100vh; }
-            .chat-container.sidebar-open { margin-left: 0; width: 100vw; }
-            .header { padding: 10px; font-size: 20px; }
-            .header-icons { left: 10px; gap: 10px; }
-            .header-right-icons { right: 10px; gap: 10px; }
-            .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon { font-size: 20px; }
-            .sidebar { width: 80%; max-width: 250px; padding: 15px; }
-            .sidebar-header { padding-bottom: 8px; }
-            .sidebar-icon { font-size: 20px; }
-            .search-input { padding: 8px; font-size: 14px; }
-            .history-item { padding: 10px; }
-            .history-item p { font-size: 14px; }
-            .history-item .timestamp { font-size: 10px; }
-            .options i { font-size: 16px; }
-            .dropdown { top: 35px; }
-            .dropdown-item { padding: 6px 12px; font-size: 12px; }
-            .chat-box { padding: 15px; gap: 15px; }
-            .welcome-message h2 { font-size: 24px; margin-bottom: 15px; }
-            .welcome-buttons button { padding: 8px 16px; font-size: 12px; }
-            .welcome-buttons button i { margin-right: 3px; }
-            .user-message, .bot-message { max-width: 75%; padding: 12px 15px; font-size: 16px; margin-bottom: 8px; }
-            .review-card { max-width: 75%; padding: 15px; }
-            .review-card h3 { font-size: 18px; margin-bottom: 12px; }
-            .review-item label, .review-item p { font-size: 14px; }
-            .review-item img { max-height: 200px; }
-            .image-preview { max-width: 150px; }
-            .input-area { padding: 10px; }
-            .input-wrapper { padding: 8px 12px; }
-            #userInput { padding: 8px 45px 8px 12px; font-size: 16px; }
-            #sendBtn { width: 35px; height: 35px; font-size: 16px; }
-            #uploadBtn { right: 55px; width: 30px; height: 30px; font-size: 14px; }
-            #uploadBtn i { font-size: 14px; }
-            .preview-image { width: 30px; height: 30px; }
-            .image-review-content { padding: 15px; }
-            .review-image { max-width: 400px; max-height: 400px; }
-            .edit-modal-content { flex-direction: column; width: 80%; max-width: 600px; }
-            .edit-canvas-container, .edit-controls { flex: none; width: 100%; }
-            .modal-content, .rename-modal-content, .genres-modal-content { width: 80%; max-width: 300px; padding: 20px; }
-            .modal-content p { font-size: 14px; margin-bottom: 15px; }
-            .modal-buttons button, .rename-modal-buttons button, .genres-modal-buttons button { padding: 8px 20px; font-size: 12px; }
-            .rename-modal-content h3, .genres-modal-content h3 { font-size: 18px; margin-bottom: 12px; }
-            .rename-modal-content input { padding: 10px; font-size: 14px; margin-bottom: 15px; }
-            .edit-btn, .confirm-btn, .download-btn { padding: 8px 16px; font-size: 12px; }
+        @media (max-width: 768px) { 
+            .chat-container { width: 100vw; height: 100vh; } 
+            .chat-container.sidebar-open { margin-left: 0; width: 100vw; } 
+            .header { padding: 10px; font-size: 20px; } 
+            .header-icons { left: 10px; gap: 10px; } 
+            .header-right-icons { right: 10px; gap: 10px; } 
+            .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon { font-size: 20px; } 
+            .sidebar { width: 80%; max-width: 250px; padding: 15px; } 
+            .sidebar-header { padding-bottom: 8px; } 
+            .sidebar-icon { font-size: 20px; } 
+            .search-input { padding: 8px; font-size: 14px; } 
+            .history-item { padding: 10px; } 
+            .history-item p { font-size: 14px; } 
+            .history-item .timestamp { font-size: 10px; } 
+            .options i { font-size: 16px; } 
+            .dropdown { top: 35px; } 
+            .dropdown-item { padding: 6px 12px; font-size: 12px; } 
+            .chat-box { padding: 15px; gap: 15px; } 
+            .welcome-message h2 { font-size: 24px; margin-bottom: 15px; } 
+            .welcome-buttons button { padding: 8px 16px; font-size: 12px; } 
+            .welcome-buttons button i { margin-right: 3px; } 
+            .user-message, .bot-message { max-width: 75%; padding: 12px 15px; font-size: 16px; margin-bottom: 8px; } 
+            .review-card { max-width: 75%; padding: 15px; } 
+            .review-card h3 { font-size: 18px; margin-bottom: 12px; } 
+            .review-item label, .review-item p { font-size: 14px; } 
+            .review-item img { max-height: 200px; } 
+            .image-preview { max-width: 150px; } 
+            .input-area { padding: 10px; } 
+            .input-wrapper { padding: 8px 12px; } 
+            #userInput { padding: 8px 45px 8px 12px; font-size: 16px; } 
+            #sendBtn { width: 35px; height: 35px; font-size: 16px; } 
+            #uploadBtn { right: 55px; width: 30px; height: 30px; font-size: 14px; } 
+            #uploadBtn i { font-size: 14px; } 
+            .preview-image { width: 30px; height: 30px; } 
+            .image-review-content { padding: 15px; } 
+            .review-image { max-width: 400px; max-height: 400px; } 
+            .edit-modal-content { flex-direction: column; width: 80%; max-width: 600px; } 
+            .edit-canvas-container, .edit-controls { flex: none; width: 100%; } 
+            .modal-content, .rename-modal-content { width: 80%; max-width: 300px; padding: 20px; } 
+            .modal-content p { font-size: 14px; margin-bottom: 15px; } 
+            .modal-buttons button, .rename-modal-buttons button { padding: 8px 20px; font-size: 12px; } 
+            .rename-modal-content h3 { font-size: 18px; margin-bottom: 12px; } 
+            .rename-modal-content input { padding: 10px; font-size: 14px; margin-bottom: 15px; } 
+            .edit-btn, .confirm-btn, .download-btn { padding: 8px 16px; font-size: 12px; } 
         }
-        @media (max-width: 480px) {
-            .chat-container { width: 100vw; height: 100vh; }
-            .chat-container.sidebar-open { margin-left: 0; width: 100vw; }
-            .header { padding: 8px; font-size: 18px; }
-            .header-icons { left: 8px; gap: 8px; }
-            .header-right-icons { right: 8px; gap: 8px; }
-            .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon { font-size: 18px; }
-            .sidebar { width: 85%; max-width: 200px; padding: 10px; }
-            .sidebar-header { padding-bottom: 6px; }
-            .sidebar-icon { font-size: 18px; }
-            .search-input { padding: 6px; font-size: 12px; }
-            .history-item { padding: 8px; }
-            .history-item p { font-size: 12px; }
-            .history-item .timestamp { font-size: 8px; }
-            .options i { font-size: 14px; }
-            .dropdown { top: 30px; }
-            .dropdown-item { padding: 5px 10px; font-size: 10px; }
-            .chat-box { padding: 10px; gap: 10px; }
-            .welcome-message { padding: 15px; }
-            .welcome-message h2 { font-size: 20px; margin-bottom: 10px; }
-            .welcome-buttons { gap: 8px; }
-            .welcome-buttons button { padding: 6px 12px; font-size: 10px; }
-            .welcome-buttons button i { margin-right: 3px; }
-            .user-message, .bot-message { max-width: 80%; padding: 10px 12px; font-size: 14px; margin-bottom: 6px; }
-            .review-card { max-width: 80%; padding: 12px; }
-            .review-card h3 { font-size: 16px; margin-bottom: 10px; }
-            .review-item label, .review-item p { font-size: 12px; }
-            .review-item img { max-height: 150px; }
-            .image-preview { max-width: 120px; }
-            .input-area { padding: 8px; }
-            .input-wrapper { padding: 6px 10px; }
-            #userInput { padding: 6px 40px 6px 10px; font-size: 14px; }
-            #sendBtn { width: 30px; height: 30px; font-size: 14px; }
-            #uploadBtn { right: 45px; width: 28px; height: 28px; font-size: 12px; }
-            #uploadBtn i { font-size: 12px; }
-            .preview-image { width: 25px; height: 25px; }
-            .image-review-content { padding: 10px; }
-            .review-image { max-width: 300px; max-height: 300px; }
-            .edit-modal-content { width: 90%; max-width: 400px; padding: 15px; }
-            #editCanvas { max-height: 300px; }
-            .modal-content, .rename-modal-content, .genres-modal-content { width: 90%; max-width: 250px; padding: 15px; }
-            .modal-content p { font-size: 12px; margin-bottom: 12px; }
-            .modal-buttons { gap: 10px; }
-            .modal-buttons button, .rename-modal-buttons button, .genres-modal-buttons button { padding: 6px 15px; font-size: 10px; }
-            .rename-modal-content h3, .genres-modal-content h3 { font-size: 16px; margin-bottom: 10px; }
-            .rename-modal-content input { padding: 8px; font-size: 12px; margin-bottom: 12px; }
-            .edit-btn, .confirm-btn, .download-btn { padding: 6px 12px; font-size: 10px; }
+        @media (max-width: 480px) { 
+            .chat-container { width: 100vw; height: 100vh; } 
+            .chat-container.sidebar-open { margin-left: 0; width: 100vw; } 
+            .header { padding: 8px; font-size: 18px; } 
+            .header-icons { left: 8px; gap: 8px; } 
+            .header-right-icons { right: 8px; gap: 8px; } 
+            .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon { font-size: 18px; } 
+            .sidebar { width: 85%; max-width: 200px; padding: 10px; } 
+            .sidebar-header { padding-bottom: 6px; } 
+            .sidebar-icon { font-size: 18px; } 
+            .search-input { padding: 6px; font-size: 12px; } 
+            .history-item { padding: 8px; } 
+            .history-item p { font-size: 12px; } 
+            .history-item .timestamp { font-size: 8px; } 
+            .options i { font-size: 14px; } 
+            .dropdown { top: 30px; } 
+            .dropdown-item { padding: 5px 10px; font-size: 10px; } 
+            .chat-box { padding: 10px; gap: 10px; } 
+            .welcome-message { padding: 15px; } 
+            .welcome-message h2 { font-size: 20px; margin-bottom: 10px; } 
+            .welcome-buttons { gap: 8px; } 
+            .welcome-buttons button { padding: 6px 12px; font-size: 10px; } 
+            .welcome-buttons button i { margin-right: 3px; } 
+            .user-message, .bot-message { max-width: 80%; padding: 10px 12px; font-size: 14px; margin-bottom: 6px; } 
+            .review-card { max-width: 80%; padding: 12px; } 
+            .review-card h3 { font-size: 16px; margin-bottom: 10px; } 
+            .review-item label, .review-item p { font-size: 12px; } 
+            .review-item img { max-height: 150px; } 
+            .image-preview { max-width: 120px; } 
+            .input-area { padding: 8px; } 
+            .input-wrapper { padding: 6px 10px; } 
+            #userInput { padding: 6px 40px 6px 10px; font-size: 14px; } 
+            #sendBtn { width: 30px; height: 30px; font-size: 14px; } 
+            #uploadBtn { right: 45px; width: 28px; height: 28px; font-size: 12px; } 
+            #uploadBtn i { font-size: 12px; } 
+            .preview-image { width: 25px; height: 25px; } 
+            .image-review-content { padding: 10px; } 
+            .review-image { max-width: 300px; max-height: 300px; } 
+            .edit-modal-content { width: 90%; max-width: 400px; padding: 15px; } 
+            #editCanvas { max-height: 300px; } 
+            .modal-content, .rename-modal-content { width: 90%; max-width: 250px; padding: 15px; } 
+            .modal-content p { font-size: 12px; margin-bottom: 12px; } 
+            .modal-buttons { gap: 10px; } 
+            .modal-buttons button, .rename-modal-buttons button { padding: 6px 15px; font-size: 10px; } 
+            .rename-modal-content h3 { font-size: 16px; margin-bottom: 10px; } 
+            .rename-modal-content input { padding: 8px; font-size: 12px; margin-bottom: 12px; } 
+            .edit-btn, .confirm-btn, .download-btn { padding: 6px 12px; font-size: 10px; } 
         }
+                              /* More Options Button */
+.welcome-buttons button#moreOptionsBtn {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background: #fff;
+    color: #6B7280;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.welcome-buttons button#moreOptionsBtn:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.05);
+}
+.welcome-buttons button#moreOptionsBtn i {
+    margin-right: 5px;
+}
+
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="header">
             <div class="header-icons">
-                <i class="fas fa-home home-icon" title="Home" onclick="window.location.href='chat.html'"></i>
+                <i class="fas fa-home home-icon" title="Home" onclick="window.location.href='index.html'"></i>
                 <i class="fas fa-bars history-icon" id="historyIcon" title="Chat History"></i>
                 <i class="fas fa-pen-to-square new-chat-icon" id="newChatIcon" title="New Chat"></i>
             </div>
@@ -322,7 +334,7 @@
             <input type="text" id="renameInput" placeholder="নতুন নাম লিখুন...">
             <div class="rename-modal-buttons">
                 <button class="cancel" id="cancelRename">বাতিল</button>
-                <button class="save" id="saveRename/ben">সংরক্ষণ</button>
+                <button class="save" id="saveRename">সংরক্ষণ</button>
             </div>
         </div>
     </div>
@@ -366,631 +378,636 @@
     <div class="genres-modal" id="genresModal">
         <div class="genres-modal-content">
             <h3>সকল সেবা</h3>
-            <div class="genres-list" id="genresList"></div>
+            <div class="genres-list" id="genresList">
+                <!-- জনরা লিস্ট JavaScript দিয়ে ডায়নামিকভাবে যোগ হবে -->
+            </div>
             <div class="genres-modal-buttons">
                 <button class="cancel" id="closeGenresModal">বন্ধ করুন</button>
             </div>
         </div>
     </div>
 
+    <script src="script.js"></script>
+
     <script src="genres.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // DOM Elements
-            const sendBtn = document.getElementById('sendBtn');
-            const userInput = document.getElementById('userInput');
-            const messagesDiv = document.getElementById('messages');
-            const uploadBtn = document.getElementById('uploadBtn');
-            const fileInput = document.getElementById('fileInput');
-            const welcomeMessage = document.getElementById('welcomeMessage');
-            const sidebar = document.getElementById('sidebar');
-            const historyList = document.getElementById('historyList');
-            const chatContainer = document.querySelector('.chat-container');
-            const historyIcon = document.getElementById('historyIcon');
-            const newChatIcon = document.getElementById('newChatIcon');
-            const closeSidebar = document.getElementById('closeSidebar');
-            const searchInput = document.getElementById('searchInput');
-            const chatBox = document.getElementById('chatBox');
-            const sidebarIcon = document.getElementById('sidebarIcon');
-            const deleteModal = document.getElementById('deleteModal');
-            const renameModal = document.getElementById('renameModal');
-            const renameInput = document.getElementById('renameInput');
-            const renameCancelBtn = document.getElementById('cancelRename');
-            const renameSaveBtn = document.getElementById('saveRename');
-            const deleteCancelBtn = document.getElementById('cancelDelete');
-            const deleteConfirmBtn = document.getElementById('confirmDelete');
-            const homeIcon = document.querySelector('.home-icon');
-            const settingsIcon = document.getElementById('settingsIcon');
-            const accountIcon = document.getElementById('accountIcon');
-            const previewContainer = document.getElementById('previewContainer');
-            const previewImage = document.getElementById('previewImage');
-            const editBtn = document.getElementById('editBtn');
-            const imageReviewModal = document.getElementById('imageReviewModal');
-            const reviewImage = document.getElementById('reviewImage');
-            const deleteImageBtn = document.getElementById('deleteImageBtn');
-            const editModal = document.getElementById('editModal');
-            const editCanvas = document.getElementById('editCanvas');
-            const cropX = document.getElementById('cropX');
-            const cropY = document.getElementById('cropY');
-            const cropWidth = document.getElementById('cropWidth');
-            const cropHeight = document.getElementById('cropHeight');
-            const brightness = document.getElementById('brightness');
-            const contrast = document.getElementById('contrast');
-            const backgroundColor = document.getElementById('bgColor');
-            const editCancelBtn = document.getElementById('cancelEdit');
-            const editApplyBtn = document.getElementById('editApplyBtn');
+  document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements
+    const sendBtn = document.getElementById('sendBtn');
+    const userInput = document.getElementById('userInput');
+    const messagesDiv = document.getElementById('messages');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const sidebar = document.getElementById('sidebar');
+    const historyList = document.getElementById('historyList');
+    const chatContainer = document.querySelector('.chat-container');
+    const historyIcon = document.getElementById('historyIcon');
+    const newChatIcon = document.getElementById('newChatIcon');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const searchInput = document.getElementById('searchInput');
+    const chatBox = document.getElementById('chatBox');
+    const sidebarIcon = document.getElementById('sidebarIcon');
+    const deleteModal = document.getElementById('deleteModal');
+    const renameModal = document.getElementById('renameModal');
+    const renameInput = document.getElementById('renameInput');
+    const renameCancelBtn = document.getElementById('cancelRename');
+    const renameSaveBtn = document.getElementById('saveRename');
+    const deleteCancelBtn = document.getElementById('cancelDelete');
+    const deleteConfirmBtn = document.getElementById('confirmDelete');
+    const homeIcon = document.querySelector('.home-icon');
+    const settingsIcon = document.getElementById('settingsIcon');
+    const accountIcon = document.getElementById('accountIcon');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const editBtn = document.getElementById('editBtn');
+    const imageReviewModal = document.getElementById('imageReviewModal');
+    const reviewImage = document.getElementById('reviewImage');
+    const deleteImageBtn = document.getElementById('deleteImageBtn');
+    const editModal = document.getElementById('editModal');
+    const editCanvas = document.getElementById('editCanvas');
+    const cropX = document.getElementById('cropX');
+    const cropY = document.getElementById('cropY');
+    const cropWidth = document.getElementById('cropWidth');
+    const cropHeight = document.getElementById('cropHeight');
+    const brightness = document.getElementById('brightness');
+    const contrast = document.getElementById('contrast');
+    const backgroundColor = document.getElementById('bgColor');
+    const editCancelBtn = document.getElementById('cancelEdit');
+    const editApplyBtn = document.getElementById('editApplyBtn');
+ 
 
-            // State Variables
-            let selectedFile = null;
-            let editedImage = null;
-            const ctx = editCanvas.getContext('2d');
-            let image = new Image();
-            let cropRect = { x: 0, y: 0, width: 200, height: 200 };
-            let brightnessValue = 0;
-            let contrastValue = 0;
-            let bgColor = 'white';
-            let currentChatId = Date.now().toString();
 
-            // Initialize jsPDF
-            const { jsPDF } = window.jspdf;
+    // State Variables
+    let selectedFile = null;
+    let editedImage = null;
+    const ctx = editCanvas.getContext('2d');
+    let image = new Image();
+    let cropRect = { x: 0, y: 0, width: 200, height: 200 };
+    let brightnessValue = 0;
+    let contrastValue = 0;
+    let bgColor = 'white';
+    let currentChatId = Date.now().toString();
 
-            // Firebase Initialization
-            const firebaseConfig = {
-                apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
-                authDomain: "admissionformdb.firebaseapp.com",
-                projectId: "admissionformdb",
-                storageBucket: "admissionformdb.firebasestorage.app",
-                messagingSenderId: "398052082157",
-                appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
-            };
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.firestore();
+    // Initialize jsPDF
+    const { jsPDF } = window.jspdf;
 
-            // Navigation Events
-            homeIcon.addEventListener('click', () => window.location.href = 'chat.html');
-            settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
-            accountIcon.addEventListener('click', () => window.location.href = 'account.html');
+    // Firebase Initialization
+    const firebaseConfig = {
+        apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
+        authDomain: "admissionformdb.firebaseapp.com",
+        projectId: "admissionformdb",
+        storageBucket: "admissionformdb.firebasestorage.app",
+        messagingSenderId: "398052082157",
+        appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-            // Message Sending
-            sendBtn.addEventListener('click', sendMessage);
-            userInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.repeat) sendMessage();
-            });
+    // Navigation Events
+    homeIcon.addEventListener('click', () => window.location.href = 'index.html');
+    settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
+    accountIcon.addEventListener('click', () => window.location.href = 'account.html');
 
-            function sendMessage() {
-                const message = userInput.value.trim();
-                if (message) {
-                    displayMessage(message, 'user');
-                    userInput.value = '';
-                    saveChatHistory(message, 'user');
-                    callRasaAPI(message);
-                    if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
-                }
-                if (selectedFile) {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.classList.add('user-message');
-                    const img = document.createElement('img');
-                    img.src = previewImage.src;
-                    img.classList.add('image-preview');
-                    img.addEventListener('click', () => openImageModal(img.src));
-                    messageDiv.appendChild(img);
-                    messagesDiv.appendChild(messageDiv);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                    if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
+    // Message Sending
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.repeat) sendMessage();
+    });
 
-                    const formData = new FormData();
-                    formData.append('image', selectedFile);
-                    fetch('http://localhost:5000/upload-image', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.image_url) {
-                                callRasaAPI(data.image_url);
-                            } else if (data.error) {
-                                displayMessage(`ত্রুটি: ${data.error}`, 'bot');
-                            }
-                        })
-                        .catch(error => {
-                            displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                            console.error('Upload Error:', error);
-                        });
-                    saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-                    clearPreview();
-                }
-            }
+    function sendMessage() {
+        const message = userInput.value.trim();
+        if (message) {
+            displayMessage(message, 'user');
+            userInput.value = '';
+            saveChatHistory(message, 'user');
+            callRasaAPI(message);
+        }
+        if (selectedFile) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('user-message');
+            const img = document.createElement('img');
+            img.src = previewImage.src;
+            img.classList.add('image-preview');
+            img.addEventListener('click', () => openImageModal(img.src));
+            messageDiv.appendChild(img);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
 
-            // Image Upload and Preview
-            uploadBtn.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', () => {
-                const file = fileInput.files[0];
-                if (file) {
-                    selectedFile = file;
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        previewImage.src = e.target.result;
-                        previewContainer.style.display = 'flex';
-                        userInput.style.paddingLeft = '110px';
-                    };
-                    reader.readAsDataURL(file);
-                }
-                fileInput.value = '';
-            });
-
-            // Image Review Modal
-            previewImage.addEventListener('click', () => {
-                reviewImage.src = previewImage.src;
-                imageReviewModal.style.display = 'flex';
-            });
-
-            // Image Editing
-            editBtn.addEventListener('click', () => {
-                image.src = previewImage.src;
-                image.onload = () => {
-                    editCanvas.width = image.width;
-                    editCanvas.height = image.height;
-                    cropRect.width = Math.min(200, image.width);
-                    cropRect.height = Math.min(200, image.height);
-                    drawImage();
-                    editModal.style.display = 'flex';
-                };
-            });
-
-            // Canvas Editing Controls
-            cropX.addEventListener('input', () => {
-                cropRect.x = parseInt(cropX.value);
-                drawImage();
-            });
-
-            cropY.addEventListener('input', () => {
-                cropRect.y = parseInt(cropY.value);
-                drawImage();
-            });
-
-            cropWidth.addEventListener('input', () => {
-                cropRect.width = parseInt(cropWidth.value);
-                drawImage();
-            });
-
-            cropHeight.addEventListener('input', () => {
-                cropRect.height = parseInt(cropHeight.value);
-                drawImage();
-            });
-
-            brightness.addEventListener('input', () => {
-                brightnessValue = parseInt(brightness.value);
-                drawImage();
-            });
-
-            contrast.addEventListener('input', () => {
-                contrastValue = parseInt(contrast.value);
-                drawImage();
-            });
-
-            backgroundColor.addEventListener('change', () => {
-                bgColor = backgroundColor.value;
-                drawImage();
-            });
-
-            function drawImage() {
-                ctx.clearRect(0, 0, editCanvas.width, editCanvas.height);
-                ctx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
-                ctx.fillRect(0, 0, editCanvas.width, editCanvas.height);
-
-                ctx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
-                ctx.drawImage(image, 0, 0);
-
-                ctx.strokeStyle = 'red';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
-                ctx.filter = 'none';
-            }
-
-            // Apply Edited Image
-            editApplyBtn.addEventListener('click', () => {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = cropRect.width;
-                tempCanvas.height = cropRect.height;
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
-                tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
-                tempCtx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
-                tempCtx.drawImage(image, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, cropRect.width, cropRect.height);
-
-                editedImage = tempCanvas.toDataURL('image/jpeg');
-                previewImage.src = editedImage;
-
-                callRasaAPI("show_review");
-                editModal.style.display = 'none';
-            });
-
-            editCancelBtn.addEventListener('click', () => {
-                editModal.style.display = 'none';
-            });
-
-            function openImageModal(imageSrc) {
-                reviewImage.src = imageSrc;
-                imageReviewModal.style.display = 'flex';
-            }
-
-            imageReviewModal.addEventListener('click', (e) => {
-                if (e.target === imageReviewModal || e.target === deleteImageBtn) {
-                    imageReviewModal.style.display = 'none';
-                }
-            });
-
-            deleteImageBtn.addEventListener('click', () => {
-                clearPreview();
-                imageReviewModal.style.display = 'none';
-            });
-
-            function clearPreview() {
-                selectedFile = null;
-                editedImage = null;
-                previewImage.src = '';
-                previewContainer.style.display = 'none';
-                userInput.style.paddingLeft = '15px';
-            }
-
-            // Sidebar and Chat History
-            historyIcon.addEventListener('click', toggleSidebar);
-            newChatIcon.addEventListener('click', startNewChat);
-            closeSidebar.addEventListener('click', toggleSidebar);
-            sidebarIcon.addEventListener('click', toggleSidebar);
-
-            function toggleSidebar() {
-                sidebar.classList.toggle('open');
-                chatContainer.classList.toggle('sidebar-open');
-                loadChatHistory();
-            }
-
-            function startNewChat() {
-                currentChatId = Date.now().toString();
-                messagesDiv.innerHTML = '';
-                welcomeMessage.style.display = 'block';
-                chatBox.classList.add('fade-in');
-                setTimeout(() => chatBox.classList.remove('fade-in'), 500);
-                saveChatHistory('New Chat Started', 'system');
-                loadChatHistory();
-            }
-
-            function displayMessage(message, sender) {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-                messageDiv.innerText = message;
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-
-            function displayReview(reviewData) {
-                const reviewCard = document.createElement('div');
-                reviewCard.classList.add('review-card');
-                reviewCard.setAttribute('data-editable', 'true');
-                reviewCard.setAttribute('data-id', Date.now());
-                reviewCard.setAttribute('data-confirmed', 'false');
-                reviewCard.innerHTML = '<h3>আপনার তথ্য রিভিউ</h3>';
-
-                const reviewContent = document.createElement('div');
-                reviewContent.classList.add('review-content');
-
-                for (const [key, value] of Object.entries(reviewData)) {
-                    const reviewItem = document.createElement('div');
-                    reviewItem.classList.add('review-item');
-                    reviewItem.setAttribute('data-key', key);
-
-                    const label = document.createElement('label');
-                    label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
-                    reviewItem.appendChild(label);
-
-                    if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                        const img = document.createElement('img');
-                        img.src = value;
-                        reviewItem.appendChild(img);
-                    } else {
-                        const p = document.createElement('p');
-                        p.innerText = value;
-                        reviewItem.appendChild(p);
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            fetch('http://localhost:5000/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.image_url) {
+                        callRasaAPI(data.image_url);
+                    } else if (data.error) {
+                        displayMessage(`ত্রুটি: ${data.error}`, 'bot');
                     }
-
-                    reviewContent.appendChild(reviewItem);
-                }
-
-                const buttonContainer = document.createElement('div');
-                buttonContainer.className = 'review-buttons';
-
-                const editBtn = document.createElement('button');
-                editBtn.className = 'edit-btn';
-                editBtn.innerText = 'Edit';
-                editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
-
-                const confirmBtn = document.createElement('button');
-                confirmBtn.className = 'confirm-btn';
-                confirmBtn.innerText = 'Confirm';
-                confirmBtn.style.display = 'inline-block';
-                confirmBtn.addEventListener('click', () => {
-                    const updatedData = {};
-                    reviewContent.querySelectorAll('.review-item').forEach(item => {
-                        const key = item.getAttribute('data-key');
-                        const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                        updatedData[key] = value;
-                    });
-
-                    db.collection('submissions').add({
-                        review_data: updatedData,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        chat_id: currentChatId
-                    })
-                        .then((docRef) => {
-                            displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-                            generatePDF(updatedData, reviewCard);
-                            reviewCard.setAttribute('data-confirmed', 'true');
-                            reviewCard.setAttribute('data-editable', 'false');
-                            editBtn.disabled = true;
-                            editBtn.style.display = 'none';
-                            confirmBtn.disabled = true;
-                            confirmBtn.style.display = 'none';
-
-                            buttonContainer.innerHTML = '';
-                            const downloadBtn = document.createElement('button');
-                            downloadBtn.className = 'download-btn';
-                            downloadBtn.innerText = 'Download PDF';
-                            downloadBtn.addEventListener('click', () => {
-                                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                                if (pdfUrl) {
-                                    const link = document.createElement('a');
-                                    link.href = pdfUrl;
-                                    link.download = 'formbondhu_submission.pdf';
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                }
-                            });
-                            buttonContainer.appendChild(downloadBtn);
-
-                            $.ajax({
-                                url: 'http://localhost:5005/webhooks/rest/webhook',
-                                type: 'POST',
-                                contentType: 'application/json',
-                                data: JSON.stringify({
-                                    sender: 'user',
-                                    message: 'confirm_review',
-                                    metadata: { review_data: updatedData }
-                                }),
-                                success: (data) => {
-                                    data.forEach(response => {
-                                        if (response.text) {
-                                            displayMessage(response.text, 'bot');
-                                        }
-                                        if (response.custom && response.custom.review_data) {
-                                            displayReview(response.custom.review_data);
-                                        }
-                                    });
-                                },
-                                error: (error) => {
-                                    displayMessage('তথ্য কনফার্ম করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                                    console.error('Rasa API Error:', error);
-                                }
-                            });
-                        })
-                        .catch((error) => {
-                            displayMessage('ফায়ারবেজে তথ্য পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                            console.error('Firebase Error:', error);
-                        });
+                })
+                .catch(error => {
+                    displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                    console.error('Upload Error:', error);
                 });
+            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+            clearPreview();
+        }
+    }
 
-                buttonContainer.appendChild(editBtn);
-                buttonContainer.appendChild(confirmBtn);
+    // Image Upload and Preview
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'flex';
+                userInput.style.paddingLeft = '110px';
+            };
+            reader.readAsDataURL(file);
+        }
+        fileInput.value = '';
+    });
 
-                reviewCard.appendChild(reviewContent);
-                reviewCard.appendChild(buttonContainer);
-                messagesDiv.appendChild(reviewCard);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
+    // Image Review Modal
+    previewImage.addEventListener('click', () => {
+        reviewImage.src = previewImage.src;
+        imageReviewModal.style.display = 'flex';
+    });
+
+    // Image Editing
+    editBtn.addEventListener('click', () => {
+        image.src = previewImage.src;
+        image.onload = () => {
+            editCanvas.width = image.width;
+            editCanvas.height = image.height;
+            cropRect.width = Math.min(200, image.width);
+            cropRect.height = Math.min(200, image.height);
+            drawImage();
+            editModal.style.display = 'flex';
+        };
+    });
+
+    // Canvas Editing Controls
+    cropX.addEventListener('input', () => {
+        cropRect.x = parseInt(cropX.value);
+        drawImage();
+    });
+
+    cropY.addEventListener('input', () => {
+        cropRect.y = parseInt(cropY.value);
+        drawImage();
+    });
+
+    cropWidth.addEventListener('input', () => {
+        cropRect.width = parseInt(cropWidth.value);
+        drawImage();
+    });
+
+    cropHeight.addEventListener('input', () => {
+        cropRect.height = parseInt(cropHeight.value);
+        drawImage();
+    });
+
+    brightness.addEventListener('input', () => {
+        brightnessValue = parseInt(brightness.value);
+        drawImage();
+    });
+
+    contrast.addEventListener('input', () => {
+        contrastValue = parseInt(contrast.value);
+        drawImage();
+    });
+
+    backgroundColor.addEventListener('change', () => {
+        bgColor = backgroundColor.value;
+        drawImage();
+    });
+
+    function drawImage() {
+        ctx.clearRect(0, 0, editCanvas.width, editCanvas.height);
+        ctx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
+        ctx.fillRect(0, 0, editCanvas.width, editCanvas.height);
+
+        ctx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
+        ctx.drawImage(image, 0, 0);
+
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
+        ctx.filter = 'none';
+    }
+
+    // Apply Edited Image
+    editApplyBtn.addEventListener('click', () => {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = cropRect.width;
+        tempCanvas.height = cropRect.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
+        tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
+        tempCtx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
+        tempCtx.drawImage(image, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, cropRect.width, cropRect.height);
+
+        editedImage = tempCanvas.toDataURL('image/jpeg');
+        previewImage.src = editedImage;
+
+        callRasaAPI("show_review");
+        editModal.style.display = 'none';
+    });
+
+    editCancelBtn.addEventListener('click', () => {
+        editModal.style.display = 'none';
+    });
+
+    function openImageModal(imageSrc) {
+        reviewImage.src = imageSrc;
+        imageReviewModal.style.display = 'flex';
+    }
+
+    imageReviewModal.addEventListener('click', (e) => {
+        if (e.target === imageReviewModal || e.target === deleteImageBtn) {
+            imageReviewModal.style.display = 'none';
+        }
+    });
+
+    deleteImageBtn.addEventListener('click', () => {
+        clearPreview();
+        imageReviewModal.style.display = 'none';
+    });
+
+    function clearPreview() {
+        selectedFile = null;
+        editedImage = null;
+        previewImage.src = '';
+        previewContainer.style.display = 'none';
+        userInput.style.paddingLeft = '15px';
+    }
+
+    // Sidebar and Chat History
+    historyIcon.addEventListener('click', toggleSidebar);
+    newChatIcon.addEventListener('click', startNewChat);
+    closeSidebar.addEventListener('click', toggleSidebar);
+    sidebarIcon.addEventListener('click', toggleSidebar);
+
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        chatContainer.classList.toggle('sidebar-open');
+        loadChatHistory();
+    }
+
+    function startNewChat() {
+        currentChatId = Date.now().toString();
+        messagesDiv.innerHTML = '';
+        welcomeMessage.style.display = 'block';
+        chatBox.classList.add('fade-in');
+        setTimeout(() => chatBox.classList.remove('fade-in'), 500);
+        saveChatHistory('New Chat Started', 'system');
+        loadChatHistory();
+    }
+
+    function displayMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+        messageDiv.innerText = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
+        saveChatHistory(message, sender);
+    }
+
+    function displayReview(reviewData) {
+        const reviewCard = document.createElement('div');
+        reviewCard.classList.add('review-card');
+        reviewCard.setAttribute('data-editable', 'true');
+        reviewCard.setAttribute('data-id', Date.now());
+        reviewCard.setAttribute('data-confirmed', 'false');
+        reviewCard.innerHTML = '<h3>আপনার তথ্য রিভিউ</h3>';
+
+        const reviewContent = document.createElement('div');
+        reviewContent.classList.add('review-content');
+
+        for (const [key, value] of Object.entries(reviewData)) {
+            const reviewItem = document.createElement('div');
+            reviewItem.classList.add('review-item');
+            reviewItem.setAttribute('data-key', key);
+
+            const label = document.createElement('label');
+            label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
+            reviewItem.appendChild(label);
+
+            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+                const img = document.createElement('img');
+                img.src = value;
+                reviewItem.appendChild(img);
+            } else {
+                const p = document.createElement('p');
+                p.innerText = value;
+                reviewItem.appendChild(p);
             }
 
-            function toggleEditMode(card, reviewData) {
-                if (card.getAttribute('data-confirmed') === 'true') {
-                    displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
-                    return;
-                }
+            reviewContent.appendChild(reviewItem);
+        }
 
-                const isEditable = card.getAttribute('data-editable') === 'true';
-                const reviewContent = card.querySelector('.review-content');
-                const editBtn = card.querySelector('.edit-btn');
-                const confirmBtn = card.querySelector('.confirm-btn');
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'review-buttons';
 
-                if (!isEditable) {
-                    card.setAttribute('data-editable', 'true');
-                    editBtn.innerText = 'Save';
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.innerText = 'Edit';
+        editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
+
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'confirm-btn';
+        confirmBtn.innerText = 'Confirm';
+        confirmBtn.style.display = 'inline-block';
+        confirmBtn.addEventListener('click', () => {
+            const updatedData = {};
+            reviewContent.querySelectorAll('.review-item').forEach(item => {
+                const key = item.getAttribute('data-key');
+                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
+                updatedData[key] = value;
+            });
+
+            db.collection('submissions').add({
+                review_data: updatedData,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                chat_id: currentChatId
+            })
+                .then((docRef) => {
+                    displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
+                    generatePDF(updatedData, reviewCard);
+                    reviewCard.setAttribute('data-confirmed', 'true');
+                    reviewCard.setAttribute('data-editable', 'false');
+                    editBtn.disabled = true;
+                    editBtn.style.display = 'none';
+                    confirmBtn.disabled = true;
                     confirmBtn.style.display = 'none';
 
-                    reviewContent.querySelectorAll('.review-item').forEach(item => {
-                        const key = item.getAttribute('data-key');
-                        const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                        item.innerHTML = `<label>${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}:</label>`;
+                    buttonContainer.innerHTML = '';
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'download-btn';
+                    downloadBtn.innerText = 'Download PDF';
+                    downloadBtn.addEventListener('click', () => {
+                        const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                        if (pdfUrl) {
+                            const link = document.createElement('a');
+                            link.href = pdfUrl;
+                            link.download = 'formbondhu_submission.pdf';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    });
+                    buttonContainer.appendChild(downloadBtn);
 
-                        if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                            const img = document.createElement('img');
-                            img.src = value;
-                            item.appendChild(img);
-
-                            const replaceIcon = document.createElement('i');
-                            replaceIcon.className = 'fas fa-camera replace-image-icon';
-                            item.appendChild(replaceIcon);
-
-                            const replaceInput = document.createElement('input');
-                            replaceInput.type = 'file';
-                            replaceInput.className = 'replace-image-input';
-                            replaceInput.accept = 'image/png, image/jpeg';
-                            replaceInput.style.display = 'none';
-                            item.appendChild(replaceInput);
-
-                            replaceIcon.addEventListener('click', () => replaceInput.click());
-
-                            replaceInput.addEventListener('change', () => {
-                                const file = replaceInput.files[0];
-                                if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = (e) => {
-                                        img.src = e.target.result;
-                                    };
-                                    reader.readAsDataURL(file);
+                    $.ajax({
+                        url: 'http://localhost:5005/webhooks/rest/webhook',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            sender: 'user',
+                            message: 'confirm_review',
+                            metadata: { review_data: updatedData }
+                        }),
+                        success: (data) => {
+                            data.forEach(response => {
+                                if (response.text) {
+                                    displayMessage(response.text, 'bot');
+                                }
+                                if (response.custom && response.custom.review_data) {
+                                    displayReview(response.custom.review_data);
                                 }
                             });
-                        } else {
-                            const input = document.createElement('input');
-                            input.type = 'text';
-                            input.value = value;
-                            input.className = 'edit-input';
-                            item.appendChild(input);
+                        },
+                        error: (error) => {
+                            displayMessage('তথ্য কনফার্ম করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                            console.error('Rasa API Error:', error);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    displayMessage('ফায়ারবেজে তথ্য পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                    console.error('Firebase Error:', error);
+                });
+        });
+
+        buttonContainer.appendChild(editBtn);
+        buttonContainer.appendChild(confirmBtn);
+
+        reviewCard.appendChild(reviewContent);
+        reviewCard.appendChild(buttonContainer);
+        messagesDiv.appendChild(reviewCard);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
+    }
+
+    function toggleEditMode(card, reviewData) {
+        if (card.getAttribute('data-confirmed') === 'true') {
+            displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
+            return;
+        }
+
+        const isEditable = card.getAttribute('data-editable') === 'true';
+        const reviewContent = card.querySelector('.review-content');
+        const editBtn = card.querySelector('.edit-btn');
+        const confirmBtn = card.querySelector('.confirm-btn');
+
+        if (!isEditable) {
+            card.setAttribute('data-editable', 'true');
+            editBtn.innerText = 'Save';
+            confirmBtn.style.display = 'none';
+
+            reviewContent.querySelectorAll('.review-item').forEach(item => {
+                const key = item.getAttribute('data-key');
+                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
+                item.innerHTML = `<label>${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}:</label>`;
+
+                if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+                    const img = document.createElement('img');
+                    img.src = value;
+                    item.appendChild(img);
+
+                    const replaceIcon = document.createElement('i');
+                    replaceIcon.className = 'fas fa-camera replace-image-icon';
+                    item.appendChild(replaceIcon);
+
+                    const replaceInput = document.createElement('input');
+                    replaceInput.type = 'file';
+                    replaceInput.className = 'replace-image-input';
+                    replaceInput.accept = 'image/png, image/jpeg';
+                    replaceInput.style.display = 'none';
+                    item.appendChild(replaceInput);
+
+                    replaceIcon.addEventListener('click', () => replaceInput.click());
+
+                    replaceInput.addEventListener('change', () => {
+                        const file = replaceInput.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                img.src = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
                         }
                     });
                 } else {
-                    const updatedData = { ...reviewData };
-                    reviewContent.querySelectorAll('.review-item').forEach(item => {
-                        const key = item.getAttribute('data-key');
-                        const input = item.querySelector('input.edit-input');
-                        const img = item.querySelector('img');
-                        if (input) {
-                            const newValue = input.value.trim();
-                            updatedData[key] = newValue;
-                            item.innerHTML = `<label>${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}:</label><p>${newValue}</p>`;
-                        } else if (img) {
-                            updatedData[key] = img.src;
-                            item.innerHTML = `<label>${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}:</label><img src="${img.src}">`;
-                        }
-                    });
-
-                    card.setAttribute('data-editable', 'false');
-                    editBtn.innerText = 'Edit';
-                    confirmBtn.style.display = 'inline-block';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = value;
+                    input.className = 'edit-input';
+                    item.appendChild(input);
                 }
-            }
-
-            function displayLoading() {
-                const loadingDiv = document.createElement('div');
-                loadingDiv.classList.add('loading');
-                loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-                messagesDiv.appendChild(loadingDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                return loadingDiv;
-            }
-
-            function removeLoading(loadingDiv) {
-                if (loadingDiv) loadingDiv.remove();
-            }
-
-            function callRasaAPI(message, metadata = {}) {
-                const loadingDiv = displayLoading();
-                const payload = { sender: 'user', message: message };
-                if (Object.keys(metadata).length > 0) {
-                    payload.metadata = metadata;
+            });
+        } else {
+            const updatedData = { ...reviewData };
+            reviewContent.querySelectorAll('.review-item').forEach(item => {
+                const key = item.getAttribute('data-key');
+                const input = item.querySelector('input.edit-input');
+                const img = item.querySelector('img');
+                if (input) {
+                    const newValue = input.value.trim();
+                    updatedData[key] = newValue;
+                    item.innerHTML = `<label>${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}:</label><p>${newValue}</p>`;
+                } else if (img) {
+                    updatedData[key] = img.src;
+                    item.innerHTML = `<label>${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}:</label><img src="${img.src}">`;
                 }
-                $.ajax({
-                    url: 'http://localhost:5005/webhooks/rest/webhook',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(payload),
-                    success: (data) => {
-                        removeLoading(loadingDiv);
-                        data.forEach(response => {
-                            if (response.text && !response.text.toLowerCase().includes('hi')) {
-                                displayMessage(response.text, 'bot');
-                            }
-                            if (response.custom && response.custom.review_data) {
-                                displayReview(response.custom.review_data);
-                            }
-                            if (response.buttons) {
-                                const buttonDiv = document.createElement('div');
-                                buttonDiv.classList.add('welcome-buttons');
-                                response.buttons.forEach(btn => {
-                                    const button = document.createElement('button');
-                                    button.innerText = btn.title;
-                                    button.addEventListener('click', () => {
-                                        sendMessage(btn.payload);
-                                        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
-                                    });
-                                    buttonDiv.appendChild(button);
-                                });
-                                messagesDiv.appendChild(buttonDiv);
-                            }
+            });
+
+            card.setAttribute('data-editable', 'false');
+            editBtn.innerText = 'Edit';
+            confirmBtn.style.display = 'inline-block';
+        }
+    }
+
+    function displayLoading() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('loading');
+        loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+        messagesDiv.appendChild(loadingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return loadingDiv;
+    }
+
+    function removeLoading(loadingDiv) {
+        if (loadingDiv) loadingDiv.remove();
+    }
+
+    function callRasaAPI(message, metadata = {}) {
+        const loadingDiv = displayLoading();
+        const payload = { sender: 'user', message: message };
+        if (Object.keys(metadata).length > 0) {
+            payload.metadata = metadata;
+        }
+        $.ajax({
+            url: 'http://localhost:5005/webhooks/rest/webhook',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: (data) => {
+                removeLoading(loadingDiv);
+                data.forEach(response => {
+                    if (response.text && !response.text.toLowerCase().includes('hi')) {
+                        displayMessage(response.text, 'bot');
+                    }
+                    if (response.custom && response.custom.review_data) {
+                        displayReview(response.custom.review_data);
+                    }
+                    if (response.buttons) {
+                        const buttonDiv = document.createElement('div');
+                        buttonDiv.classList.add('welcome-buttons');
+                        response.buttons.forEach(btn => {
+                            const button = document.createElement('button');
+                            button.innerText = btn.title;
+                            button.addEventListener('click', () => sendMessage(btn.payload));
+                            buttonDiv.appendChild(button);
                         });
-                    },
-                    error: (error) => {
-                        removeLoading(loadingDiv);
-                        displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                        console.error('Rasa API Error:', error);
+                        messagesDiv.appendChild(buttonDiv);
                     }
                 });
+            },
+            error: (error) => {
+                removeLoading(loadingDiv);
+                displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                console.error('Rasa API Error:', error);
             }
+        });
+    }
 
-            function generatePDF(reviewData, reviewCard) {
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
+    function generatePDF(reviewData, reviewCard) {
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-                doc.setFont("helvetica");
-                doc.setFontSize(16);
-                doc.setFillColor(30, 58, 138);
-                doc.rect(0, 0, 210, 40, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.text("Formbondhu Submission", 20, 20);
-                doc.setFontSize(12);
-                doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
-                doc.setDrawColor(30, 58, 138);
-                doc.setLineWidth(0.5);
-                doc.rect(10, 10, 190, 277);
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(12);
+        doc.setFont("helvetica");
+        doc.setFontSize(16);
+        doc.setFillColor(30, 58, 138);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.text("Formbondhu Submission", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
+        doc.setDrawColor(30, 58, 138);
+        doc.setLineWidth(0.5);
+        doc.rect(10, 10, 190, 277);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
 
-                let y = 50;
-                for (const [key, value] of Object.entries(reviewData)) {
-                    const label = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ');
-                    doc.setFont("helvetica", "bold");
-                    doc.text(`${label}:`, 20, y);
-                    doc.setFont("helvetica", "normal");
+        let y = 50;
+        for (const [key, value] of Object.entries(reviewData)) {
+            const label = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ');
+            doc.setFont("helvetica", "bold");
+            doc.text(`${label}:`, 20, y);
+            doc.setFont("helvetica", "normal");
 
-                    if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                        try {
-                            const imgData = value;
-                            doc.addImage(imgData, 'JPEG', 20, y + 5, 80, 60, undefined, 'FAST');
-                            y += 70;
-                        } catch (error) {
-                            doc.text("Image could not be loaded", 20, y + 5);
-                            y += 10;
-                            console.error('PDF Image Error:', error);
-                        }
-                    } else {
-                        const lines = doc.splitTextToSize(value, 170);
-                        doc.text(lines, 20, y + 5);
-                        y += lines.length * 5 + 5;
-                    }
-                    y += 5;
+            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+                try {
+                    const imgData = value;
+                    doc.addImage(imgData, 'JPEG', 20, y + 5, 80, 60, undefined, 'FAST');
+                    y += 70;
+                } catch (error) {
+                    doc.text("Image could not be loaded", 20, y + 5);
+                    y += 10;
+                    console.error('PDF Image Error:', error);
                 }
-
-                doc.setFillColor(229, 231, 235);
-                doc.rect(0, 277, 210, 20, 'F');
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
-                doc.text("Generated by Formbondhu - www.formbondhu.com", 20, 287);
-                doc.text("Page 1 of 1", 180, 287);
-
-                const pdfBlob = doc.output('blob');
-                const pdfUrl = URL.createObjectURL(pdfBlob);
-                reviewCard.setAttribute('data-pdf-url', pdfUrl);
+            } else {
+                const lines = doc.splitTextToSize(value, 170);
+                doc.text(lines, 20, y + 5);
+                y += lines.length * 5 + 5;
             }
+            y += 5;
+        }
 
-            function saveChatHistory(message, sender) {
-                let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-                if (!chats[currentChatId]) {
-                    chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
-                }
-                chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
-                localStorage.setItem('chatHistory', JSON.stringify(chats));
-            }
+        doc.setFillColor(229, 231, 235);
+        doc.rect(0, 277, 210, 20, 'F');
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.text("Generated by Formbondhu - www.formbondhu.com", 20, 287);
+        doc.text("Page 1 of 1", 180, 287);
+
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        reviewCard.setAttribute('data-pdf-url', pdfUrl);
+    }
+
+    function saveChatHistory(message, sender) {
+        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        if (!chats[currentChatId]) {
+            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
+        }
+        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+        localStorage.setItem('chatHistory', JSON.stringify(chats));
+    }
 
     function loadChatHistory() {
         historyList.innerHTML = '';
