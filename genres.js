@@ -99,13 +99,49 @@ const genres = [
     { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
+
 const moreOptionsBtn = document.getElementById('moreOptionsBtn');
 const genresModal = document.getElementById('genresModal');
 const closeGenresModal = document.getElementById('closeGenresModal');
 const genresList = document.getElementById('genresList');
 const welcomeButtons = document.querySelector('.welcome-buttons');
 const messagesDiv = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
 
+// ফাংশন: লোডিং মেসেজ দেখানো
+function displayLoading() {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loading';
+    loadingDiv.innerText = 'লোড হচ্ছে...';
+    messagesDiv.appendChild(loadingDiv);
+    return loadingDiv;
+}
+
+// ফাংশন: লোডিং মেসেজ সরানো
+function removeLoading(loadingDiv) {
+    if (loadingDiv && messagesDiv.contains(loadingDiv)) {
+        messagesDiv.removeChild(loadingDiv);
+    }
+}
+
+// ফাংশন: মেসেজ প্রদর্শন
+function displayMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    messageDiv.innerText = message;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight; // স্ক্রল নিচে নিয়ে যাওয়া
+}
+
+// ফাংশন: রিভিউ ডেটা প্রদর্শন
+function displayReview(reviewData) {
+    const reviewDiv = document.createElement('div');
+    reviewDiv.className = 'review-data';
+    reviewDiv.innerText = JSON.stringify(reviewData, null, 2); // সাময়িকভাবে ডেটা দেখানোর জন্য
+    messagesDiv.appendChild(reviewDiv);
+}
+
+// ফাংশন: জেনার লিস্ট রেন্ডার করা
 function renderGenresList() {
     console.log('Rendering genres list...');
     if (!genresList) {
@@ -126,9 +162,10 @@ function renderGenresList() {
     });
 }
 
+// ফাংশন: ইনটেন্ট ট্রিগার করা
 function triggerIntent(message) {
     console.log(`Triggering intent with message: ${message}`);
-    sendMessage(message, false); // মেসেজ পাঠাও, UI-এ দেখাবে না
+    sendMessage(message, true); // মেসেজ পাঠাও এবং UI-তে দেখাও
     if (welcomeButtons) {
         console.log('Hiding welcome buttons');
         welcomeButtons.style.display = 'none';
@@ -137,107 +174,84 @@ function triggerIntent(message) {
     }
 }
 
+// ফাংশন: মেসেজ পাঠানো
 function sendMessage(message, showInUI = true) {
     console.log(`Sending message: ${message}, showInUI: ${showInUI}`);
     if (message && showInUI) {
-        if (typeof displayMessage === 'function') {
-            displayMessage(message, 'user');
-        } else {
-            console.error('displayMessage function not defined!');
-        }
+        displayMessage(message, 'user');
         if (userInput) {
             userInput.value = '';
         } else {
             console.warn('userInput element not found!');
         }
-        if (typeof saveChatHistory === 'function') {
-            saveChatHistory(message, 'user');
-        } else {
-            console.error('saveChatHistory function not defined!');
-        }
+        saveChatHistory(message, 'user');
     }
     if (message) {
         callRasaAPI(message);
     }
 }
 
+// ফাংশন: চ্যাট হিস্টোরি সেভ করা (ডামি ফাংশন, আপনার প্রয়োজন অনুযায়ী বাস্তবায়ন করুন)
+function saveChatHistory(message, sender) {
+    console.log(`Saving chat history: ${sender}: ${message}`);
+    // এখানে আপনার চ্যাট হিস্টোরি সেভ করার লজিক যোগ করুন
+}
+
+// ফাংশন: Rasa API কল করা (fetch API ব্যবহার করে)
 function callRasaAPI(message, metadata = {}) {
     console.log(`Calling Rasa API with message: ${message}`);
-    let loadingDiv;
-    if (typeof displayLoading === 'function') {
-        loadingDiv = displayLoading();
-    } else {
-        console.error('displayLoading function not defined!');
-    }
+    const loadingDiv = displayLoading();
     const payload = { sender: 'user', message: message };
     if (Object.keys(metadata).length > 0) {
         payload.metadata = metadata;
     }
-    if (typeof $.ajax === 'function') {
-        $.ajax({
-            url: 'http://localhost:5005/webhooks/rest/webhook',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(payload),
-            success: (data) => {
-                console.log('Rasa API response:', data);
-                if (typeof removeLoading === 'function') {
-                    removeLoading(loadingDiv);
-                } else {
-                    console.error('removeLoading function not defined!');
-                }
-                if (!data || !Array.isArray(data)) {
-                    if (typeof displayMessage === 'function') {
-                        displayMessage('বট থেকে কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
-                    }
-                    console.error('Invalid Rasa response:', data);
-                    return;
-                }
-                data.forEach(response => {
-                    if (response.text && !response.text.toLowerCase().includes('hi')) {
-                        if (typeof displayMessage === 'function') {
-                            displayMessage(response.text, 'bot');
-                        }
-                    }
-                    if (response.custom && response.custom.review_data) {
-                        if (typeof displayReview === 'function') {
-                            displayReview(response.custom.review_data);
-                        } else {
-                            console.error('displayReview function not defined!');
-                        }
-                    }
-                    if (response.buttons) {
-                        const buttonDiv = document.createElement('div');
-                        buttonDiv.classList.add('welcome-buttons');
-                        response.buttons.forEach(btn => {
-                            const button = document.createElement('button');
-                            button.innerText = btn.title;
-                            button.addEventListener('click', () => sendMessage(btn.payload));
-                            buttonDiv.appendChild(button);
-                        });
-                        if (messagesDiv) {
-                            messagesDiv.appendChild(buttonDiv);
-                        } else {
-                            console.error('messagesDiv element not found!');
-                        }
-                    }
+    fetch('http://localhost:5005/webhooks/rest/webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Rasa API response:', data);
+        removeLoading(loadingDiv);
+        if (!data || !Array.isArray(data)) {
+            displayMessage('বট থেকে কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
+            console.error('Invalid Rasa response:', data);
+            return;
+        }
+        data.forEach(response => {
+            if (response.text && !response.text.toLowerCase().includes('hi')) {
+                displayMessage(response.text, 'bot');
+            }
+            if (response.custom && response.custom.review_data) {
+                displayReview(response.custom.review_data);
+            }
+            if (response.buttons) {
+                const buttonDiv = document.createElement('div');
+                buttonDiv.classList.add('welcome-buttons');
+                response.buttons.forEach(btn => {
+                    const button = document.createElement('button');
+                    button.innerText = btn.title;
+                    button.addEventListener('click', () => sendMessage(btn.payload));
+                    buttonDiv.appendChild(button);
                 });
-            },
-            error: (error) => {
-                console.error('Rasa API error:', error);
-                if (typeof removeLoading === 'function') {
-                    removeLoading(loadingDiv);
-                }
-                if (typeof displayMessage === 'function') {
-                    displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                }
+                messagesDiv.appendChild(buttonDiv);
             }
         });
-    } else {
-        console.error('jQuery not loaded, cannot make AJAX request!');
-    }
+    })
+    .catch(error => {
+        console.error('Rasa API error:', error);
+        removeLoading(loadingDiv);
+        displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন বা সার্ভার চেক করুন।', 'bot');
+    });
 }
 
+// ফাংশন: জেনার মোডাল খোলা
 function openGenresModal() {
     console.log('Opening genres modal');
     if (genresModal) {
@@ -248,6 +262,7 @@ function openGenresModal() {
     }
 }
 
+// ফাংশন: জেনার মোডাল বন্ধ করা
 function closeGenresModalFunc() {
     console.log('Closing genres modal');
     if (genresModal) {
@@ -257,19 +272,21 @@ function closeGenresModalFunc() {
     }
 }
 
+// ইভেন্ট লিসেনার: "More Options" বাটন
 if (moreOptionsBtn) {
     moreOptionsBtn.addEventListener('click', openGenresModal);
 } else {
     console.error('moreOptionsBtn element not found!');
 }
 
+// ইভেন্ট লিসেনার: মোডাল বন্ধ করার বাটন
 if (closeGenresModal) {
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
 } else {
     console.error('closeGenresModal element not found!');
 }
 
-// Welcome Buttons
+// ইভেন্ট লিসেনার: ওয়েলকাম বাটন
 const welcomeButtonsList = document.querySelectorAll('.welcome-buttons button[data-genre]');
 if (welcomeButtonsList.length > 0) {
     welcomeButtonsList.forEach(button => {
