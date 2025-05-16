@@ -99,6 +99,7 @@ const genres = [
     { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
+  
 const moreOptionsBtn = document.getElementById('moreOptionsBtn');
 const genresModal = document.getElementById('genresModal');
 const closeGenresModal = document.getElementById('closeGenresModal');
@@ -283,6 +284,10 @@ if (welcomeButtonsList.length > 0) {
                 console.warn(`Genre not found for name: ${genreName}`);
             }
         });
+    });
+} else {
+    console.error('No welcome buttons with data-genre attribute found!');
+}
     });
 } else {
     console.error('No welcome buttons with data-genre attribute found!');
