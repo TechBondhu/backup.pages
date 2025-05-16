@@ -100,14 +100,17 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
+// DOM Elements
 const moreOptionsBtn = document.getElementById('moreOptionsBtn');
 const genresModal = document.getElementById('genresModal');
 const closeGenresModal = document.getElementById('closeGenresModal');
 const genresList = document.getElementById('genresList');
 const welcomeMessage = document.getElementById('welcomeMessage');
+const messagesDiv = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
 
+// Render Genres List
 function renderGenresList() {
-    console.log('Rendering genres list...');
     if (!genresList) {
         console.error('genresList element not found!');
         return;
@@ -118,7 +121,6 @@ function renderGenresList() {
         genreItem.className = 'genre-item';
         genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
         genreItem.addEventListener('click', () => {
-            console.log(`Genre clicked: ${genre.name}, sending message: ${genre.message}`);
             triggerIntent(genre.message);
             genresModal.style.display = 'none';
             if (welcomeMessage) {
@@ -129,55 +131,106 @@ function renderGenresList() {
     });
 }
 
+// Trigger Intent and Send to Rasa
 function triggerIntent(message) {
-    console.log(`Triggering intent with message: ${message}`);
-    sendMessage(message, true);
-}
+    if (message) {
+        // Display user message
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('user-message');
+        messageDiv.innerText = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-function sendMessage(message, showInUI = true) {
-    console.log(`Sending message: ${message}, showInUI: ${showInUI}`);
-    if (message && showInUI) {
-        if (typeof displayMessage === 'function') {
-            displayMessage(message, 'user');
-        } else {
-            console.error('displayMessage function not defined!');
-        }
-        const userInput = document.getElementById('userInput');
+        // Clear input
         if (userInput) {
             userInput.value = '';
-        } else {
-            console.warn('userInput element not found!');
         }
-        if (typeof saveChatHistory === 'function') {
-            saveChatHistory(message, 'user');
-        } else {
-            console.error('saveChatHistory function not defined!');
-        }
-    }
-    if (message) {
+
+        // Save to chat history
+        saveChatHistory(message, 'user');
+
+        // Call Rasa API
         callRasaAPI(message);
     }
 }
 
+// Call Rasa API
+function callRasaAPI(message) {
+    const loadingDiv = displayLoading();
+    $.ajax({
+        url: 'http://localhost:5005/webhooks/rest/webhook',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ sender: 'user', message: message }),
+        success: (data) => {
+            removeLoading(loadingDiv);
+            data.forEach(response => {
+                if (response.text) {
+                    const botMessageDiv = document.createElement('div');
+                    botMessageDiv.classList.add('bot-message');
+                    botMessageDiv.innerText = response.text;
+                    messagesDiv.appendChild(botMessageDiv);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    saveChatHistory(response.text, 'bot');
+                }
+                if (response.custom && response.custom.review_data) {
+                    displayReview(response.custom.review_data);
+                }
+            });
+        },
+        error: (error) => {
+            removeLoading(loadingDiv);
+            const errorMessageDiv = document.createElement('div');
+            errorMessageDiv.classList.add('bot-message');
+            errorMessageDiv.innerText = 'বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।';
+            messagesDiv.appendChild(errorMessageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            console.error('Rasa API Error:', error);
+        }
+    });
+}
+
+// Display Loading Animation
+function displayLoading() {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.classList.add('loading');
+    loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+    messagesDiv.appendChild(loadingDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    return loadingDiv;
+}
+
+// Remove Loading Animation
+function removeLoading(loadingDiv) {
+    if (loadingDiv) loadingDiv.remove();
+}
+
+// Save Chat History
+function saveChatHistory(message, sender) {
+    let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+    if (!chats[currentChatId]) {
+        chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
+    }
+    chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+    localStorage.setItem('chatHistory', JSON.stringify(chats));
+}
+
+// Open Genres Modal
 function openGenresModal() {
-    console.log('Opening genres modal');
+    renderGenresList();
     if (genresModal) {
-        renderGenresList();
         genresModal.style.display = 'flex';
-    } else {
-        console.error('genresModal element not found!');
     }
 }
 
+// Close Genres Modal
 function closeGenresModalFunc() {
-    console.log('Closing genres modal');
     if (genresModal) {
         genresModal.style.display = 'none';
-    } else {
-        console.error('genresModal element not found!');
     }
 }
 
+// Event Listeners
 if (moreOptionsBtn) {
     moreOptionsBtn.addEventListener('click', openGenresModal);
 } else {
@@ -198,13 +251,10 @@ if (welcomeButtonsList.length > 0) {
             const genreName = button.getAttribute('data-genre');
             const genre = genres.find(g => g.name === genreName);
             if (genre) {
-                console.log(`Welcome button clicked: ${genreName}, sending message: ${genre.message}`);
                 triggerIntent(genre.message);
                 if (welcomeMessage) {
                     welcomeMessage.style.display = 'none';
                 }
-            } else {
-                console.warn(`Genre not found for name: ${genreName}`);
             }
         });
     });
