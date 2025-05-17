@@ -421,16 +421,19 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
-    /* Ripple Effect for Buttons */
+ 
+
+/* Ripple Effect for Buttons */
 .ripple-btn {
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ripple-btn:hover {
     transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .ripple-btn::after {
@@ -505,12 +508,28 @@
     }
 }
 
+/* Slide-Out Animation for Loading */
+.slide-out {
+    animation: slideOut 0.3s ease-in;
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+}
+
 /* Modal Slide Animations */
-.slide-in {
+#genresModal.slide-in {
     animation: slideInModal 0.3s ease-out;
 }
 
-.slide-out {
+#genresModal.slide-out {
     animation: slideOutModal 0.3s ease-in;
 }
 
@@ -536,8 +555,21 @@
     }
 }
 
-/* Update Existing Classes */
+/* Fade-Out Animation */
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Button and Item Styles */
 .welcome-buttons button, .genre-item {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    background-color: #1e3a8a;
+    color: white;
+    font-size: 16px;
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -546,8 +578,39 @@
     transform: scale(1.02);
 }
 
+.genre-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Message Styles */
 .user-message, .bot-message {
+    padding: 10px 15px;
+    margin: 10px;
+    border-radius: 15px;
+    max-width: 70%;
     transition: all 0.3s ease;
+}
+
+.user-message {
+    background-color: #1e3a8a;
+    color: white;
+    margin-left: auto;
+}
+
+.bot-message {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+/* Review Card */
+.review-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
        
 }
