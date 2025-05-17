@@ -405,15 +405,16 @@ document.addEventListener('DOMContentLoaded', () => {
         loadChatHistory();
     }
 
-    function displayMessage(message, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-        messageDiv.innerText = message;
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
-        saveChatHistory(message, sender);
-    }
+// displayMessage ফাংশন (অপরিবর্তিত, কিন্তু নিশ্চিত করার জন্য যোগ করা হলো)
+function displayMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+    messageDiv.innerText = message;
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
+    saveChatHistory(message, sender);
+}
 
     function displayReview(reviewData) {
         const reviewCard = document.createElement('div');
@@ -633,46 +634,56 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loadingDiv) loadingDiv.remove();
     }
 
-    function callRasaAPI(message, metadata = {}) {
-        const loadingDiv = displayLoading();
-        const payload = { sender: 'user', message: message };
-        if (Object.keys(metadata).length > 0) {
-            payload.metadata = metadata;
-        }
-        $.ajax({
-            url: 'http://localhost:5005/webhooks/rest/webhook',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(payload),
-            success: (data) => {
-                removeLoading(loadingDiv);
-                data.forEach(response => {
-                    if (response.text && !response.text.toLowerCase().includes('hi')) {
-                        displayMessage(response.text, 'bot');
-                    }
-                    if (response.custom && response.custom.review_data) {
-                        displayReview(response.custom.review_data);
-                    }
-                    if (response.buttons) {
-                        const buttonDiv = document.createElement('div');
-                        buttonDiv.classList.add('welcome-buttons');
-                        response.buttons.forEach(btn => {
-                            const button = document.createElement('button');
-                            button.innerText = btn.title;
-                            button.addEventListener('click', () => sendMessage(btn.payload));
-                            buttonDiv.appendChild(button);
-                        });
-                        messagesDiv.appendChild(buttonDiv);
-                    }
-                });
-            },
-            error: (error) => {
-                removeLoading(loadingDiv);
-                displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                console.error('Rasa API Error:', error);
-            }
-        });
+  // callRasaAPI ফাংশন আপডেট
+function callRasaAPI(message, metadata = {}) {
+    const loadingDiv = displayLoading();
+    const payload = { sender: 'user', message: message };
+    if (Object.keys(metadata).length > 0) {
+        payload.metadata = metadata;
     }
+    $.ajax({
+        url: 'http://localhost:5005/webhooks/rest/webhook',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: (data) => {
+            removeLoading(loadingDiv);
+            data.forEach(response => {
+                // বটের টেক্সট রেসপন্স প্রদর্শন করা
+                if (response.text && !response.text.toLowerCase().includes('hi')) {
+                    displayMessage(response.text, 'bot');
+                }
+                // যদি রিভিউ ডেটা থাকে, তবে রিভিউ কার্ড প্রদর্শন করা
+                if (response.custom && response.custom.review_data) {
+                    displayReview(response.custom.review_data);
+                }
+                // যদি বাটন থাকে, তবে বাটন প্রদর্শন করা
+                if (response.buttons) {
+                    const buttonDiv = document.createElement('div');
+                    buttonDiv.classList.add('welcome-buttons');
+                    response.buttons.forEach(btn => {
+                        const button = document.createElement('button');
+                        button.innerText = btn.title;
+                        button.addEventListener('click', () => {
+                            // বাটনে ক্লিক করলে সেই মেসেজটি ইউজার মেসেজ হিসেবে প্রদর্শন করা
+                            displayMessage(btn.title, 'user');
+                            saveChatHistory(btn.title, 'user');
+                            callRasaAPI(btn.payload); // Rasa-তে পাঠানো
+                        });
+                        buttonDiv.appendChild(button);
+                    });
+                    messagesDiv.appendChild(buttonDiv);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+            });
+        },
+        error: (error) => {
+            removeLoading(loadingDiv);
+            displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+            console.error('Rasa API Error:', error);
+        }
+    });
+}
 
     function generatePDF(reviewData, reviewCard) {
         const doc = new jsPDF({
@@ -848,15 +859,15 @@ function renderGenresList() {
         genresList.appendChild(genreItem);
     });
 }  
-    // sendMessage ফাংশন আপডেট
+   // sendMessage ফাংশন আপডেট
 function sendMessage(message) {
     if (message) {
+        // ইউজারের মেসেজ সঠিকভাবে প্রদর্শন করা
         displayMessage(message, 'user');
-        userInput.value = '';
-        saveChatHistory(message, 'user');
-        callRasaAPI(message);
-        // Welcome message হাইড করা
-        welcomeMessage.style.display = 'none';
+        userInput.value = ''; // ইনপুট ফিল্ড খালি করা
+        saveChatHistory(message, 'user'); // চ্যাট হিস্ট্রি সেভ করা
+        callRasaAPI(message); // Rasa API-তে মেসেজ পাঠানো
+        welcomeMessage.style.display = 'none'; // Welcome message হাইড করা
     }
     if (selectedFile) {
         const messageDiv = document.createElement('div');
@@ -868,7 +879,7 @@ function sendMessage(message) {
         messageDiv.appendChild(img);
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        welcomeMessage.style.display = 'none'; // Welcome message হাইড করা
+        welcomeMessage.style.display = 'none';
 
         const formData = new FormData();
         formData.append('image', selectedFile);
