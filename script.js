@@ -208,48 +208,53 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter' && !e.repeat) sendMessage();
     });
 
-    function sendMessage() {
-        const message = userInput.value.trim();
-        if (message) {
-            displayMessage(message, 'user');
-            userInput.value = '';
-            saveChatHistory(message, 'user');
-            callRasaAPI(message);
-        }
-        if (selectedFile) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('user-message');
-            const img = document.createElement('img');
-            img.src = previewImage.src;
-            img.classList.add('image-preview');
-            img.addEventListener('click', () => openImageModal(img.src));
-            messageDiv.appendChild(img);
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
-
-            const formData = new FormData();
-            formData.append('image', selectedFile);
-            fetch('http://localhost:5000/upload-image', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.image_url) {
-                        callRasaAPI(data.image_url);
-                    } else if (data.error) {
-                        displayMessage(`ত্রুটি: ${data.error}`, 'bot');
-                    }
-                })
-                .catch(error => {
-                    displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                    console.error('Upload Error:', error);
-                });
-            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-            clearPreview();
-        }
+function sendMessage(message = userInput.value.trim()) {
+    // যদি মেসেজ প্যারামিটার না থাকে, তবে ইনপুট ফিল্ড থেকে নেওয়া হবে
+    const finalMessage = message || userInput.value.trim();
+    if (finalMessage) {
+        // ইউজারের মেসেজ প্রদর্শন
+        displayMessage(finalMessage, 'user');
+        userInput.value = ''; // ইনপুট ফিল্ড খালি করা
+        saveChatHistory(finalMessage, 'user'); // চ্যাট হিস্ট্রি সেভ করা
+        callRasaAPI(finalMessage); // Rasa API-তে মেসেজ পাঠানো
+        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none'; // Welcome message হাইড
     }
+
+    // ইমেজ হ্যান্ডলিং
+    if (selectedFile) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('user-message');
+        const img = document.createElement('img');
+        img.src = previewImage.src;
+        img.classList.add('image-preview');
+        img.addEventListener('click', () => openImageModal(img.src));
+        messageDiv.appendChild(img);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        fetch('http://localhost:5000/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    displayMessage(`[Image: ${selectedFile.name}]`, 'user'); // ইমেজের জন্য মেসেজ প্রদর্শন
+                    callRasaAPI(data.image_url);
+                } else if (data.error) {
+                    displayMessage(`ত্রুটি: ${data.error}`, 'bot');
+                }
+            })
+            .catch(error => {
+                displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                console.error('Upload Error:', error);
+            });
+        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+        clearPreview();
+    }
+}
 
     // Image Upload and Preview
     uploadBtn.addEventListener('click', () => fileInput.click());
@@ -859,51 +864,6 @@ function renderGenresList() {
         genresList.appendChild(genreItem);
     });
 }  
-   // sendMessage ফাংশন আপডেট
-function sendMessage(message) {
-    if (message) {
-        // ইউজারের মেসেজ সঠিকভাবে প্রদর্শন করা
-        displayMessage(message, 'user');
-        userInput.value = ''; // ইনপুট ফিল্ড খালি করা
-        saveChatHistory(message, 'user'); // চ্যাট হিস্ট্রি সেভ করা
-        callRasaAPI(message); // Rasa API-তে মেসেজ পাঠানো
-        welcomeMessage.style.display = 'none'; // Welcome message হাইড করা
-    }
-    if (selectedFile) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('user-message');
-        const img = document.createElement('img');
-        img.src = previewImage.src;
-        img.classList.add('image-preview');
-        img.addEventListener('click', () => openImageModal(img.src));
-        messageDiv.appendChild(img);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        welcomeMessage.style.display = 'none';
-
-        const formData = new FormData();
-        formData.append('image', selectedFile);
-        fetch('http://localhost:5000/upload-image', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.image_url) {
-                    callRasaAPI(data.image_url);
-                } else if (data.error) {
-                    displayMessage(`ত্রুটি: ${data.error}`, 'bot');
-                }
-            })
-            .catch(error => {
-                displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                console.error('Upload Error:', error);
-            });
-        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-        clearPreview();
-    }
-}
-
     function openGenresModal() {
         renderGenresList();
         genresModal.style.display = 'flex';
