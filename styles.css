@@ -63,7 +63,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 @keyframes glow{0%,100%{opacity:0.3;transform:scale(0.8);}50%{opacity:1;transform:scale(1.2);box-shadow:0 0 8px rgba(30,58,138,0.6);}}
 .user-message,.bot-message{padding:15px 20px;border-radius:12px;max-width:60%;word-wrap:break-word;box-shadow:0 2px 5px rgba(0,0,0,0.1);font-size:18px;margin:10px;font-family:'Tiro Bangla',serif;font-weight:700;transition:all 0.3s ease;}
 .user-message{background:#1e3a8a;color:#fff;text-align:right;margin-left:auto;}
-.bot-message { background: #fff; color: #111827; text-align: left; margin-right: auto; animation: fadeIn 0.3s ease-out; text-shadow: none; }
+.bot-message { background: #fff; color: #111827; text-align: left; margin-right: auto; animation: fadeIn 0.3s ease-out; text-shadow: none; border: none; padding: 15px 20px; max-width: 60%; word-wrap: break-word; font-size: 18px; margin: 10px; font-family: 'Tiro Bangla', serif; font-weight: 700; transition: all 0.3s ease; }
 @keyframes slideIn{from{transform:translateX(20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
 .slide-out{animation:slideOut 0.3s ease-in;}
 @keyframes slideOut{from{transform:translateX(0);opacity:1;}to{transform:translateX(20px);opacity:0;}}
