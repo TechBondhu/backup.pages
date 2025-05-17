@@ -63,7 +63,7 @@ const genres = [
     { name: 'ফায়ার সার্ভিস চাকরি', icon: 'fas fa-fire', message: 'আমি ফায়ার সার্ভিস চাকরির জন্য আবেদন করতে চাই' },
     { name: 'জেলা প্রশাসন চাকরি', icon: 'fas fa-landmark', message: 'আমি জেলা প্রশাসন চাকরির জন্য আবেদন করতে চাই' },
     { name: 'বিমান বন্দর চাকরি', icon: 'fas fa-plane', message: 'আমি বিমান বন্দর চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'বিসিসি (BCS) চাকরি', icon: 'fas fa-graduation-cap', message: 'আমি বিসিসি চাকরির জন্য আবেদন করতে চাই' },
+    { name: 'বিসিএস (BCS) চাকরি', icon: 'fas fa-graduation-cap', message: 'আমি বিসিএস চাকরির জন্য আবেদন করতে চাই' },
     { name: 'ব্যাংক চাকরি (বেসরকারি)', icon: 'fas fa-university', message: 'আমি ব্যাংক চাকরি (বেসরকারি) আবেদন করতে চাই' },
     { name: 'এনজিও চাকরি', icon: 'fas fa-hands-helping', message: 'আমি এনজিও চাকরির জন্য আবেদন করতে চাই' },
     { name: 'আইটি চাকরি (সফটওয়্যার)', icon: 'fas fa-laptop-code', message: 'আমি আইটি চাকরি (সফটওয়্যার) আবেদন করতে চাই' },
@@ -83,68 +83,523 @@ const genres = [
     { name: 'রিয়েল এস্টেট চাকরি', icon: 'fas fa-home', message: 'আমি রিয়েল এস্টেট চাকরির জন্য আবেদন করতে চাই' },
     { name: 'লজিস্টিক্স চাকরি', icon: 'fas fa-truck', message: 'আমি লজিস্টিক্স চাকরির জন্য আবেদন করতে চাই' },
     { name: 'রিটেইল চাকরি', icon: 'fas fa-shopping-cart', message: 'আমি রিটেইল চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ইন্টারনেট মার্কেটিং চাকরি', icon: 'fas fa-globe', message: 'আমি ইন্টারনেট মার্কেটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'কনটেন্ট রাইটিং চাকরি', icon: 'fas fa-pen', message: 'আমি কনটেন্ট রাইটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ডিজিটাল মার্কেটিং চাকরি', icon: 'fas fa-chart-line', message: 'আমি ডিজিটাল মার্কেটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'সেলস চাকরি', icon: 'fas fa-hand-holding-usd', message: 'আমি সেলস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'কাস্টমার সার্ভিস চাকরি', icon: 'fas fa-headset', message: 'আমি কাস্টমার সার্ভিস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'প্রোডাকশন চাকরি', icon: 'fas fa-industry', message: 'আমি প্রোডাকশন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এডভোকেসি চাকরি', icon: 'fas fa-balance-scale', message: 'আমি এডভোকেসি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এডুকেশনাল কনসালটেন্ট চাকরি', icon: 'fas fa-chalkboard', message: 'আমি এডুকেশনাল কনসালটেন্ট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ট্রেনিং চাকরি', icon: 'fas fa-user-graduate', message: 'আমি ট্রেনিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'রিসার্চ চাকরি', icon: 'fas fa-flask', message: 'আমি রিসার্চ চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ফ্রিল্যান্স চাকরি', icon: 'fas fa-user-tie', message: 'আমি ফ্রিল্যান্স চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ইনশিওরেন্স চাকরি', icon: 'fas fa-shield-alt', message: 'আমি ইনশিওরেন্স চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এভিয়েশন চাকরি', icon: 'fas fa-plane-departure', message: 'আমি এভিয়েশন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
+    { name: 'ইন্টারনেট মার্কেটিং চাকরি', icon: 'fas fa-globe', message: 'আমি ইন্টারনেট মার্কেটিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-    const welcomeMessage = document.querySelector('.welcome-message');
-    const chatContainer = document.querySelector('.chat-container');
-    const chatBody = document.querySelector('#chat-body');
-    const moreOptionsBtn = document.getElementById('moreOptionsBtn');
-    const genresModal = document.getElementById('genresModal');
-    const closeGenresModal = document.getElementById('closeGenresModal');
-    const genresList = document.getElementById('genresList');
-    
-  function renderGenresList() {
-    console.log('Rendering genres list...');
-    if (!genresList) {
-        console.error('genresList element not found!');
-        return;
-    }
+// Firebase configuration
+const firebaseConfig = {
+    // Add your Firebase configuration here
+    // apiKey: "your-api-key",
+    // authDomain: "your-auth-domain",
+    // projectId: "your-project-id",
+    // storageBucket: "your-storage-bucket",
+    // messagingSenderId: "your-messaging-sender-id",
+    // appId: "your-app-id"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// DOM elements
+const chatBox = document.getElementById('chatBox');
+const messages = CGAL.getElementById('messages');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const fileInput = document.getElementById('fileInput');
+const previewContainer = document.getElementById('previewContainer');
+const previewImage = document.getElementById('previewImage');
+const editBtn = document.getElementById('editBtn');
+const sidebar = document.getElementById('sidebar');
+const historyIcon = document.getElementById('historyIcon');
+const closeSidebar = document.getElementById('closeSidebar');
+const historyList = document.getElementById('historyList');
+const searchInput = document.getElementById('searchInput');
+const newChatIcon = document.getElementById('newChatIcon');
+const deleteModal = document.getElementById('deleteModal');
+const confirmDelete = document.getElementById('confirmDelete');
+const cancelDelete = document.getElementById('cancelDelete');
+const renameModal = document.getElementById('renameModal');
+const renameInput = document.getElementById('renameInput');
+const saveRename = document.getElementById('saveRename');
+const cancelRename = document.getElementById('cancelRename');
+const imageReviewModal = document.getElementById('imageReviewModal');
+const reviewImage = document.getElementById('reviewImage');
+const deleteImageBtn = document.getElementById('deleteImageBtn');
+const editModal = document.getElementById('editModal');
+const editCanvas = document.getElementById('editCanvas');
+const editApplyBtn = document.getElementById('editApplyBtn');
+const cancelEdit = document.getElementById('cancelEdit');
+const genresModal = document.getElementById('genresModal');
+const genresList = document.getElementById('genresList');
+const closeGenresModal = document.getElementById('closeGenresModal');
+const moreOptionsBtn = document.getElementById('moreOptionsBtn');
+const welcomeMessage = document.getElementById('welcomeMessage');
+
+// Canvas context
+const ctx = editCanvas.getContext('2d');
+
+// Global variables
+let currentChatId = null;
+let uploadedImage = null;
+let originalImage = null;
+let currentHistoryItem = null;
+
+// Initialize genres modal
+function populateGenres() {
     genresList.innerHTML = '';
     genres.forEach(genre => {
         const genreItem = document.createElement('div');
-        genreItem.className = 'genre-item';
+        genreItem.classList.add('genre-item');
         genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
         genreItem.addEventListener('click', () => {
-            console.log(`Genre clicked: ${genre.name}, sending message: ${genre.message}`);
-            triggerIntent(genre.message);
+            sendMessage(genre.message);
             genresModal.style.display = 'none';
         });
         genresList.appendChild(genreItem);
     });
 }
-    // বাটনগুলো তৈরি করা
-    const genresContainer = document.createElement('div');
-    genresContainer.className = 'genres-container';
-    genres.forEach(genre => {
-        const button = document.createElement('button');
-        button.className = 'genre';
-        button.innerHTML = `<i class="${genre.icon}"></i> ${genre.name}`;
-        button.addEventListener('click', () => {
-            welcomeMessage.style.display = 'none';
-            chatContainer.style.display = 'block';
-            const messageElement = document.createElement('div');
-            messageElement.className = 'user-message';
-            messageElement.textContent = genre.message;
-            chatBody.appendChild(messageElement);
-            chatBody.scrollTop = chatBody.scrollHeight;
-        });
-        genresContainer.appendChild(button);
+
+// Event listeners for welcome buttons
+document.querySelectorAll('.welcome-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const genre = button.dataset.genre;
+        const genreObj = genres.find(g => g.name === genre);
+        if (genreObj) {
+            sendMessage(genreObj.message);
+        }
     });
-    welcomeMessage.appendChild(genresContainer);
+});
+
+// More options button
+moreOptionsBtn.addEventListener('click', () => {
+    populateGenres();
+    genresModal.style.display = 'flex';
+});
+
+closeGenresModal.addEventListener('click', () => {
+    genresModal.style.display = 'none';
+});
+
+// Firebase: Save chat history
+async function saveChatHistory(message, isUser, image = null) {
+    if (!currentChatId) {
+        const chatRef = await db.collection('chats').add({
+            title: message.slice(0, 30) + '...',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        currentChatId = chatRef.id;
+    }
+
+    await db.collection('chats').doc(currentChatId).collection('messages').add({
+        message,
+        isUser,
+        image,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    loadChatHistory();
+}
+
+// Firebase: Load chat history
+async function loadChatHistory() {
+    historyList.innerHTML = '';
+    const snapshot = await db.collection('chats').orderBy('timestamp', 'desc').get();
+    snapshot.forEach(doc => {
+        const chat = { id: doc.id, ...doc.data() };
+        const historyItem = document.createElement('div');
+        historyItem.classList.add('history-item');
+        historyItem.innerHTML = `
+            <div class="history-item-content">
+                <p>${chat.title}</p>
+                <div class="timestamp">${new Date(chat.timestamp?.toDate()).toLocaleString()}</div>
+            </div>
+            <div class="options">
+                <i class="fas fa-ellipsis-v" onclick="toggleDropdown('${chat.id}')"></i>
+                <div class="dropdown" id="dropdown-${chat.id}">
+                    <div class="dropdown-item" onclick="renameChat('${chat.id}')">Rename</div>
+                    <div class="dropdown-item" onclick="deleteChat('${chat.id}')">Delete</div>
+                </div>
+            </div>
+        `;
+        historyItem.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('fas') && !e.target.classList.contains('dropdown-item')) {
+                loadChatMessages(chat.id);
+            }
+        });
+        historyList.appendChild(historyItem);
+    });
+}
+
+// Load specific chat messages
+async function loadChatMessages(chatId) {
+    currentChatId = chatId;
+    messages.innerHTML = '';
+    welcomeMessage.style.display = 'none';
+    const snapshot = await db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp').get();
+    snapshot.forEach(doc => {
+        const msg = doc.data();
+        displayMessage(msg.message, msg.isUser, msg.image);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Toggle dropdown for history item options
+function toggleDropdown(chatId) {
+    const dropdown = document.getElementById(`dropdown-${chatId}`);
+    dropdown.classList.toggle('active');
+}
+
+// Rename chat
+function renameChat(chatId) {
+    currentHistoryItem = chatId;
+    renameModal.style.display = 'flex';
+}
+
+saveRename.addEventListener('click', async () => {
+    const newTitle = renameInput.value.trim();
+    if (newTitle) {
+        await db.collection('chats').doc(currentHistoryItem).update({ title: newTitle });
+        loadChatHistory();
+        renameModal.style.display = 'none';
+        renameInput.value = '';
+    }
+});
+
+cancelRename.addEventListener('click', () => {
+    renameModal.style.display = 'none';
+    renameInput.value = '';
+});
+
+// Delete chat
+function deleteChat(chatId) {
+    currentHistoryItem = chatId;
+    deleteModal.style.display = 'flex';
+}
+
+confirmDelete.addEventListener('click', async () => {
+    await db.collection('chats').doc(currentHistoryItem).delete();
+    if (currentChatId === currentHistoryItem) {
+        messages.innerHTML = '';
+        currentChatId = null;
+        welcomeMessage.style.display = 'block';
+    }
+    loadChatHistory();
+    deleteModal.style.display = 'none';
+});
+
+cancelDelete.addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+});
+
+// Search chat history
+searchInput.addEventListener('input', async () => {
+    const query = searchInput.value.toLowerCase();
+    historyList.innerHTML = '';
+    const snapshot = await db.collection('chats').orderBy('timestamp', 'desc').get();
+    snapshot.forEach(doc => {
+        const chat = { id: doc.id, ...doc.data() };
+        if (chat.title.toLowerCase().includes(query)) {
+            const historyItem = document.createElement('div');
+            historyItem.classList.add('history-item');
+            historyItem.innerHTML = `
+                <div class="history-item-content">
+                    <p>${chat.title}</p>
+                    <div class="timestamp">${new Date(chat.timestamp?.toDate()).toLocaleString()}</div>
+                </div>
+                <div class="options">
+                    <i class="fas fa-ellipsis-v" onclick="toggleDropdown('${chat.id}')"></i>
+                    <div class="dropdown" id="dropdown-${chat.id}">
+                        <div class="dropdown-item" onclick="renameChat('${chat.id}')">Rename</div>
+                        <div class="dropdown-item" onclick="deleteChat('${chat.id}')">Delete</div>
+                    </div>
+                </div>
+            `;
+            historyItem.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('fas') && !e.target.classList.contains('dropdown-item')) {
+                    loadChatMessages(chat.id);
+                }
+            });
+            historyList.appendChild(historyItem);
+        }
+    });
+});
+
+// Send message
+async function sendMessage(message) {
+    if (!message && !uploadedImage) return;
+
+    const msg = message || userInput.value.trim();
+    if (msg || uploadedImage) {
+        displayMessage(msg, true, uploadedImage);
+        await saveChatHistory(msg, true, uploadedImage);
+        welcomeMessage.style.display = 'none';
+        userInput.value = '';
+        previewContainer.style.display = 'none';
+        uploadedImage = null;
+
+        // Simulate bot response
+        setTimeout(async () => {
+            displayLoading();
+            setTimeout(async () => {
+                messages.removeChild(messages.querySelector('.loading'));
+                const botResponse = await getBotResponse(msg);
+                displayMessage(botResponse.message, false);
+                if (botResponse.review) {
+                    displayReviewCard(botResponse.review);
+                }
+                await saveChatHistory(botResponse.message, false);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1000);
+        }, 500);
+    }
+}
+
+sendBtn.addEventListener('click', () => sendMessage());
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+
+// Display message
+function displayMessage(message, isUser, image = null) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+    messageDiv.textContent = message;
+    if (image) {
+        const img = document.createElement('img');
+        img.src = image;
+        img.classList.add('image-preview');
+        messageDiv.appendChild(img);
+    }
+    messages.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Display loading animation
+function displayLoading() {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.classList.add('loading');
+    loadingDiv.innerHTML = `অপেক্ষা করুন... <span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+    messages.appendChild(loadingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Simulate bot response
+async function getBotResponse(message) {
+    // Replace with actual API call to your backend
+    return {
+        message: `আপনার ${message} সম্পর্কিত অনুরোধ প্রক্রিয়াধীন।`,
+        review: {
+            title: 'আবেদনের বিবরণ',
+            fields: [
+                { label: 'নাম', value: 'জন ডো' },
+                { label: 'আবেদনের ধরন', value: message },
+                { label: 'ছবি', image: uploadedImage }
+            ]
+        }
+    };
+}
+
+// Display review card
+function displayReviewCard(review) {
+    const reviewCard = document.createElement('div');
+    reviewCard.classList.add('review-card');
+    reviewCard.innerHTML = `<h3>${review.title}</h3><div class="review-content"></div><div class="review-buttons">
+        <button class="edit-btn">Edit</button>
+        <button class="confirm-btn">Confirm</button>
+        <button class="download-btn">Download</button>
+    </div>`;
+    const reviewContent = reviewCard.querySelector('.review-content');
+    review.fields.forEach(field => {
+        const reviewItem = document.createElement('div');
+        reviewItem.classList.add('review-item');
+        reviewItem.innerHTML = `<label>${field.label}</label><p>${field.value || ''}</p>`;
+        if (field.image) {
+            const img = document.createElement('img');
+            img.src = field.image;
+            img.classList.add('image-preview');
+            const replaceIcon = document.createElement('i');
+            replaceIcon.classList.add('fas', 'fa-camera', 'replace-image-icon');
+            const replaceInput = document.createElement('input');
+            replaceInput.type = 'file';
+            replaceInput.accept = 'image/png, image/jpeg';
+            replaceInput.classList.add('replace-image-input');
+            replaceInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        img.src = reader.result;
+                        field.image = reader.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            replaceIcon.addEventListener('click', () => replaceInput.click());
+            reviewItem.appendChild(img);
+            reviewItem.appendChild(replaceIcon);
+            reviewItem.appendChild(replaceInput);
+        }
+        reviewContent.appendChild(reviewItem);
+    });
+
+    reviewCard.querySelector('.edit-btn').addEventListener('click', () => {
+        reviewContent.querySelectorAll('.review-item').forEach(item => {
+            const p = item.querySelector('p');
+            if (p) {
+                const input = document.createElement('input');
+                input.classList.add('edit-input');
+                input.value = p.textContent;
+                p.replaceWith(input);
+            }
+        });
+        reviewCard.querySelector('.edit-btn').textContent = 'Save';
+        reviewCard.querySelector('.edit-btn').classList.add('apply');
+        reviewCard.querySelector('.edit-btn').addEventListener('click', () => {
+            reviewContent.querySelectorAll('.review-item').forEach(item => {
+                const input = item.querySelector('.edit-input');
+                if (input) {
+                    const p = document.createElement('p');
+                    p.textContent = input.value;
+                    input.replaceWith(p);
+                }
+            });
+            reviewCard.querySelector('.edit-btn').textContent = 'Edit';
+            reviewCard.querySelector('.edit-btn').classList.remove('apply');
+        }, { once: true });
+    });
+
+    reviewCard.querySelector('.confirm-btn').addEventListener('click', () => {
+        alert('আবেদন নিশ্চিত করা হয়েছে!');
+    });
+
+    reviewCard.querySelector('.download-btn').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 10;
+        doc.text(review.title, 10, y);
+        y += 10;
+        review.fields.forEach(field => {
+            doc.text(`${field.label}: ${field.value || ''}`, 10, y);
+            y += 10;
+            if (field.image) {
+                doc.addImage(field.image, 'JPEG', 10, y, 50, 50);
+                y += 60;
+            }
+        });
+        doc.save('application.pdf');
+    });
+
+    messages.appendChild(reviewCard);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Image upload
+uploadBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            uploadedImage = reader.result;
+            previewImage.src = uploadedImage;
+            previewContainer.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Image preview click
+previewImage.addEventListener('click', () => {
+    reviewImage.src = uploadedImage;
+    imageReviewModal.style.display = 'flex';
+});
+
+// Delete image
+deleteImageBtn.addEventListener('click', () => {
+    uploadedImage = null;
+    previewContainer.style.display = 'none';
+    imageReviewModal.style.display = 'none';
+    fileInput.value = '';
+});
+
+// Image review modal close
+imageReviewModal.addEventListener('click', (e) => {
+    if (e.target === imageReviewModal) {
+        imageReviewModal.style.display = 'none';
+    }
+});
+
+// Image editing
+editBtn.addEventListener('click', () => {
+    originalImage = new Image();
+    originalImage.src = uploadedImage;
+    originalImage.onload = () => {
+        editCanvas.width = originalImage.width;
+        editCanvas.height = originalImage.height;
+        ctx.drawImage(originalImage, 0, 0);
+        editModal.style.display = 'flex';
+    };
+});
+
+editApplyBtn.addEventListener('click', () => {
+    const cropX = parseInt(document.getElementById('cropX').value);
+    const cropY = parseInt(document.getElementById('cropY').value);
+    const cropWidth = parseInt(document.getElementById('cropWidth').value);
+    const cropHeight = parseInt(document.getElementById('cropHeight').value);
+    const brightness = parseInt(document.getElementById('brightness').value) / 100;
+    const contrast = parseInt(document.getElementById('contrast').value) / 100;
+    const bgColor = document.getElementById('bgColor').value;
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = cropWidth;
+    tempCanvas.height = cropHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(originalImage, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+    const imageData = tempCtx.getImageData(0, 0, cropWidth, cropHeight);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        data[i] = data[i] * brightness * contrast;
+        data[i + 1] = data[i + 1] * brightness * contrast;
+        data[i + 2] = data[i + 2] * brightness * contrast;
+    }
+
+    tempCtx.putImageData(imageData, 0, 0);
+    uploadedImage = tempCanvas.toDataURL('image/jpeg');
+    previewImage.src = uploadedImage;
+    editModal.style.display = 'none';
+});
+
+cancelEdit.addEventListener('click', () => {
+    editModal.style.display = 'none';
+});
+
+// Sidebar toggle
+historyIcon.addEventListener('click', () => {
+    sidebar.classList.add('open');
+    document.querySelector('.chat-container').classList.add('sidebar-open');
+});
+
+closeSidebar.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    document.querySelector('.chat-container').classList.remove('sidebar-open');
+});
+
+// New chat
+newChatIcon.addEventListener('click', () => {
+    currentChatId = null;
+    messages.innerHTML = '';
+    welcomeMessage.style.display = 'block';
+    userInput.value = '';
+    previewContainer.style.display = 'none';
+    uploadedImage = null;
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadChatHistory();
+    populateGenres();
 });
