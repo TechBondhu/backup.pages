@@ -105,7 +105,7 @@ const genres = [
 
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
-    const sendBtn = document.getElementById('sendBtn');
+         const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
     const messagesDiv = document.getElementById('messages');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -151,7 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const genresModal = document.getElementById('genresModal');
     const closeGenresModal = document.getElementById('closeGenresModal');
     const genresList = document.getElementById('genresList');
-
+    const imageInput = document.getElementById('imageInput');
+    const clearPreviewBtn = document.getElementById('clearPreviewBtn');
+    const imageUploadBtn = document.getElementById('imageUploadBtn');
+    
     // Genres Data
     const genres = [
         { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card' },
