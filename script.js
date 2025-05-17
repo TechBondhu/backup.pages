@@ -834,20 +834,64 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteModal.style.display = 'none';
     });
 
-    // Genres Modal Functionality
-    function renderGenresList() {
-        genresList.innerHTML = '';
-        genres.forEach(genre => {
-            const genreItem = document.createElement('div');
-            genreItem.className = 'genre-item';
-            genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
-            genreItem.addEventListener('click', () => {
-                sendMessage(genre.name);
-                genresModal.style.display = 'none';
-            });
-            genresList.appendChild(genreItem);
+    // Genres Modal-এর জন্য renderGenresList ফাংশন আপডেট
+function renderGenresList() {
+    genresList.innerHTML = '';
+    genres.forEach(genre => {
+        const genreItem = document.createElement('div');
+        genreItem.className = 'genre-item';
+        genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
+        genreItem.addEventListener('click', () => {
+            sendMessage(genre.message); // genre.name-এর পরিবর্তে genre.message পাঠানো হচ্ছে
+            genresModal.style.display = 'none';
         });
+        genresList.appendChild(genreItem);
+    });
+}  
+    // sendMessage ফাংশন আপডেট
+function sendMessage(message) {
+    if (message) {
+        displayMessage(message, 'user');
+        userInput.value = '';
+        saveChatHistory(message, 'user');
+        callRasaAPI(message);
+        // Welcome message হাইড করা
+        welcomeMessage.style.display = 'none';
     }
+    if (selectedFile) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('user-message');
+        const img = document.createElement('img');
+        img.src = previewImage.src;
+        img.classList.add('image-preview');
+        img.addEventListener('click', () => openImageModal(img.src));
+        messageDiv.appendChild(img);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        welcomeMessage.style.display = 'none'; // Welcome message হাইড করা
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        fetch('http://localhost:5000/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    callRasaAPI(data.image_url);
+                } else if (data.error) {
+                    displayMessage(`ত্রুটি: ${data.error}`, 'bot');
+                }
+            })
+            .catch(error => {
+                displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                console.error('Upload Error:', error);
+            });
+        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+        clearPreview();
+    }
+}
 
     function openGenresModal() {
         renderGenresList();
@@ -861,13 +905,13 @@ document.addEventListener('DOMContentLoaded', () => {
     moreOptionsBtn.addEventListener('click', openGenresModal);
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
 
-    // Welcome Buttons
-    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
-        button.addEventListener('click', () => {
-            const genre = button.getAttribute('data-genre');
-            sendMessage(genre);
-        });
+// Welcome Buttons-এর ক্লিক হ্যান্ডলার
+document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+    button.addEventListener('click', () => {
+        const message = button.getAttribute('data-message');
+        sendMessage(message);
     });
+});
 
     // Initialize
     loadChatHistory();
