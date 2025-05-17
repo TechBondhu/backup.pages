@@ -421,7 +421,7 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
- 
+
 
 /* Ripple Effect for Buttons */
 .ripple-btn {
@@ -612,5 +612,4 @@
     margin: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-       
 }
