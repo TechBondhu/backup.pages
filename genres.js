@@ -104,7 +104,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeMessage = document.querySelector('.welcome-message');
     const chatContainer = document.querySelector('.chat-container');
     const chatBody = document.querySelector('#chat-body');
-
+    const moreOptionsBtn = document.getElementById('moreOptionsBtn');
+    const genresModal = document.getElementById('genresModal');
+    const closeGenresModal = document.getElementById('closeGenresModal');
+    const genresList = document.getElementById('genresList');
+    
+  function renderGenresList() {
+    console.log('Rendering genres list...');
+    if (!genresList) {
+        console.error('genresList element not found!');
+        return;
+    }
+    genresList.innerHTML = '';
+    genres.forEach(genre => {
+        const genreItem = document.createElement('div');
+        genreItem.className = 'genre-item';
+        genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
+        genreItem.addEventListener('click', () => {
+            console.log(`Genre clicked: ${genre.name}, sending message: ${genre.message}`);
+            triggerIntent(genre.message);
+            genresModal.style.display = 'none';
+        });
+        genresList.appendChild(genreItem);
+    });
+}
     // বাটনগুলো তৈরি করা
     const genresContainer = document.createElement('div');
     genresContainer.className = 'genres-container';
