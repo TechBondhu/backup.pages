@@ -416,4 +416,11 @@
         padding: 6px 15px;
         font-size: 10px;
     }
+   .welcome-message.hide {
+    animation: fadeOut 0.3s ease-in-out forwards;
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; display: none; }
+}
 }
