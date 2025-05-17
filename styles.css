@@ -67,7 +67,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 @keyframes slideIn{from{transform:translateX(20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
 .slide-out{animation:slideOut 0.3s ease-in;}
 @keyframes slideOut{from{transform:translateX(0);opacity:1;}to{transform:translateX(20px);opacity:0;}}
-.review-card{background:linear-gradient(135deg,#e0e7ff,#fff);border-radius:15px;padding:20px;max-width:60%;margin:10px;box-shadow:0 4px 15px rgba(0,0,0,0.15);animation:slideIn 0.3s ease-out;}
+.review-card { background: #fff; border-radius: 0; padding: 20px; max-width: 60%; margin: 10px; box-shadow: none;animation: slideIn 0.3s ease-out;}
 .review-card h3{font-size:20px;color:#1E3A8A;margin-bottom:15px;font-family:'Tiro Bangla',serif;font-weight:700;}
 .review-content{display:flex;flex-direction:column;gap:10px;}
 .review-item{display:flex;flex-direction:column;gap:5px;position:relative;}
