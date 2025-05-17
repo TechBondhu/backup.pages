@@ -105,7 +105,7 @@ const genres = [
 
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
-         const sendBtn = document.getElementById('sendBtn');
+    const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
     const messagesDiv = document.getElementById('messages');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -151,10 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const genresModal = document.getElementById('genresModal');
     const closeGenresModal = document.getElementById('closeGenresModal');
     const genresList = document.getElementById('genresList');
-    const imageInput = document.getElementById('imageInput');
-    const clearPreviewBtn = document.getElementById('clearPreviewBtn');
-    const imageUploadBtn = document.getElementById('imageUploadBtn');
-    
+
     // Genres Data
     const genres = [
         { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card' },
@@ -211,53 +208,48 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter' && !e.repeat) sendMessage();
     });
 
-function sendMessage(message = userInput.value.trim()) {
-    // যদি মেসেজ প্যারামিটার না থাকে, তবে ইনপুট ফিল্ড থেকে নেওয়া হবে
-    const finalMessage = message || userInput.value.trim();
-    if (finalMessage) {
-        // ইউজারের মেসেজ প্রদর্শন
-        displayMessage(finalMessage, 'user');
-        userInput.value = ''; // ইনপুট ফিল্ড খালি করা
-        saveChatHistory(finalMessage, 'user'); // চ্যাট হিস্ট্রি সেভ করা
-        callRasaAPI(finalMessage); // Rasa API-তে মেসেজ পাঠানো
-        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none'; // Welcome message হাইড
-    }
+    function sendMessage() {
+        const message = userInput.value.trim();
+        if (message) {
+            displayMessage(message, 'user');
+            userInput.value = '';
+            saveChatHistory(message, 'user');
+            callRasaAPI(message);
+        }
+        if (selectedFile) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('user-message');
+            const img = document.createElement('img');
+            img.src = previewImage.src;
+            img.classList.add('image-preview');
+            img.addEventListener('click', () => openImageModal(img.src));
+            messageDiv.appendChild(img);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
 
-    // ইমেজ হ্যান্ডলিং
-    if (selectedFile) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('user-message');
-        const img = document.createElement('img');
-        img.src = previewImage.src;
-        img.classList.add('image-preview');
-        img.addEventListener('click', () => openImageModal(img.src));
-        messageDiv.appendChild(img);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-        const formData = new FormData();
-        formData.append('image', selectedFile);
-        fetch('http://localhost:5000/upload-image', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.image_url) {
-                    displayMessage(`[Image: ${selectedFile.name}]`, 'user'); // ইমেজের জন্য মেসেজ প্রদর্শন
-                    callRasaAPI(data.image_url);
-                } else if (data.error) {
-                    displayMessage(`ত্রুটি: ${data.error}`, 'bot');
-                }
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            fetch('http://localhost:5000/upload-image', {
+                method: 'POST',
+                body: formData
             })
-            .catch(error => {
-                displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-                console.error('Upload Error:', error);
-            });
-        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-        clearPreview();
+                .then(response => response.json())
+                .then(data => {
+                    if (data.image_url) {
+                        callRasaAPI(data.image_url);
+                    } else if (data.error) {
+                        displayMessage(`ত্রুটি: ${data.error}`, 'bot');
+                    }
+                })
+                .catch(error => {
+                    displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                    console.error('Upload Error:', error);
+                });
+            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+            clearPreview();
+        }
     }
-}
 
     // Image Upload and Preview
     uploadBtn.addEventListener('click', () => fileInput.click());
@@ -413,16 +405,15 @@ function sendMessage(message = userInput.value.trim()) {
         loadChatHistory();
     }
 
-// displayMessage ফাংশন (অপরিবর্তিত, কিন্তু নিশ্চিত করার জন্য যোগ করা হলো)
-function displayMessage(message, sender) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-    messageDiv.innerText = message;
-    messagesDiv.appendChild(messageDiv);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
-    saveChatHistory(message, sender);
-}
+    function displayMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+        messageDiv.innerText = message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        if (welcomeMessage.style.display !== 'none') welcomeMessage.style.display = 'none';
+        saveChatHistory(message, sender);
+    }
 
     function displayReview(reviewData) {
         const reviewCard = document.createElement('div');
@@ -642,56 +633,46 @@ function displayMessage(message, sender) {
         if (loadingDiv) loadingDiv.remove();
     }
 
-  // callRasaAPI ফাংশন আপডেট
-function callRasaAPI(message, metadata = {}) {
-    const loadingDiv = displayLoading();
-    const payload = { sender: 'user', message: message };
-    if (Object.keys(metadata).length > 0) {
-        payload.metadata = metadata;
-    }
-    $.ajax({
-        url: 'http://localhost:5005/webhooks/rest/webhook',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(payload),
-        success: (data) => {
-            removeLoading(loadingDiv);
-            data.forEach(response => {
-                // বটের টেক্সট রেসপন্স প্রদর্শন করা
-                if (response.text && !response.text.toLowerCase().includes('hi')) {
-                    displayMessage(response.text, 'bot');
-                }
-                // যদি রিভিউ ডেটা থাকে, তবে রিভিউ কার্ড প্রদর্শন করা
-                if (response.custom && response.custom.review_data) {
-                    displayReview(response.custom.review_data);
-                }
-                // যদি বাটন থাকে, তবে বাটন প্রদর্শন করা
-                if (response.buttons) {
-                    const buttonDiv = document.createElement('div');
-                    buttonDiv.classList.add('welcome-buttons');
-                    response.buttons.forEach(btn => {
-                        const button = document.createElement('button');
-                        button.innerText = btn.title;
-                        button.addEventListener('click', () => {
-                            // বাটনে ক্লিক করলে সেই মেসেজটি ইউজার মেসেজ হিসেবে প্রদর্শন করা
-                            displayMessage(btn.title, 'user');
-                            saveChatHistory(btn.title, 'user');
-                            callRasaAPI(btn.payload); // Rasa-তে পাঠানো
-                        });
-                        buttonDiv.appendChild(button);
-                    });
-                    messagesDiv.appendChild(buttonDiv);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                }
-            });
-        },
-        error: (error) => {
-            removeLoading(loadingDiv);
-            displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
-            console.error('Rasa API Error:', error);
+    function callRasaAPI(message, metadata = {}) {
+        const loadingDiv = displayLoading();
+        const payload = { sender: 'user', message: message };
+        if (Object.keys(metadata).length > 0) {
+            payload.metadata = metadata;
         }
-    });
-}
+        $.ajax({
+            url: 'http://localhost:5005/webhooks/rest/webhook',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: (data) => {
+                removeLoading(loadingDiv);
+                data.forEach(response => {
+                    if (response.text && !response.text.toLowerCase().includes('hi')) {
+                        displayMessage(response.text, 'bot');
+                    }
+                    if (response.custom && response.custom.review_data) {
+                        displayReview(response.custom.review_data);
+                    }
+                    if (response.buttons) {
+                        const buttonDiv = document.createElement('div');
+                        buttonDiv.classList.add('welcome-buttons');
+                        response.buttons.forEach(btn => {
+                            const button = document.createElement('button');
+                            button.innerText = btn.title;
+                            button.addEventListener('click', () => sendMessage(btn.payload));
+                            buttonDiv.appendChild(button);
+                        });
+                        messagesDiv.appendChild(buttonDiv);
+                    }
+                });
+            },
+            error: (error) => {
+                removeLoading(loadingDiv);
+                displayMessage('বটের সাথে সংযোগে ত্রুটি হয়েছে। আবার চেষ্টা করুন।', 'bot');
+                console.error('Rasa API Error:', error);
+            }
+        });
+    }
 
     function generatePDF(reviewData, reviewCard) {
         const doc = new jsPDF({
@@ -853,7 +834,7 @@ function callRasaAPI(message, metadata = {}) {
         deleteModal.style.display = 'none';
     });
 
-    // Genres Modal-এর জন্য renderGenresList ফাংশন আপডেট
+    // Genres Modal Functionality
 function renderGenresList() {
     genresList.innerHTML = '';
     genres.forEach(genre => {
@@ -861,12 +842,21 @@ function renderGenresList() {
         genreItem.className = 'genre-item';
         genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${genre.name}</span>`;
         genreItem.addEventListener('click', () => {
-            sendMessage(genre.message); // genre.name-এর পরিবর্তে genre.message পাঠানো হচ্ছে
+            // Add fade-out animation to welcome message
+            welcomeMessage.classList.add('fade-out');
+            setTimeout(() => {
+                welcomeMessage.style.display = 'none';
+                welcomeMessage.classList.remove('fade-out');
+            }, 300); // Match CSS transition duration
+            displayMessage(genre.message, 'user');
+            saveChatHistory(genre.message, 'user');
+            callRasaAPI(genre.message);
             genresModal.style.display = 'none';
         });
         genresList.appendChild(genreItem);
     });
-}  
+}
+
     function openGenresModal() {
         renderGenresList();
         genresModal.style.display = 'flex';
@@ -879,11 +869,21 @@ function renderGenresList() {
     moreOptionsBtn.addEventListener('click', openGenresModal);
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
 
-// Welcome Buttons-এর ক্লিক হ্যান্ডলার
 document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
     button.addEventListener('click', () => {
-        const message = button.getAttribute('data-message');
-        sendMessage(message);
+        const genreName = button.getAttribute('data-genre');
+        const genre = genres.find(g => g.name === genreName);
+        if (genre) {
+            // Add fade-out animation to welcome message
+            welcomeMessage.classList.add('fade-out');
+            setTimeout(() => {
+                welcomeMessage.style.display = 'none';
+                welcomeMessage.classList.remove('fade-out');
+            }, 300); // Match CSS transition duration
+            displayMessage(genre.message, 'user');
+            saveChatHistory(genre.message, 'user');
+            callRasaAPI(genre.message);
+        }
     });
 });
 
