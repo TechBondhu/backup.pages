@@ -202,6 +202,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return typingDiv;
     }
 
+    // Utility: Progressive Message Loading
+    function displayProgressiveMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        // Split message into words
+        const words = message.split(' ');
+        let currentIndex = 0;
+
+        function addNextWord() {
+            if (currentIndex < words.length) {
+                messageDiv.innerHTML = sanitizeMessage(words.slice(0, currentIndex + 1).join(' '));
+                currentIndex++;
+                setTimeout(addNextWord, 100); // 100ms delay per word
+            } else {
+                saveChatHistory(message, sender);
+            }
+        }
+
+        addNextWord();
+
+        if (welcomeMessage.style.display !== 'none') {
+            welcomeMessage.classList.add('fade-out');
+            setTimeout(() => {
+                welcomeMessage.style.display = 'none';
+                welcomeMessage.classList.remove('fade-out');
+            }, 300);
+        }
+    }
+
     // Message Sending
     sendBtn.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
@@ -415,19 +447,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayMessage(message, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
-        messageDiv.innerHTML = sanitizeMessage(message);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        if (welcomeMessage.style.display !== 'none') {
-            welcomeMessage.classList.add('fade-out');
-            setTimeout(() => {
-                welcomeMessage.style.display = 'none';
-                welcomeMessage.classList.remove('fade-out');
-            }, 300);
+        if (sender === 'bot') {
+            displayProgressiveMessage(sanitizeMessage(message), sender);
+        } else {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('user-message', 'slide-in');
+            messageDiv.innerHTML = sanitizeMessage(message);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if (welcomeMessage.style.display !== 'none') {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+            }
+            saveChatHistory(message, sender);
         }
-        saveChatHistory(message, sender);
     }
 
     function displayReview(reviewData) {
@@ -702,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
             });
-        }, 800);
+        }, 500); // 500ms delay for professional feel
     }
 
     function generatePDF(reviewData, reviewCard) {
