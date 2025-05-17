@@ -99,10 +99,6 @@ const genres = [
     { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
-
-
-
-
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
@@ -190,6 +186,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return div.innerHTML;
     }
 
+    // Utility: Show Typing Indicator
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.classList.add('typing-indicator');
+        typingDiv.innerHTML = `
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+        `;
+        messagesDiv.appendChild(typingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return typingDiv;
+    }
+
     // Message Sending
     sendBtn.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
@@ -208,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (selectedFile) {
                 const messageDiv = document.createElement('div');
-                messageDiv.classList.add('user-message');
+                messageDiv.classList.add('user-message', 'slide-in');
                 const img = document.createElement('img');
                 img.src = previewImage.src;
                 img.classList.add('image-preview');
@@ -404,8 +414,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayMessage(message, sender) {
         const messageDiv = document.createElement('div');
-        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-        messageDiv.innerHTML = sanitizeMessage(message); // Use innerHTML with sanitized content
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+        messageDiv.innerHTML = sanitizeMessage(message);
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
         if (welcomeMessage.style.display !== 'none') {
@@ -420,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayReview(reviewData) {
         const reviewCard = document.createElement('div');
-        reviewCard.classList.add('review-card');
+        reviewCard.classList.add('review-card', 'slide-in');
         reviewCard.setAttribute('data-editable', 'true');
         reviewCard.setAttribute('data-id', Date.now());
         reviewCard.setAttribute('data-confirmed', 'false');
@@ -455,12 +465,12 @@ document.addEventListener('DOMContentLoaded', () => {
         buttonContainer.className = 'review-buttons';
 
         const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn';
+        editBtn.className = 'edit-btn ripple-btn';
         editBtn.innerText = 'Edit';
         editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
 
         const confirmBtn = document.createElement('button');
-        confirmBtn.className = 'confirm-btn';
+        confirmBtn.className = 'confirm-btn ripple-btn';
         confirmBtn.innerText = 'Confirm';
         confirmBtn.style.display = 'inline-block';
         confirmBtn.addEventListener('click', () => {
@@ -488,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     buttonContainer.innerHTML = '';
                     const downloadBtn = document.createElement('button');
-                    downloadBtn.className = 'download-btn';
+                    downloadBtn.className = 'download-btn ripple-btn';
                     downloadBtn.innerText = 'Download PDF';
                     downloadBtn.addEventListener('click', () => {
                         const pdfUrl = reviewCard.getAttribute('data-pdf-url');
@@ -631,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayLoading() {
         const loadingDiv = document.createElement('div');
-        loadingDiv.classList.add('loading');
+        loadingDiv.classList.add('loading', 'slide-in');
         loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
         messagesDiv.appendChild(loadingDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -639,52 +649,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function removeLoading(loadingDiv) {
-        if (loadingDiv) loadingDiv.remove();
+        if (loadingDiv) {
+            loadingDiv.classList.add('slide-out');
+            setTimeout(() => loadingDiv.remove(), 300);
+        }
     }
 
     function callRasaAPI(message, metadata = {}) {
-        const loadingDiv = displayLoading();
+        const typingDiv = showTypingIndicator();
         const payload = { sender: 'user', message: message };
         if (Object.keys(metadata).length > 0) {
             payload.metadata = metadata;
         }
-        $.ajax({
-            url: 'http://localhost:5005/webhooks/rest/webhook',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(payload),
-            success: (data) => {
-                removeLoading(loadingDiv);
-                if (!data || data.length === 0) {
-                    displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
-                    return;
+        setTimeout(() => {
+            $.ajax({
+                url: 'http://localhost:5005/webhooks/rest/webhook',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: (data) => {
+                    typingDiv.remove();
+                    if (!data || data.length === 0) {
+                        displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
+                        return;
+                    }
+                    data.forEach(response => {
+                        if (response.text && !response.text.toLowerCase().includes('hi')) {
+                            displayMessage(sanitizeMessage(response.text), 'bot');
+                        }
+                        if (response.custom && response.custom.review_data) {
+                            displayReview(response.custom.review_data);
+                        }
+                        if (response.buttons) {
+                            const buttonDiv = document.createElement('div');
+                            buttonDiv.classList.add('welcome-buttons');
+                            response.buttons.forEach(btn => {
+                                const button = document.createElement('button');
+                                button.innerText = sanitizeMessage(btn.title);
+                                button.classList.add('ripple-btn');
+                                button.addEventListener('click', () => sendMessage(btn.payload));
+                                buttonDiv.appendChild(button);
+                            });
+                            messagesDiv.appendChild(buttonDiv);
+                        }
+                    });
+                },
+                error: (error) => {
+                    typingDiv.remove();
+                    displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
+                    console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
-                data.forEach(response => {
-                    if (response.text && !response.text.toLowerCase().includes('hi')) {
-                        displayMessage(sanitizeMessage(response.text), 'bot');
-                    }
-                    if (response.custom && response.custom.review_data) {
-                        displayReview(response.custom.review_data);
-                    }
-                    if (response.buttons) {
-                        const buttonDiv = document.createElement('div');
-                        buttonDiv.classList.add('welcome-buttons');
-                        response.buttons.forEach(btn => {
-                            const button = document.createElement('button');
-                            button.innerText = sanitizeMessage(btn.title);
-                            button.addEventListener('click', () => sendMessage(btn.payload));
-                            buttonDiv.appendChild(button);
-                        });
-                        messagesDiv.appendChild(buttonDiv);
-                    }
-                });
-            },
-            error: (error) => {
-                removeLoading(loadingDiv);
-                displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
-                console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
-            }
-        });
+            });
+        }, 800);
     }
 
     function generatePDF(reviewData, reviewCard) {
@@ -852,10 +868,15 @@ document.addEventListener('DOMContentLoaded', () => {
         genresList.innerHTML = '';
         genres.forEach(genre => {
             const genreItem = document.createElement('div');
-            genreItem.className = 'genre-item';
+            genreItem.className = 'genre-item ripple-btn';
             genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
             genreItem.addEventListener('click', () => {
                 if (genre.message) {
+                    genresModal.classList.add('slide-out');
+                    setTimeout(() => {
+                        genresModal.style.display = 'none';
+                        genresModal.classList.remove('slide-out');
+                    }, 300);
                     welcomeMessage.classList.add('fade-out');
                     setTimeout(() => {
                         welcomeMessage.style.display = 'none';
@@ -864,7 +885,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     displayMessage(sanitizeMessage(genre.message), 'user');
                     saveChatHistory(sanitizeMessage(genre.message), 'user');
                     callRasaAPI(sanitizeMessage(genre.message));
-                    genresModal.style.display = 'none';
                 } else {
                     console.error(`Message undefined for genre: ${genre.name}`);
                     displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
@@ -876,17 +896,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openGenresModal() {
         renderGenresList();
+        genresModal.classList.add('slide-in');
         genresModal.style.display = 'flex';
+        setTimeout(() => genresModal.classList.remove('slide-in'), 300);
     }
 
     function closeGenresModalFunc() {
-        genresModal.style.display = 'none';
+        genresModal.classList.add('slide-out');
+        setTimeout(() => {
+            genresModal.style.display = 'none';
+            genresModal.classList.remove('slide-out');
+        }, 300);
     }
 
     moreOptionsBtn.addEventListener('click', openGenresModal);
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
 
     document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+        button.classList.add('ripple-btn');
         button.addEventListener('click', () => {
             const genreName = button.getAttribute('data-genre');
             const genre = genres.find(g => g.name === genreName);
