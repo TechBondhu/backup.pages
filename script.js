@@ -1,5 +1,5 @@
 const genres = [
-    { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি ত�ৈরি করতে চাই' },
+    { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
     { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
     { name: 'কোম্পানি রেজিসট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিসট্রেশন করতে চাই' },
     { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
