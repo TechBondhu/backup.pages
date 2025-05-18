@@ -100,7 +100,7 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
@@ -158,9 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let brightnessValue = 0;
     let contrastValue = 0;
     let bgColor = 'white';
-    // Generate unique chatId per tab using sessionStorage
     let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
-    sessionStorage.setItem('chatId', currentChatId); // Store chatId for this tab
+    sessionStorage.setItem('chatId', currentChatId);
 
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
@@ -176,6 +175,49 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // Genres Data (Added back as per previous context)
+    const genres = [
+        { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
+        { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
+        { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
+        { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
+        { name: 'টিআইএন (TIN) সার্টিফিকেট আবেদন', icon: 'fas fa-file-invoice', message: 'আমি টিআইএন সার্টিফিকেট আবেদন করতে চাই' },
+        { name: 'ভূমি নামজারি (Mutation) আবেদনপত্র', icon: 'fas fa-map-marked-alt', message: 'আমি ভূমি নামজারি আবেদন করতে চাই' },
+        { name: 'উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন', icon: 'fas fa-graduation-cap', message: 'আমি উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন করতে চাই' },
+        { name: 'জন্ম ও মৃত্যু নিবন্ধন', icon: 'fas fa-certificate', message: 'আমি জন্ম ও মৃত্যু নিবন্ধন করতে চাই' },
+        { name: 'ড্রাইভিং লাইসেন্স আবেদন', icon: 'fas fa-car', message: 'আমি ড্রাইভিং লাইসেন্স আবেদন করতে চাই' },
+        { name: 'নাগরিক সনদ (Citizen Certificate) আবেদন', icon: 'fas fa-user-check', message: 'আমি নাগরিক সনদ আবেদন করতে চাই' },
+        { name: 'চারিত্রিক সনদপত্র (Character Certificate) আবেদন', icon: 'fas fa-award', message: 'আমি চারিত্রিক সনদপত্র আবেদন করতে চাই' },
+        { name: 'ট্রেড লাইসেন্স', icon: 'fas fa-store', message: 'আমি ট্রেড লাইসেন্স আবেদন করতে চাই' },
+        { name: 'ভ্যাট রেজিস্ট্রেশন', icon: 'fas fa-calculator', message: 'আমি ভ্যাট রেজিস্ট্রেশন করতে চাই' },
+        { name: 'প্রপার্টি রেজিস্ট্রেশন', icon: 'fas fa-home', message: 'আমি প্রপার্টি রেজিস্ট্রেশন করতে চাই' },
+        { name: 'ব্যাংক অ্যাকাউন্ট খোলা', icon: 'fas fa-university', message: 'আমি ব্যাংক অ্যাকাউন্ট খুলতে চাই' },
+        { name: 'ঢাকা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি ঢাকা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'খুলনা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি খুলনা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'রাজশাহী বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি রাজশাহী বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'চট্টগ্রাম বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি চট্টগ্রাম বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'জাহাঙ্গীরনগর বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি জাহাঙ্গীরনগর বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'বাংলাদেশ কৃষি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি বাংলাদেশ কৃষি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'জগন্নাথ বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি জগন্নাথ বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'কুমিল্লা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি কুমিল্লা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'বরিশাল বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি বরিশাল বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'ইসলামী বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি ইসলামী বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
+        { name: 'গ্যাস সংযোগ আবেদন', icon: 'fas fa-fire', message: 'আমি গ্যাস সংযোগ আবেদন করতে চাই' },
+        { name: 'বিদ্যুৎ সংযোগ আবেদন', icon: 'fas fa-bolt', message: 'আমি বিদ্যুৎ সংযোগ আবেদন করতে চাই' },
+        { name: 'পানি সংযোগ আবেদন', icon: 'fas fa-faucet', message: 'আমি পানি সংযোগ আবেদন করতে চাই' },
+        { name: 'জমির খতিয়ান সংশোধন', icon: 'fas fa-file-alt', message: 'আমি জমির খতিয়ান সংশোধন করতে চাই' },
+        { name: 'ভূমি উন্নয়ন কর পরিশোধ', icon: 'fas fa-money-bill', message: 'আমি ভূমি উন্নয়ন কর পরিশোধ করতে চাই' },
+        { name: 'ইমিগ্রেশন ক্লিয়ারেন্স', icon: 'fas fa-plane-departure', message: 'আমি ইমিগ্রেশন ক্লিয়ারেন্সের জন্য আবেদন করতে চাই' },
+        { name: 'ওয়ারিশ সনদ আবেদন', icon: 'fas fa-users', message: 'আমি ওয়ারিশ সনদ আবেদন করতে চাই' },
+        { name: 'পৌরসভা সেবা আবেদন', icon: 'fas fa-city', message: 'আমি পৌরসভা সেবা আবেদন করতে চাই' },
+        { name: 'বন্ধকী জমি মুক্তি', icon: 'fas fa-unlock', message: 'আমি বন্ধকী জমি মুক্তি করতে চাই' }
+    ];
 
     // Navigation Events
     homeIcon.addEventListener('click', () => window.location.href = 'index.html');
@@ -210,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-        // Split message into words
         const words = message.split(' ');
         let currentIndex = 0;
 
@@ -218,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentIndex < words.length) {
                 messageDiv.innerHTML = sanitizeMessage(words.slice(0, currentIndex + 1).join(' '));
                 currentIndex++;
-                setTimeout(addNextWord, 100); // 100ms delay per word
+                setTimeout(addNextWord, 100);
             } else {
                 saveChatHistory(message, sender);
             }
@@ -283,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
-        
                     });
                 clearPreview();
             }
@@ -435,9 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startNewChat() {
-        // Generate new chatId for new tab/session
         currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem('chatId', currentChatId); // Update chatId in sessionStorage
+        sessionStorage.setItem('chatId', currentChatId);
         messagesDiv.innerHTML = '';
         welcomeMessage.style.display = 'block';
         chatBox.classList.add('fade-in');
@@ -556,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            sender: currentChatId, // Use chatId as sender
+                            sender: currentChatId,
                             message: 'confirm_review',
                             metadata: { review_data: updatedData }
                         }),
@@ -695,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
-        const payload = { sender: currentChatId, message: message }; // Use currentChatId as sender
+        const payload = { sender: currentChatId, message: message };
         if (Object.keys(metadata).length > 0) {
             payload.metadata = metadata;
         }
@@ -738,7 +777,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
             });
-        }, 500); // 500ms delay for professional feel
+        }, 500);
     }
 
     function generatePDF(reviewData, reviewCard) {
@@ -802,16 +841,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveChatHistory(message, sender) {
         let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         if (!chats[currentChatId]) {
-            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
+            chats[currentChatId] = {
+                title: `Chat ${Object.keys(chats).length + 1}`,
+                messages: [],
+                timestamp: new Date().toISOString()
+            };
         }
-        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+        chats[currentChatId].messages.push({
+            text: message,
+            sender: sender,
+            time: new Date().toISOString()
+        });
         localStorage.setItem('chatHistory', JSON.stringify(chats));
+        loadChatHistory(); // Ensure UI updates after saving
     }
 
     function loadChatHistory() {
-        historyList.innerHTML = '';
+        historyList.innerHTML = ''; // Clear existing history
         const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        Object.keys(chats).forEach(chatId => {
+        if (Object.keys(chats).length === 0) {
+            startNewChat();
+            return;
+        }
+
+        Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
             const chat = chats[chatId];
             const item = document.createElement('div');
             item.classList.add('history-item');
@@ -831,7 +884,12 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             historyList.appendChild(item);
 
-            item.addEventListener('click', () => loadChat(chatId));
+            item.addEventListener('click', (e) => {
+                if (!e.target.closest('.options') && !e.target.closest('.dropdown')) {
+                    loadChat(chatId);
+                }
+            });
+
             const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
             const dropdown = item.querySelector(`#dropdown-${chatId}`);
             const renameItem = item.querySelector(`.rename-item-${chatId}`);
@@ -842,18 +900,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdown.classList.toggle('active');
             });
 
-            renameItem.addEventListener('click', () => {
+            renameItem.addEventListener('click', (e) => {
+                e.stopPropagation();
                 renameModal.style.display = 'flex';
                 renameInput.value = chat.title;
                 currentChatId = chatId;
             });
 
-            deleteItem.addEventListener('click', () => {
+            deleteItem.addEventListener('click', (e) => {
+                e.stopPropagation();
                 deleteModal.style.display = 'flex';
                 currentChatId = chatId;
             });
         });
-        // Ensure history is visible on new tab load
+
         if (historyList.children.length > 0) {
             sidebar.classList.add('open');
             chatContainer.classList.add('sidebar-open');
@@ -862,7 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadChat(chatId) {
         currentChatId = chatId;
-        sessionStorage.setItem('chatId', currentChatId); // Update sessionStorage with selected chatId
+        sessionStorage.setItem('chatId', currentChatId);
         const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         const chat = chats[chatId];
         if (chat) {
@@ -873,8 +933,8 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
-            loadChatHistory(); // Refresh history list
         }
+        loadChatHistory();
     }
 
     renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
