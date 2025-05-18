@@ -100,6 +100,7 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
+
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
@@ -158,9 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let brightnessValue = 0;
     let contrastValue = 0;
     let bgColor = 'white';
-    // Generate unique chatId per tab using sessionStorage
     let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
-    sessionStorage.setItem('chatId', currentChatId); // Store chatId for this tab
+    sessionStorage.setItem('chatId', currentChatId);
 
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
@@ -435,9 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startNewChat() {
-        // Generate new chatId for new tab/session
-        currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem('chatId', currentChatId); // Update chatId in sessionStorage
+        currentChatId = Date.now().toString();
         messagesDiv.innerHTML = '';
         welcomeMessage.style.display = 'block';
         chatBox.classList.add('fade-in');
@@ -556,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            sender: currentChatId, // Use chatId as sender
+                            sender: 'user',
                             message: 'confirm_review',
                             metadata: { review_data: updatedData }
                         }),
@@ -695,7 +693,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
-        const payload = { sender: currentChatId, message: message }; // Use currentChatId as sender
+        const payload = { sender: 'user', message: message };
         if (Object.keys(metadata).length > 0) {
             payload.metadata = metadata;
         }
@@ -802,16 +800,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveChatHistory(message, sender) {
         let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         if (!chats[currentChatId]) {
-            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
+            chats[currentChatId] = {
+                title: `Chat ${Object.keys(chats).length + 1}`,
+                messages: [],
+                timestamp: new Date().toISOString()
+            };
         }
-        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+        chats[currentChatId].messages.push({
+            text: message,
+            sender: sender,
+            time: new Date().toISOString()
+        });
         localStorage.setItem('chatHistory', JSON.stringify(chats));
+        // সেভ করার পর সাথে সাথে হিস্ট্রি লোড করা
+        loadChatHistory();
     }
 
     function loadChatHistory() {
-        historyList.innerHTML = '';
+        historyList.innerHTML = ''; // UI ক্লিয়ার করা
         const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        Object.keys(chats).forEach(chatId => {
+        if (Object.keys(chats).length === 0) {
+            // যদি কোনো হিস্ট্রি না থাকে, তাহলে নতুন চ্যাট শুরু করা
+            startNewChat();
+            return;
+        }
+
+        Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
             const chat = chats[chatId];
             const item = document.createElement('div');
             item.classList.add('history-item');
@@ -831,7 +845,13 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             historyList.appendChild(item);
 
-            item.addEventListener('click', () => loadChat(chatId));
+            // ইভেন্ট লিসেনার যোগ করা
+            item.addEventListener('click', (e) => {
+                if (!e.target.closest('.options') && !e.target.closest('.dropdown')) {
+                    loadChat(chatId);
+                }
+            });
+
             const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
             const dropdown = item.querySelector(`#dropdown-${chatId}`);
             const renameItem = item.querySelector(`.rename-item-${chatId}`);
@@ -842,18 +862,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdown.classList.toggle('active');
             });
 
-            renameItem.addEventListener('click', () => {
+            renameItem.addEventListener('click', (e) => {
+                e.stopPropagation();
                 renameModal.style.display = 'flex';
                 renameInput.value = chat.title;
                 currentChatId = chatId;
             });
 
-            deleteItem.addEventListener('click', () => {
+            deleteItem.addEventListener('click', (e) => {
+                e.stopPropagation();
                 deleteModal.style.display = 'flex';
                 currentChatId = chatId;
             });
         });
-        // Ensure history is visible on new tab load
+
+                // হিস্ট্রি লোড হওয়ার পর সাইডবার স্বয়ংক্রিয়ভাবে খোলা
         if (historyList.children.length > 0) {
             sidebar.classList.add('open');
             chatContainer.classList.add('sidebar-open');
@@ -862,7 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadChat(chatId) {
         currentChatId = chatId;
-        sessionStorage.setItem('chatId', currentChatId); // Update sessionStorage with selected chatId
+        sessionStorage.setItem('chatId', currentChatId);
         const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         const chat = chats[chatId];
         if (chat) {
@@ -873,8 +896,19 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
-            loadChatHistory(); // Refresh history list
         }
+        loadChatHistory(); // হিস্ট্রি রিফ্রেশ করা
+    }
+ 
+        function startNewChat() {
+        currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        sessionStorage.setItem('chatId', currentChatId);
+        messagesDiv.innerHTML = '';
+        welcomeMessage.style.display = 'block';
+        chatBox.classList.add('fade-in');
+        setTimeout(() => chatBox.classList.remove('fade-in'), 500);
+        saveChatHistory('New Chat Started', 'system');
+        loadChatHistory(); // নতুন চ্যাট শুরু করার পর হিস্ট্রি লোড
     }
 
     renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
@@ -980,4 +1014,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     loadChatHistory();
-});
+});s
