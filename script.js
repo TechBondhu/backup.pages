@@ -100,7 +100,6 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
@@ -160,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let contrastValue = 0;
     let bgColor = 'white';
     // Generate unique chatId per tab using sessionStorage
-    let currentChatId = sessionStorage.getItem('chatId') || 'chat_' + Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
     sessionStorage.setItem('chatId', currentChatId); // Store chatId for this tab
 
     // Initialize jsPDF
@@ -211,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
+        // Split message into words
         const words = message.split(' ');
         let currentIndex = 0;
 
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentIndex < words.length) {
                 messageDiv.innerHTML = sanitizeMessage(words.slice(0, currentIndex + 1).join(' '));
                 currentIndex++;
-                setTimeout(addNextWord, 100);
+                setTimeout(addNextWord, 100); // 100ms delay per word
             } else {
                 saveChatHistory(message, sender);
             }
@@ -283,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
+        
                     });
                 clearPreview();
             }
@@ -435,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startNewChat() {
         // Generate new chatId for new tab/session
-        currentChatId = 'chat_' + Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
         sessionStorage.setItem('chatId', currentChatId); // Update chatId in sessionStorage
         messagesDiv.innerHTML = '';
         welcomeMessage.style.display = 'block';
@@ -737,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
             });
-        }, 500);
+        }, 500); // 500ms delay for professional feel
     }
 
     function generatePDF(reviewData, reviewCard) {
@@ -852,6 +853,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentChatId = chatId;
             });
         });
+        // Ensure history is visible on new tab load
+        if (historyList.children.length > 0) {
+            sidebar.classList.add('open');
+            chatContainer.classList.add('sidebar-open');
+        }
     }
 
     function loadChat(chatId) {
@@ -867,6 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
+            loadChatHistory(); // Refresh history list
         }
     }
 
@@ -904,7 +911,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Genres Modal Functionality
     function renderGenresList() {
         genresList.innerHTML = '';
-        // genres array not included as per your request
+        genres.forEach(genre => {
+            const genreItem = document.createElement('div');
+            genreItem.className = 'genre-item ripple-btn';
+            genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
+            genreItem.addEventListener('click', () => {
+                if (genre.message) {
+                    genresModal.classList.add('slide-out');
+                    setTimeout(() => {
+                        genresModal.style.display = 'none';
+                        genresModal.classList.remove('slide-out');
+                    }, 300);
+                    welcomeMessage.classList.add('fade-out');
+                    setTimeout(() => {
+                        welcomeMessage.style.display = 'none';
+                        welcomeMessage.classList.remove('fade-out');
+                    }, 300);
+                    displayMessage(sanitizeMessage(genre.message), 'user');
+                    saveChatHistory(sanitizeMessage(genre.message), 'user');
+                    callRasaAPI(sanitizeMessage(genre.message));
+                } else {
+                    console.error(`Message undefined for genre: ${genre.name}`);
+                    displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+                }
+            });
+            genresList.appendChild(genreItem);
+        });
     }
 
     function openGenresModal() {
@@ -924,6 +956,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     moreOptionsBtn.addEventListener('click', openGenresModal);
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
+
+    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+        button.classList.add('ripple-btn');
+        button.addEventListener('click', () => {
+            const genreName = button.getAttribute('data-genre');
+            const genre = genres.find(g => g.name === genreName);
+            if (genre && genre.message) {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+                displayMessage(sanitizeMessage(genre.message), 'user');
+                saveChatHistory(sanitizeMessage(genre.message), 'user');
+                callRasaAPI(sanitizeMessage(genre.message));
+            } else {
+                console.error(`Genre not found or message undefined for: ${genreName}`);
+                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+            }
+        });
+    });
 
     // Initialize
     loadChatHistory();
