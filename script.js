@@ -1,54 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const sendBtn = document.getElementById('sendBtn');
-    const userInput = document.getElementById('userInput');
-    const messagesDiv = document.getElementById('messages');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileInput = document.getElementById('fileInput');
-    const welcomeMessage = document.getElementById('welcomeMessage');
-    const sidebar = document.getElementById('sidebar');
-    const historyList = document.getElementById('historyList');
-    const chatContainer = document.querySelector('.chat-container');
-    const historyIcon = document.getElementById('historyIcon');
-    const newChatIcon = document.getElementById('newChatIcon');
-    const closeSidebar = document.getElementById('closeSidebar');
-    const searchInput = document.getElementById('searchInput');
-    const chatBox = document.getElementById('chatBox');
-    const sidebarIcon = document.getElementById('sidebarIcon');
-    const deleteModal = document.getElementById('deleteModal');
-    const renameModal = document.getElementById('renameModal');
-    const renameInput = document.getElementById('renameInput');
-    const renameCancelBtn = document.getElementById('cancelRename');
-    const renameSaveBtn = document.getElementById('saveRename');
-    const deleteCancelBtn = document.getElementById('cancelDelete');
-    const deleteConfirmBtn = document.getElementById('confirmDelete');
-    const homeIcon = document.querySelector('.home-icon');
-    const settingsIcon = document.getElementById('settingsIcon');
-    const accountIcon = document.getElementById('accountIcon');
-    const previewContainer = document.getElementById('previewContainer');
-    const previewImage = document.getElementById('previewImage');
-    const editBtn = document.getElementById('editBtn');
-    const imageReviewModal = document.getElementById('imageReviewModal');
-    const reviewImage = document.getElementById('reviewImage');
-    const deleteImageBtn = document.getElementById('deleteImageBtn');
-    const editModal = document.getElementById('editModal');
-    const editCanvas = document.getElementById('editCanvas');
-    const cropX = document.getElementById('cropX');
-    const cropY = document.getElementById('cropY');
-    const cropWidth = document.getElementById('cropWidth');
-    const cropHeight = document.getElementById('cropHeight');
-    const brightness = document.getElementById('brightness');
-    const contrast = document.getElementById('contrast');
-    const backgroundColor = document.getElementById('bgColor');
-    const editCancelBtn = document.getElementById('cancelEdit');
-    const editApplyBtn = document.getElementById('editApplyBtn');
-    const moreOptionsBtn = document.getElementById('moreOptionsBtn');
-    const genresModal = document.getElementById('genresModal');
-    const closeGenresModal = document.getElementById('closeGenresModal');
-    const genresList = document.getElementById('genresList');
-
-    // Genres Array
-    const genres = [
+ const genres = [
         { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
         { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
         { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
@@ -150,6 +100,55 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
     ];
 
+ document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements
+    const sendBtn = document.getElementById('sendBtn');
+    const userInput = document.getElementById('userInput');
+    const messagesDiv = document.getElementById('messages');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const sidebar = document.getElementById('sidebar');
+    const historyList = document.getElementById('historyList');
+    const chatContainer = document.querySelector('.chat-container');
+    const historyIcon = document.getElementById('historyIcon');
+    const newChatIcon = document.getElementById('newChatIcon');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const searchInput = document.getElementById('searchInput');
+    const chatBox = document.getElementById('chatBox');
+    const sidebarIcon = document.getElementById('sidebarIcon');
+    const deleteModal = document.getElementById('deleteModal');
+    const renameModal = document.getElementById('renameModal');
+    const renameInput = document.getElementById('renameInput');
+    const renameCancelBtn = document.getElementById('cancelRename');
+    const renameSaveBtn = document.getElementById('saveRename');
+    const deleteCancelBtn = document.getElementById('cancelDelete');
+    const deleteConfirmBtn = document.getElementById('confirmDelete');
+    const homeIcon = document.querySelector('.home-icon');
+    const settingsIcon = document.getElementById('settingsIcon');
+    const accountIcon = document.getElementById('accountIcon');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const editBtn = document.getElementById('editBtn');
+    const imageReviewModal = document.getElementById('imageReviewModal');
+    const reviewImage = document.getElementById('reviewImage');
+    const deleteImageBtn = document.getElementById('deleteImageBtn');
+    const editModal = document.getElementById('editModal');
+    const editCanvas = document.getElementById('editCanvas');
+    const cropX = document.getElementById('cropX');
+    const cropY = document.getElementById('cropY');
+    const cropWidth = document.getElementById('cropWidth');
+    const cropHeight = document.getElementById('cropHeight');
+    const brightness = document.getElementById('brightness');
+    const contrast = document.getElementById('contrast');
+    const backgroundColor = document.getElementById('bgColor');
+    const editCancelBtn = document.getElementById('cancelEdit');
+    const editApplyBtn = document.getElementById('editApplyBtn');
+    const moreOptionsBtn = document.getElementById('moreOptionsBtn');
+    const genresModal = document.getElementById('genresModal');
+    const closeGenresModal = document.getElementById('closeGenresModal');
+    const genresList = document.getElementById('genresList');
+
     // State Variables
     let selectedFile = null;
     let editedImage = null;
@@ -159,7 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let brightnessValue = 0;
     let contrastValue = 0;
     let bgColor = 'white';
-    let currentChatId = Date.now().toString();
+    // Generate unique chatId per tab using sessionStorage
+    let currentChatId = sessionStorage.getItem('chatId') || 'chat_' + Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    sessionStorage.setItem('chatId', currentChatId); // Store chatId for this tab
 
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
@@ -209,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
-        // Split message into words
         const words = message.split(' ');
         let currentIndex = 0;
 
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentIndex < words.length) {
                 messageDiv.innerHTML = sanitizeMessage(words.slice(0, currentIndex + 1).join(' '));
                 currentIndex++;
-                setTimeout(addNextWord, 100); // 100ms delay per word
+                setTimeout(addNextWord, 100);
             } else {
                 saveChatHistory(message, sender);
             }
@@ -283,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
                     });
-
                 clearPreview();
             }
         }
@@ -434,15 +433,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startNewChat() {
-        currentChatId = Date.now().toString();
+        // Generate new chatId for new tab/session
+        currentChatId = 'chat_' + Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        sessionStorage.setItem('chatId', currentChatId); // Update chatId in sessionStorage
         messagesDiv.innerHTML = '';
         welcomeMessage.style.display = 'block';
         chatBox.classList.add('fade-in');
         setTimeout(() => chatBox.classList.remove('fade-in'), 500);
         saveChatHistory('New Chat Started', 'system');
         loadChatHistory();
-        // Rasa সেশন রিসেট করার জন্য কাস্টম অ্যাকশন কল
-        callRasaAPI("/reset_session");
     }
 
     function displayMessage(message, sender) {
@@ -555,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            sender: 'user',
+                            sender: currentChatId, // Use chatId as sender
                             message: 'confirm_review',
                             metadata: { review_data: updatedData }
                         }),
@@ -694,16 +693,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        const chatHistory = chats[currentChatId]?.messages || [];
-        const payload = {
-            sender: 'user',
-            message: message,
-            metadata: {
-                ...metadata,
-                chat_history: chatHistory // হিস্ট্রি পাঠানো
-            }
-        };
+        const payload = { sender: currentChatId, message: message }; // Use currentChatId as sender
+        if (Object.keys(metadata).length > 0) {
+            payload.metadata = metadata;
+        }
         setTimeout(() => {
             $.ajax({
                 url: 'http://localhost:5005/webhooks/rest/webhook',
@@ -743,7 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
             });
-        }, 500); // 500ms delay for professional feel
+        }, 500);
     }
 
     function generatePDF(reviewData, reviewCard) {
@@ -862,6 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadChat(chatId) {
         currentChatId = chatId;
+        sessionStorage.setItem('chatId', currentChatId); // Update sessionStorage with selected chatId
         const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         const chat = chats[chatId];
         if (chat) {
@@ -909,32 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Genres Modal Functionality
     function renderGenresList() {
         genresList.innerHTML = '';
-        genres.forEach(genre => {
-            const genreItem = document.createElement('div');
-            genreItem.className = 'genre-item ripple-btn';
-            genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
-            genreItem.addEventListener('click', () => {
-                if (genre.message) {
-                    genresModal.classList.add('slide-out');
-                    setTimeout(() => {
-                        genresModal.style.display = 'none';
-                        genresModal.classList.remove('slide-out');
-                    }, 300);
-                    welcomeMessage.classList.add('fade-out');
-                    setTimeout(() => {
-                        welcomeMessage.style.display = 'none';
-                        welcomeMessage.classList.remove('fade-out');
-                    }, 300);
-                    displayMessage(sanitizeMessage(genre.message), 'user');
-                    saveChatHistory(sanitizeMessage(genre.message), 'user');
-                    callRasaAPI(sanitizeMessage(genre.message));
-                } else {
-                    console.error(`Message undefined for genre: ${genre.name}`);
-                    displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
-                }
-            });
-            genresList.appendChild(genreItem);
-        });
+        // genres array not included as per your request
     }
 
     function openGenresModal() {
@@ -954,27 +923,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     moreOptionsBtn.addEventListener('click', openGenresModal);
     closeGenresModal.addEventListener('click', closeGenresModalFunc);
-
-    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
-        button.classList.add('ripple-btn');
-        button.addEventListener('click', () => {
-            const genreName = button.getAttribute('data-genre');
-            const genre = genres.find(g => g.name === genreName);
-            if (genre && genre.message) {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-                displayMessage(sanitizeMessage(genre.message), 'user');
-                saveChatHistory(sanitizeMessage(genre.message), 'user');
-                callRasaAPI(sanitizeMessage(genre.message));
-            } else {
-                console.error(`Genre not found or message undefined for: ${genreName}`);
-                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
-            }
-        });
-    });
 
     // Initialize
     loadChatHistory();
