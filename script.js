@@ -100,7 +100,7 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
- document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
@@ -202,29 +202,6 @@ const genres = [
         return typingDiv;
     }
 
-    // Utility: Get Message Preview
-    function getMessagePreview(messages) {
-        if (!messages || messages.length === 0) return 'No messages yet';
-        const lastMessage = messages[messages.length - 1];
-        const text = lastMessage.text;
-        if (text.startsWith('[Image')) return '[Image]';
-        return text.length > 30 ? sanitizeMessage(text.substring(0, 30)) + '...' : sanitizeMessage(text);
-    }
-
-    // Utility: Clean Up Invalid Chats in localStorage
-    function cleanChatHistory() {
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        const cleanedChats = {};
-        Object.keys(chats).forEach(chatId => {
-            const chat = chats[chatId];
-            if (chat && chat.title && chat.messages && chat.timestamp) {
-                cleanedChats[chatId] = chat;
-            }
-        });
-        localStorage.setItem('chatHistory', JSON.stringify(cleanedChats));
-        return cleanedChats;
-    }
-
     // Utility: Progressive Message Loading
     function displayProgressiveMessage(message, sender) {
         const messageDiv = document.createElement('div');
@@ -300,7 +277,7 @@ const genres = [
                     .then(data => {
                         if (data.image_url) {
                             callRasaAPI(data.image_url);
-                            saveChatHistory(`[Image: ${data.image_url}]`, 'user');
+                            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
@@ -468,26 +445,9 @@ const genres = [
     function displayMessage(message, sender) {
         if (sender === 'bot') {
             displayProgressiveMessage(sanitizeMessage(message), sender);
-        } else if        if (sender === 'user' && message.startsWith('[Image')) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('user-message', 'slide-in');
-            const img = document.createElement('img');
-            img.src = message.match(/\[Image: (.+)\]/)?.[1] || '';
-            img.classList.add('image-preview');
-            img.addEventListener('click', () => openImageModal(img.src));
-            messageDiv.appendChild(img);
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            if (welcomeMessage.style.display !== 'none') {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-            }
         } else {
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+            messageDiv.classList.add('user-message', 'slide-in');
             messageDiv.innerHTML = sanitizeMessage(message);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -498,6 +458,7 @@ const genres = [
                     welcomeMessage.classList.remove('fade-out');
                 }, 300);
             }
+            saveChatHistory(message, sender);
         }
     }
 
@@ -712,6 +673,22 @@ const genres = [
         }
     }
 
+    function displayLoading() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('loading', 'slide-in');
+        loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+        messagesDiv.appendChild(loadingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return loadingDiv;
+    }
+
+    function removeLoading(loadingDiv) {
+        if (loadingDiv) {
+            loadingDiv.classList.add('slide-out');
+            setTimeout(() => loadingDiv.remove(), 300);
+        }
+    }
+
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
         const payload = { sender: currentChatId, message: message };
@@ -830,20 +807,17 @@ const genres = [
 
     function loadChatHistory() {
         historyList.innerHTML = '';
-        const chats = cleanChatHistory(); // Clean up invalid entries
-        Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        Object.keys(chats).forEach(chatId => {
             const chat = chats[chatId];
-            if (!chat || !chat.title) {
-                console.warn(`Invalid chat entry for chatId: ${chatId}`, chat);
-                return; // Skip invalid chats
-            }
+            const latestMessage = chat.messages[chat.messages.length - 1]?.text || 'No messages yet';
+            const previewText = latestMessage.length > 50 ? latestMessage.substring(0, 50) + '...' : latestMessage;
             const item = document.createElement('div');
             item.classList.add('history-item');
             item.setAttribute('data-chat-id', chatId);
             item.innerHTML = `
                 <div class="history-item-content">
-                    <p>${sanitizeMessage(chat.title)}</p>
-                    <div class="preview">${getMessagePreview(chat.messages)}</div>
+                    <p>${sanitizeMessage(chat.title)} - ${sanitizeMessage(previewText)}</p>
                     <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
                 </div>
                 <div class="options">
@@ -854,25 +828,22 @@ const genres = [
                     <div class="dropdown-item delete-item-${chatId}">Delete</div>
                 </div>
             `;
+            item.addEventListener('click', () => loadChat(chatId));
             historyList.appendChild(item);
 
-            item.addEventListener('click', () => loadChat(chatId));
             const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
             const dropdown = item.querySelector(`#dropdown-${chatId}`);
             const renameItem = item.querySelector(`.rename-item-${chatId}`);
             const deleteItem = item.querySelector(`.delete-item-${chatId}`);
-
             optionIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
                 dropdown.classList.toggle('active');
             });
-
             renameItem.addEventListener('click', () => {
                 renameModal.style.display = 'flex';
                 renameInput.value = chat.title;
                 currentChatId = chatId;
             });
-
             deleteItem.addEventListener('click', () => {
                 deleteModal.style.display = 'flex';
                 currentChatId = chatId;
@@ -887,7 +858,7 @@ const genres = [
     function loadChat(chatId) {
         currentChatId = chatId;
         sessionStorage.setItem('chatId', currentChatId);
-        const chats = cleanChatHistory();
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         const chat = chats[chatId];
         if (chat) {
             messagesDiv.innerHTML = '';
@@ -897,77 +868,17 @@ const genres = [
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        } else {
-            console.warn(`Chat with ID ${chatId} not found after cleaning.`);
-            startNewChat(); // Start a new chat if the current one is invalid
+            loadChatHistory();
         }
-    }
-
-    function filterChats(query) {
-        historyList.innerHTML = '';
-        const chats = cleanChatHistory();
-        Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
-            const chat = chats[chatId];
-            if (!chat || !chat.title) {
-                console.warn(`Invalid chat entry for chatId: ${chatId}`, chat);
-                return;
-            }
-            const titleMatch = chat.title.toLowerCase().includes(query.toLowerCase());
-            const messageMatch = chat.messages.some(msg => msg.text.toLowerCase().includes(query.toLowerCase()));
-            if (titleMatch || messageMatch) {
-                const item = document.createElement('div');
-                item.classList.add('history-item');
-                item.setAttribute('data-chat-id', chatId);
-                item.innerHTML = `
-                    <div class="history-item-content">
-                        <p>${sanitizeMessage(chat.title)}</p>
-                        <div class="preview">${getMessagePreview(chat.messages)}</div>
-                        <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
-                    </div>
-                    <div class="options">
-                        <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
-                    </div>
-                    <div class="dropdown" id="dropdown-${chatId}">
-                        <div class="dropdown-item rename-item-${chatId}">Rename</div>
-                        <div class="dropdown-item delete-item-${chatId}">Delete</div>
-                    </div>
-                `;
-                historyList.appendChild(item);
-
-                item.addEventListener('click', () => loadChat(chatId));
-                const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
-                const dropdown = item.querySelector(`#dropdown-${chatId}`);
-                const renameItem = item.querySelector(`.rename-item-${chatId}`);
-                const deleteItem = item.querySelector(`.delete-item-${chatId}`);
-
-                optionIcon.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    dropdown.classList.toggle('active');
-                });
-
-                renameItem.addEventListener('click', () => {
-                    renameModal.style.display = 'flex';
-                    renameInput.value = chat.title;
-                    currentChatId = chatId;
-                });
-
-                deleteItem.addEventListener('click', () => {
-                    deleteModal.style.display = 'flex';
-                    currentChatId = chatId;
-                });
-            }
-        });
     }
 
     renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
     renameSaveBtn.addEventListener('click', () => {
         const newTitle = renameInput.value.trim();
         if (newTitle) {
-            let chats = cleanChatHistory();
+            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
             if (chats[currentChatId]) {
                 chats[currentChatId].title = sanitizeMessage(newTitle);
-                chats[currentChatId].timestamp = new Date().toISOString();
                 localStorage.setItem('chatHistory', JSON.stringify(chats));
                 loadChatHistory();
             }
@@ -977,7 +888,7 @@ const genres = [
 
     deleteCancelBtn.addEventListener('click', () => deleteModal.style.display = 'none');
     deleteConfirmBtn.addEventListener('click', () => {
-        let chats = cleanChatHistory();
+        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         if (chats[currentChatId]) {
             delete chats[currentChatId];
             localStorage.setItem('chatHistory', JSON.stringify(chats));
@@ -990,10 +901,6 @@ const genres = [
             }
         }
         deleteModal.style.display = 'none';
-    });
-
-    searchInput.addEventListener('input', (e) => {
-        filterChats(e.target.value);
     });
 
     // Genres Modal Functionality
@@ -1067,6 +974,5 @@ const genres = [
     });
 
     // Initialize
-    cleanChatHistory(); // Clean up on startup
     loadChatHistory();
 });
