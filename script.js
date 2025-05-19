@@ -101,7 +101,7 @@ const genres = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements with null checks
+    // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
     const messagesDiv = document.getElementById('messages');
@@ -152,14 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // State Variables
     let selectedFile = null;
     let editedImage = null;
-    const ctx = editCanvas?.getContext('2d');
+    const ctx = editCanvas.getContext('2d');
     let image = new Image();
     let cropRect = { x: 0, y: 0, width: 200, height: 200 };
     let brightnessValue = 0;
     let contrastValue = 0;
     let bgColor = 'white';
-    let currentChatId = sessionStorage.getItem('chatId') || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    sessionStorage.setItem('chatId', currentChatId);
+    // Generate unique chatId per tab using sessionStorage
+    let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
+    sessionStorage.setItem('chatId', currentChatId); // Store chatId for this tab
 
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
@@ -177,9 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const db = firebase.firestore();
 
     // Navigation Events
-    if (homeIcon) homeIcon.addEventListener('click', () => window.location.href = 'index.html');
-    if (settingsIcon) settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
-    if (accountIcon) accountIcon.addEventListener('click', () => window.location.href = 'account.html');
+    homeIcon.addEventListener('click', () => window.location.href = 'index.html');
+    settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
+    accountIcon.addEventListener('click', () => window.location.href = 'account.html');
 
     // Utility: Sanitize Message to Prevent XSS
     function sanitizeMessage(message) {
@@ -190,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Utility: Show Typing Indicator
     function showTypingIndicator() {
-        if (!messagesDiv) return null;
         const typingDiv = document.createElement('div');
         typingDiv.classList.add('typing-indicator');
         typingDiv.innerHTML = `
@@ -205,12 +205,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Utility: Progressive Message Loading
     function displayProgressiveMessage(message, sender) {
-        if (!messagesDiv) return;
         const messageDiv = document.createElement('div');
         messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
+        // Split message into words
         const words = message.split(' ');
         let currentIndex = 0;
 
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentIndex < words.length) {
                 messageDiv.innerHTML = sanitizeMessage(words.slice(0, currentIndex + 1).join(' '));
                 currentIndex++;
-                setTimeout(addNextWord, 100);
+                setTimeout(addNextWord, 100); // 100ms delay per word
             } else {
                 saveChatHistory(message, sender);
             }
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         addNextWord();
 
-        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+        if (welcomeMessage.style.display !== 'none') {
             welcomeMessage.classList.add('fade-out');
             setTimeout(() => {
                 welcomeMessage.style.display = 'none';
@@ -236,8 +236,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Message Sending
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.repeat) sendMessage();
+    });
+
     function sendMessage() {
-        if (!userInput || !messagesDiv) return;
         const message = userInput.value.trim();
         if (message || selectedFile) {
             if (message) {
@@ -251,13 +255,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('user-message', 'slide-in');
                 const img = document.createElement('img');
-                img.src = previewImage?.src || '';
+                img.src = previewImage.src;
                 img.classList.add('image-preview');
                 img.addEventListener('click', () => openImageModal(img.src));
                 messageDiv.appendChild(img);
                 messagesDiv.appendChild(messageDiv);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+                if (welcomeMessage.style.display !== 'none') {
                     welcomeMessage.classList.add('fade-out');
                     setTimeout(() => {
                         welcomeMessage.style.display = 'none';
@@ -279,34 +283,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
-                    })
-                    .catch(error => {
-                        console.error('Image upload error:', error);
-                        displayMessage('ইমেজ আপলোডে সমস্যা হয়েছে।', 'bot');
+        
                     });
                 clearPreview();
             }
         }
     }
 
-    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-    if (userInput) userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.repeat) sendMessage();
-    });
-
     // Image Upload and Preview
-    if (uploadBtn) uploadBtn.addEventListener('click', () => fileInput?.click());
-    if (fileInput) fileInput.addEventListener('change', () => {
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
         const file = fileInput.files[0];
         if (file) {
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
-                if (previewImage && previewContainer && userInput) {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'flex';
-                    userInput.style.paddingLeft = '110px';
-                }
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'flex';
+                userInput.style.paddingLeft = '110px';
             };
             reader.readAsDataURL(file);
         }
@@ -314,66 +308,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Image Review Modal
-    if (previewImage) previewImage.addEventListener('click', () => {
-        if (reviewImage && imageReviewModal) {
-            reviewImage.src = previewImage.src;
-            imageReviewModal.style.display = 'flex';
-        }
+    previewImage.addEventListener('click', () => {
+        reviewImage.src = previewImage.src;
+        imageReviewModal.style.display = 'flex';
     });
 
     // Image Editing
-    if (editBtn) editBtn.addEventListener('click', () => {
-        if (previewImage && editModal && editCanvas) {
-            image.src = previewImage.src;
-            image.onload = () => {
-                editCanvas.width = image.width;
-                editCanvas.height = image.height;
-                cropRect.width = Math.min(200, image.width);
-                cropRect.height = Math.min(200, image.height);
-                drawImage();
-                editModal.style.display = 'flex';
-            };
-        }
+    editBtn.addEventListener('click', () => {
+        image.src = previewImage.src;
+        image.onload = () => {
+            editCanvas.width = image.width;
+            editCanvas.height = image.height;
+            cropRect.width = Math.min(200, image.width);
+            cropRect.height = Math.min(200, image.height);
+            drawImage();
+            editModal.style.display = 'flex';
+        };
     });
 
     // Canvas Editing Controls
-    if (cropX) cropX.addEventListener('input', () => {
+    cropX.addEventListener('input', () => {
         cropRect.x = parseInt(cropX.value);
         drawImage();
     });
 
-    if (cropY) cropY.addEventListener('input', () => {
+    cropY.addEventListener('input', () => {
         cropRect.y = parseInt(cropY.value);
         drawImage();
     });
 
-    if (cropWidth) cropWidth.addEventListener('input', () => {
+    cropWidth.addEventListener('input', () => {
         cropRect.width = parseInt(cropWidth.value);
         drawImage();
     });
 
-    if (cropHeight) cropHeight.addEventListener('input', () => {
+    cropHeight.addEventListener('input', () => {
         cropRect.height = parseInt(cropHeight.value);
         drawImage();
     });
 
-    if (brightness) brightness.addEventListener('input', () => {
+    brightness.addEventListener('input', () => {
         brightnessValue = parseInt(brightness.value);
         drawImage();
     });
 
-    if (contrast) contrast.addEventListener('input', () => {
+    contrast.addEventListener('input', () => {
         contrastValue = parseInt(contrast.value);
         drawImage();
     });
 
-    if (backgroundColor) backgroundColor.addEventListener('change', () => {
+    backgroundColor.addEventListener('change', () => {
         bgColor = backgroundColor.value;
         drawImage();
     });
 
     function drawImage() {
-        if (!ctx || !editCanvas) return;
         ctx.clearRect(0, 0, editCanvas.width, editCanvas.height);
         ctx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
         ctx.fillRect(0, 0, editCanvas.width, editCanvas.height);
@@ -388,8 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Apply Edited Image
-    if (editApplyBtn) editApplyBtn.addEventListener('click', () => {
-        if (!editModal || !previewImage) return;
+    editApplyBtn.addEventListener('click', () => {
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = cropRect.width;
         tempCanvas.height = cropRect.height;
@@ -406,65 +394,59 @@ document.addEventListener('DOMContentLoaded', () => {
         editModal.style.display = 'none';
     });
 
-    if (editCancelBtn) editCancelBtn.addEventListener('click', () => {
-        if (editModal) editModal.style.display = 'none';
+    editCancelBtn.addEventListener('click', () => {
+        editModal.style.display = 'none';
     });
 
     function openImageModal(imageSrc) {
-        if (reviewImage && imageReviewModal) {
-            reviewImage.src = imageSrc;
-            imageReviewModal.style.display = 'flex';
-        }
+        reviewImage.src = imageSrc;
+        imageReviewModal.style.display = 'flex';
     }
 
-    if (imageReviewModal) imageReviewModal.addEventListener('click', (e) => {
+    imageReviewModal.addEventListener('click', (e) => {
         if (e.target === imageReviewModal || e.target === deleteImageBtn) {
             imageReviewModal.style.display = 'none';
         }
     });
 
-    if (deleteImageBtn) deleteImageBtn.addEventListener('click', () => {
+    deleteImageBtn.addEventListener('click', () => {
         clearPreview();
-        if (imageReviewModal) imageReviewModal.style.display = 'none';
+        imageReviewModal.style.display = 'none';
     });
 
     function clearPreview() {
-        if (!previewContainer || !userInput) return;
         selectedFile = null;
         editedImage = null;
-        if (previewImage) previewImage.src = '';
+        previewImage.src = '';
         previewContainer.style.display = 'none';
         userInput.style.paddingLeft = '15px';
     }
 
     // Sidebar and Chat History
+    historyIcon.addEventListener('click', toggleSidebar);
+    newChatIcon.addEventListener('click', startNewChat);
+    closeSidebar.addEventListener('click', toggleSidebar);
+    sidebarIcon.addEventListener('click', toggleSidebar);
+
     function toggleSidebar() {
-        if (sidebar && chatContainer) {
-            sidebar.classList.toggle('open');
-            chatContainer.classList.toggle('sidebar-open');
-            loadChatHistory();
-        } else {
-            console.error('Sidebar or chatContainer not found');
-        }
+        sidebar.classList.toggle('open');
+        chatContainer.classList.toggle('sidebar-open');
+        loadChatHistory();
     }
 
     function startNewChat() {
-        if (messagesDiv && welcomeMessage && chatBox) {
-            currentChatId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            sessionStorage.setItem('chatId', currentChatId);
-            messagesDiv.innerHTML = '';
-            welcomeMessage.style.display = 'block';
-            chatBox.classList.add('fade-in');
-            setTimeout(() => chatBox.classList.remove('fade-in'), 500);
-            saveChatHistory('New Chat Started', 'system');
-            loadChatHistory();
-        } else {
-            console.error('Messages, welcomeMessage, or chatBox not found');
-        }
+        // Generate new chatId for new tab/session
+        currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        sessionStorage.setItem('chatId', currentChatId); // Update chatId in sessionStorage
+        messagesDiv.innerHTML = '';
+        welcomeMessage.style.display = 'block';
+        chatBox.classList.add('fade-in');
+        setTimeout(() => chatBox.classList.remove('fade-in'), 500);
+        saveChatHistory('New Chat Started', 'system');
+        loadChatHistory();
     }
 
     function displayMessage(message, sender) {
-        if (!messagesDiv || !welcomeMessage) return;
         if (sender === 'bot') {
             displayProgressiveMessage(sanitizeMessage(message), sender);
         } else {
@@ -485,7 +467,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayReview(reviewData) {
-        if (!messagesDiv || !welcomeMessage) return;
         const reviewCard = document.createElement('div');
         reviewCard.classList.add('review-card', 'slide-in');
         reviewCard.setAttribute('data-editable', 'true');
@@ -575,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            sender: currentChatId,
+                            sender: currentChatId, // Use chatId as sender
                             message: 'confirm_review',
                             metadata: { review_data: updatedData }
                         }),
@@ -618,15 +599,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleEditMode(card, reviewData) {
-        const isEditable = card.getAttribute('data-editable') === 'true';
-        const reviewContent = card.querySelector('.review-content');
-        const editBtn = card.querySelector('.edit-btn');
-        const confirmBtn = card.querySelector('.confirm-btn');
-
         if (card.getAttribute('data-confirmed') === 'true') {
             displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
             return;
         }
+
+        const isEditable = card.getAttribute('data-editable') === 'true';
+        const reviewContent = card.querySelector('.review-content');
+        const editBtn = card.querySelector('.edit-btn');
+        const confirmBtn = card.querySelector('.confirm-btn');
 
         if (!isEditable) {
             card.setAttribute('data-editable', 'true');
@@ -697,7 +678,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayLoading() {
-        if (!messagesDiv) return null;
         const loadingDiv = document.createElement('div');
         loadingDiv.classList.add('loading', 'slide-in');
         loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
@@ -715,8 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
-        if (!typingDiv) return;
-        const payload = { sender: currentChatId, message: message };
+        const payload = { sender: currentChatId, message: message }; // Use currentChatId as sender
         if (Object.keys(metadata).length > 0) {
             payload.metadata = metadata;
         }
@@ -759,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
             });
-        }, 500);
+        }, 500); // 500ms delay for professional feel
     }
 
     function generatePDF(reviewData, reviewCard) {
@@ -821,198 +800,116 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveChatHistory(message, sender) {
-        try {
-            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            if (!chats[currentChatId]) {
-                chats[currentChatId] = {
-                    title: `Chat ${Object.keys(chats).length + 1}`,
-                    messages: [],
-                    timestamp: new Date().toISOString()
-                };
-            }
-            chats[currentChatId].messages.push({
-                text: message,
-                sender: sender,
-                time: new Date().toISOString()
-            });
-            localStorage.setItem('chatHistory', JSON.stringify(chats));
-            loadChatHistory();
-        } catch (error) {
-            console.error('Error saving chat history:', error);
-            displayMessage('চ্যাট হিস্টোরি সংরক্ষণে সমস্যা হয়েছে।', 'bot');
+        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        if (!chats[currentChatId]) {
+            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
         }
+        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+        localStorage.setItem('chatHistory', JSON.stringify(chats));
     }
 
     function loadChatHistory() {
-        if (!historyList || !sidebar || !chatContainer) {
-            console.error('HistoryList, sidebar, or chatContainer not found');
-            return;
-        }
         historyList.innerHTML = '';
-        try {
-            const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            if (Object.keys(chats).length === 0) {
-                sidebar.classList.remove('open');
-                chatContainer.classList.remove('sidebar-open');
-                return;
-            }
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        Object.keys(chats).forEach(chatId => {
+            const chat = chats[chatId];
+            const item = document.createElement('div');
+            item.classList.add('history-item');
+            item.setAttribute('data-chat-id', chatId);
+            item.innerHTML = `
+                <div class="history-item-content">
+                    <p>${sanitizeMessage(chat.title)}</p>
+                    <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
+                </div>
+                <div class="options">
+                    <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
+                </div>
+                <div class="dropdown" id="dropdown-${chatId}">
+                    <div class="dropdown-item rename-item-${chatId}">Rename</div>
+                    <div class="dropdown-item delete-item-${chatId}">Delete</div>
+                </div>
+            `;
+            historyList.appendChild(item);
 
-            Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
-                const chat = chats[chatId];
-                const item = document.createElement('div');
-                item.classList.add('history-item');
-                item.setAttribute('data-chat-id', chatId);
-                item.innerHTML = `
-                    <div class="history-item-content">
-                        <p>${sanitizeMessage(chat.title)}</p>
-                        <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
-                    </div>
-                    <div class="options">
-                        <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
-                    </div>
-                    <div class="dropdown" id="dropdown-${chatId}">
-                        <div class="dropdown-item rename-item-${chatId}">Rename</div>
-                        <div class="dropdown-item delete-item-${chatId}">Delete</div>
-                    </div>
-                `;
-                historyList.appendChild(item);
+            item.addEventListener('click', () => loadChat(chatId));
+            const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
+            const dropdown = item.querySelector(`#dropdown-${chatId}`);
+            const renameItem = item.querySelector(`.rename-item-${chatId}`);
+            const deleteItem = item.querySelector(`.delete-item-${chatId}`);
 
-                item.addEventListener('click', (e) => {
-                    if (!e.target.closest('.options, .dropdown')) {
-                        loadChat(chatId);
-                    }
-                });
-
-                const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
-                const dropdown = item.querySelector(`#dropdown-${chatId}`);
-                const renameItem = item.querySelector(`.rename-item-${chatId}`);
-                const deleteItem = item.querySelector(`.delete-item-${chatId}`);
-
-                if (optionIcon && dropdown && renameItem && deleteItem) {
-                    optionIcon.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        dropdown.classList.toggle('active');
-                    });
-
-                    renameItem.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (renameModal && renameInput) {
-                            renameModal.style.display = 'flex';
-                            renameInput.value = chat.title;
-                            currentChatId = chatId;
-                        }
-                    });
-
-                    deleteItem.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (deleteModal) {
-                            deleteModal.style.display = 'flex';
-                            currentChatId = chatId;
-                        }
-                    });
-                }
+            optionIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
             });
 
-            if (historyList.children.length > 0) {
-                sidebar.classList.add('open');
-                chatContainer.classList.add('sidebar-open');
-            } else {
-                sidebar.classList.remove('open');
-                chatContainer.classList.remove('sidebar-open');
-            }
-        } catch (error) {
-            console.error('Error loading chat history:', error);
-            displayMessage('চ্যাট হিস্টোরি লোড করতে সমস্যা হয়েছে।', 'bot');
+            renameItem.addEventListener('click', () => {
+                renameModal.style.display = 'flex';
+                renameInput.value = chat.title;
+                currentChatId = chatId;
+            });
+
+            deleteItem.addEventListener('click', () => {
+                deleteModal.style.display = 'flex';
+                currentChatId = chatId;
+            });
+        });
+        // Ensure history is visible on new tab load
+        if (historyList.children.length > 0) {
+            sidebar.classList.add('open');
+            chatContainer.classList.add('sidebar-open');
         }
     }
 
     function loadChat(chatId) {
-        if (!messagesDiv || !welcomeMessage || !sidebar || !chatContainer) {
-            console.error('Messages, welcomeMessage, sidebar, or chatContainer not found');
-            return;
-        }
-        try {
-            currentChatId = chatId;
-            sessionStorage.setItem('chatId', currentChatId);
-            const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            const chat = chats[chatId];
-            if (chat) {
-                messagesDiv.innerHTML = '';
-                chat.messages.forEach(msg => {
-                    if (msg.sender === 'user' || msg.sender === 'bot') {
-                        displayMessage(msg.text, msg.sender);
-                    }
-                });
-                welcomeMessage.style.display = 'none';
-                sidebar.classList.remove('open');
-                chatContainer.classList.remove('sidebar-open');
-            }
-        } catch (error) {
-            console.error('Error loading chat:', error);
-            displayMessage('চ্যাট লোড করতে সমস্যা হয়েছে।', 'bot');
+        currentChatId = chatId;
+        sessionStorage.setItem('chatId', currentChatId); // Update sessionStorage with selected chatId
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        const chat = chats[chatId];
+        if (chat) {
+            messagesDiv.innerHTML = '';
+            chat.messages.forEach(msg => {
+                displayMessage(msg.text, msg.sender);
+            });
+            welcomeMessage.style.display = 'none';
+            sidebar.classList.remove('open');
+            chatContainer.classList.remove('sidebar-open');
+            loadChatHistory(); // Refresh history list
         }
     }
 
-    // Event Listeners for Sidebar
-    if (historyIcon) historyIcon.addEventListener('click', toggleSidebar);
-    if (newChatIcon) newChatIcon.addEventListener('click', startNewChat);
-    if (closeSidebar) closeSidebar.addEventListener('click', toggleSidebar);
-    if (sidebarIcon) sidebarIcon.addEventListener('click', toggleSidebar);
-
-    // Rename and Delete Chat
-    if (renameCancelBtn) renameCancelBtn.addEventListener('click', () => {
-        if (renameModal) renameModal.style.display = 'none';
-    });
-
-    if (renameSaveBtn) renameSaveBtn.addEventListener('click', () => {
-        if (!renameInput || !renameModal) return;
-        try {
-            const newTitle = renameInput.value.trim();
-            if (newTitle) {
-                let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-                if (chats[currentChatId]) {
-                    chats[currentChatId].title = sanitizeMessage(newTitle);
-                    chats[currentChatId].timestamp = new Date().toISOString();
-                    localStorage.setItem('chatHistory', JSON.stringify(chats));
-                    loadChatHistory();
-                }
-            }
-            renameModal.style.display = 'none';
-        } catch (error) {
-            console.error('Error renaming chat:', error);
-            displayMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।', 'bot');
-        }
-    });
-
-    if (deleteCancelBtn) deleteCancelBtn.addEventListener('click', () => {
-        if (deleteModal) deleteModal.style.display = 'none';
-    });
-
-    if (deleteConfirmBtn) deleteConfirmBtn.addEventListener('click', () => {
-        if (!deleteModal || !messagesDiv || !welcomeMessage) return;
-        try {
+    renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
+    renameSaveBtn.addEventListener('click', () => {
+        const newTitle = renameInput.value.trim();
+        if (newTitle) {
             let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
             if (chats[currentChatId]) {
-                delete chats[currentChatId];
+                chats[currentChatId].title = sanitizeMessage(newTitle);
                 localStorage.setItem('chatHistory', JSON.stringify(chats));
                 loadChatHistory();
-                if (Object.keys(chats).length === 0) {
-                    startNewChat();
-                } else {
-                    messagesDiv.innerHTML = '';
-                    welcomeMessage.style.display = 'block';
-                }
             }
-            deleteModal.style.display = 'none';
-        } catch (error) {
-            console.error('Error deleting chat:', error);
-            displayMessage('চ্যাট মুছতে সমস্যা হয়েছে।', 'bot');
         }
+        renameModal.style.display = 'none';
+    });
+
+    deleteCancelBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+    deleteConfirmBtn.addEventListener('click', () => {
+        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        if (chats[currentChatId]) {
+            delete chats[currentChatId];
+            localStorage.setItem('chatHistory', JSON.stringify(chats));
+            loadChatHistory();
+            if (Object.keys(chats).length === 0) {
+                startNewChat();
+            } else {
+                messagesDiv.innerHTML = '';
+                welcomeMessage.style.display = 'block';
+            }
+        }
+        deleteModal.style.display = 'none';
     });
 
     // Genres Modal Functionality
     function renderGenresList() {
-        if (!genresList) return;
         genresList.innerHTML = '';
         genres.forEach(genre => {
             const genreItem = document.createElement('div');
@@ -1020,20 +917,16 @@ document.addEventListener('DOMContentLoaded', () => {
             genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
             genreItem.addEventListener('click', () => {
                 if (genre.message) {
-                    if (genresModal) {
-                        genresModal.classList.add('slide-out');
-                        setTimeout(() => {
-                            genresModal.style.display = 'none';
-                            genresModal.classList.remove('slide-out');
-                        }, 300);
-                    }
-                    if (welcomeMessage) {
-                        welcomeMessage.classList.add('fade-out');
-                        setTimeout(() => {
-                            welcomeMessage.style.display = 'none';
-                            welcomeMessage.classList.remove('fade-out');
-                        }, 300);
-                    }
+                    genresModal.classList.add('slide-out');
+                    setTimeout(() => {
+                        genresModal.style.display = 'none';
+                        genresModal.classList.remove('slide-out');
+                    }, 300);
+                    welcomeMessage.classList.add('fade-out');
+                    setTimeout(() => {
+                        welcomeMessage.style.display = 'none';
+                        welcomeMessage.classList.remove('fade-out');
+                    }, 300);
                     displayMessage(sanitizeMessage(genre.message), 'user');
                     saveChatHistory(sanitizeMessage(genre.message), 'user');
                     callRasaAPI(sanitizeMessage(genre.message));
@@ -1047,7 +940,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openGenresModal() {
-        if (!genresModal) return;
         renderGenresList();
         genresModal.classList.add('slide-in');
         genresModal.style.display = 'flex';
@@ -1055,7 +947,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeGenresModalFunc() {
-        if (!genresModal) return;
         genresModal.classList.add('slide-out');
         setTimeout(() => {
             genresModal.style.display = 'none';
@@ -1063,8 +954,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
-    if (moreOptionsBtn) moreOptionsBtn.addEventListener('click', openGenresModal);
-    if (closeGenresModal) closeGenresModal.addEventListener('click', closeGenresModalFunc);
+    moreOptionsBtn.addEventListener('click', openGenresModal);
+    closeGenresModal.addEventListener('click', closeGenresModalFunc);
 
     document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
         button.classList.add('ripple-btn');
@@ -1072,13 +963,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const genreName = button.getAttribute('data-genre');
             const genre = genres.find(g => g.name === genreName);
             if (genre && genre.message) {
-                if (welcomeMessage) {
-                    welcomeMessage.classList.add('fade-out');
-                    setTimeout(() => {
-                        welcomeMessage.style.display = 'none';
-                        welcomeMessage.classList.remove('fade-out');
-                    }, 300);
-                }
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
                 displayMessage(sanitizeMessage(genre.message), 'user');
                 saveChatHistory(sanitizeMessage(genre.message), 'user');
                 callRasaAPI(sanitizeMessage(genre.message));
@@ -1091,8 +980,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     loadChatHistory();
-    const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-    if (chats[currentChatId] && messagesDiv) {
-        loadChat(currentChatId);
-    }
 });
