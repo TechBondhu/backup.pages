@@ -176,49 +176,6 @@ const genres = [
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Genres Data (Added back as per previous context)
-    const genres = [
-        { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
-        { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
-        { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
-        { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
-        { name: 'টিআইএন (TIN) সার্টিফিকেট আবেদন', icon: 'fas fa-file-invoice', message: 'আমি টিআইএন সার্টিফিকেট আবেদন করতে চাই' },
-        { name: 'ভূমি নামজারি (Mutation) আবেদনপত্র', icon: 'fas fa-map-marked-alt', message: 'আমি ভূমি নামজারি আবেদন করতে চাই' },
-        { name: 'উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন', icon: 'fas fa-graduation-cap', message: 'আমি উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন করতে চাই' },
-        { name: 'জন্ম ও মৃত্যু নিবন্ধন', icon: 'fas fa-certificate', message: 'আমি জন্ম ও মৃত্যু নিবন্ধন করতে চাই' },
-        { name: 'ড্রাইভিং লাইসেন্স আবেদন', icon: 'fas fa-car', message: 'আমি ড্রাইভিং লাইসেন্স আবেদন করতে চাই' },
-        { name: 'নাগরিক সনদ (Citizen Certificate) আবেদন', icon: 'fas fa-user-check', message: 'আমি নাগরিক সনদ আবেদন করতে চাই' },
-        { name: 'চারিত্রিক সনদপত্র (Character Certificate) আবেদন', icon: 'fas fa-award', message: 'আমি চারিত্রিক সনদপত্র আবেদন করতে চাই' },
-        { name: 'ট্রেড লাইসেন্স', icon: 'fas fa-store', message: 'আমি ট্রেড লাইসেন্স আবেদন করতে চাই' },
-        { name: 'ভ্যাট রেজিস্ট্রেশন', icon: 'fas fa-calculator', message: 'আমি ভ্যাট রেজিস্ট্রেশন করতে চাই' },
-        { name: 'প্রপার্টি রেজিস্ট্রেশন', icon: 'fas fa-home', message: 'আমি প্রপার্টি রেজিস্ট্রেশন করতে চাই' },
-        { name: 'ব্যাংক অ্যাকাউন্ট খোলা', icon: 'fas fa-university', message: 'আমি ব্যাংক অ্যাকাউন্ট খুলতে চাই' },
-        { name: 'ঢাকা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি ঢাকা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'খুলনা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি খুলনা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'রাজশাহী বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি রাজশাহী বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'চট্টগ্রাম বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি চট্টগ্রাম বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'জাহাঙ্গীরনগর বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি জাহাঙ্গীরনগর বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'বাংলাদেশ কৃষি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি বাংলাদেশ কৃষি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'জগন্নাথ বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি জগন্নাথ বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'কুমিল্লা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি কুমিল্লা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'বরিশাল বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি বরিশাল বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'ইসলামী বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি ইসলামী বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-        { name: 'গ্যাস সংযোগ আবেদন', icon: 'fas fa-fire', message: 'আমি গ্যাস সংযোগ আবেদন করতে চাই' },
-        { name: 'বিদ্যুৎ সংযোগ আবেদন', icon: 'fas fa-bolt', message: 'আমি বিদ্যুৎ সংযোগ আবেদন করতে চাই' },
-        { name: 'পানি সংযোগ আবেদন', icon: 'fas fa-faucet', message: 'আমি পানি সংযোগ আবেদন করতে চাই' },
-        { name: 'জমির খতিয়ান সংশোধন', icon: 'fas fa-file-alt', message: 'আমি জমির খতিয়ান সংশোধন করতে চাই' },
-        { name: 'ভূমি উন্নয়ন কর পরিশোধ', icon: 'fas fa-money-bill', message: 'আমি ভূমি উন্নয়ন কর পরিশোধ করতে চাই' },
-        { name: 'ইমিগ্রেশন ক্লিয়ারেন্স', icon: 'fas fa-plane-departure', message: 'আমি ইমিগ্রেশন ক্লিয়ারেন্সের জন্য আবেদন করতে চাই' },
-        { name: 'ওয়ারিশ সনদ আবেদন', icon: 'fas fa-users', message: 'আমি ওয়ারিশ সনদ আবেদন করতে চাই' },
-        { name: 'পৌরসভা সেবা আবেদন', icon: 'fas fa-city', message: 'আমি পৌরসভা সেবা আবেদন করতে চাই' },
-        { name: 'বন্ধকী জমি মুক্তি', icon: 'fas fa-unlock', message: 'আমি বন্ধকী জমি মুক্তি করতে চাই' }
-    ];
-
     // Navigation Events
     homeIcon.addEventListener('click', () => window.location.href = 'index.html');
     settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
@@ -243,6 +200,29 @@ const genres = [
         messagesDiv.appendChild(typingDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
         return typingDiv;
+    }
+
+    // Utility: Get Message Preview
+    function getMessagePreview(messages) {
+        if (!messages || messages.length === 0) return 'No messages yet';
+        const lastMessage = messages[messages.length - 1];
+        const text = lastMessage.text;
+        if (text.startsWith('[Image')) return '[Image]';
+        return text.length > 30 ? sanitizeMessage(text.substring(0, 30)) + '...' : sanitizeMessage(text);
+    }
+
+    // Utility: Clean Up Invalid Chats in localStorage
+    function cleanChatHistory() {
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        const cleanedChats = {};
+        Object.keys(chats).forEach(chatId => {
+            const chat = chats[chatId];
+            if (chat && chat.title && chat.messages && chat.timestamp) {
+                cleanedChats[chatId] = chat;
+            }
+        });
+        localStorage.setItem('chatHistory', JSON.stringify(cleanedChats));
+        return cleanedChats;
     }
 
     // Utility: Progressive Message Loading
@@ -320,7 +300,7 @@ const genres = [
                     .then(data => {
                         if (data.image_url) {
                             callRasaAPI(data.image_url);
-                            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+                            saveChatHistory(`[Image: ${data.image_url}]`, 'user');
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
@@ -488,9 +468,26 @@ const genres = [
     function displayMessage(message, sender) {
         if (sender === 'bot') {
             displayProgressiveMessage(sanitizeMessage(message), sender);
-        } else {
+        } else if        if (sender === 'user' && message.startsWith('[Image')) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('user-message', 'slide-in');
+            const img = document.createElement('img');
+            img.src = message.match(/\[Image: (.+)\]/)?.[1] || '';
+            img.classList.add('image-preview');
+            img.addEventListener('click', () => openImageModal(img.src));
+            messageDiv.appendChild(img);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            if (welcomeMessage.style.display !== 'none') {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+            }
+        } else {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
             messageDiv.innerHTML = sanitizeMessage(message);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -501,7 +498,6 @@ const genres = [
                     welcomeMessage.classList.remove('fade-out');
                 }, 300);
             }
-            saveChatHistory(message, sender);
         }
     }
 
@@ -716,22 +712,6 @@ const genres = [
         }
     }
 
-    function displayLoading() {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.classList.add('loading', 'slide-in');
-        loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        messagesDiv.appendChild(loadingDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        return loadingDiv;
-    }
-
-    function removeLoading(loadingDiv) {
-        if (loadingDiv) {
-            loadingDiv.classList.add('slide-out');
-            setTimeout(() => loadingDiv.remove(), 300);
-        }
-    }
-
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
         const payload = { sender: currentChatId, message: message };
@@ -841,37 +821,29 @@ const genres = [
     function saveChatHistory(message, sender) {
         let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
         if (!chats[currentChatId]) {
-            chats[currentChatId] = {
-                title: `Chat ${Object.keys(chats).length + 1}`,
-                messages: [],
-                timestamp: new Date().toISOString()
-            };
+            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
         }
-        chats[currentChatId].messages.push({
-            text: message,
-            sender: sender,
-            time: new Date().toISOString()
-        });
+        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
         localStorage.setItem('chatHistory', JSON.stringify(chats));
-        loadChatHistory(); // Ensure UI updates after saving
+        loadChatHistory();
     }
 
     function loadChatHistory() {
-        historyList.innerHTML = ''; // Clear existing history
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        if (Object.keys(chats).length === 0) {
-            startNewChat();
-            return;
-        }
-
+        historyList.innerHTML = '';
+        const chats = cleanChatHistory(); // Clean up invalid entries
         Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
             const chat = chats[chatId];
+            if (!chat || !chat.title) {
+                console.warn(`Invalid chat entry for chatId: ${chatId}`, chat);
+                return; // Skip invalid chats
+            }
             const item = document.createElement('div');
             item.classList.add('history-item');
             item.setAttribute('data-chat-id', chatId);
             item.innerHTML = `
                 <div class="history-item-content">
                     <p>${sanitizeMessage(chat.title)}</p>
+                    <div class="preview">${getMessagePreview(chat.messages)}</div>
                     <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
                 </div>
                 <div class="options">
@@ -884,12 +856,7 @@ const genres = [
             `;
             historyList.appendChild(item);
 
-            item.addEventListener('click', (e) => {
-                if (!e.target.closest('.options') && !e.target.closest('.dropdown')) {
-                    loadChat(chatId);
-                }
-            });
-
+            item.addEventListener('click', () => loadChat(chatId));
             const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
             const dropdown = item.querySelector(`#dropdown-${chatId}`);
             const renameItem = item.querySelector(`.rename-item-${chatId}`);
@@ -900,20 +867,17 @@ const genres = [
                 dropdown.classList.toggle('active');
             });
 
-            renameItem.addEventListener('click', (e) => {
-                e.stopPropagation();
+            renameItem.addEventListener('click', () => {
                 renameModal.style.display = 'flex';
                 renameInput.value = chat.title;
                 currentChatId = chatId;
             });
 
-            deleteItem.addEventListener('click', (e) => {
-                e.stopPropagation();
+            deleteItem.addEventListener('click', () => {
                 deleteModal.style.display = 'flex';
                 currentChatId = chatId;
             });
         });
-
         if (historyList.children.length > 0) {
             sidebar.classList.add('open');
             chatContainer.classList.add('sidebar-open');
@@ -923,7 +887,7 @@ const genres = [
     function loadChat(chatId) {
         currentChatId = chatId;
         sessionStorage.setItem('chatId', currentChatId);
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        const chats = cleanChatHistory();
         const chat = chats[chatId];
         if (chat) {
             messagesDiv.innerHTML = '';
@@ -933,17 +897,77 @@ const genres = [
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } else {
+            console.warn(`Chat with ID ${chatId} not found after cleaning.`);
+            startNewChat(); // Start a new chat if the current one is invalid
         }
-        loadChatHistory();
+    }
+
+    function filterChats(query) {
+        historyList.innerHTML = '';
+        const chats = cleanChatHistory();
+        Object.keys(chats).sort((a, b) => new Date(chats[b].timestamp) - new Date(chats[a].timestamp)).forEach(chatId => {
+            const chat = chats[chatId];
+            if (!chat || !chat.title) {
+                console.warn(`Invalid chat entry for chatId: ${chatId}`, chat);
+                return;
+            }
+            const titleMatch = chat.title.toLowerCase().includes(query.toLowerCase());
+            const messageMatch = chat.messages.some(msg => msg.text.toLowerCase().includes(query.toLowerCase()));
+            if (titleMatch || messageMatch) {
+                const item = document.createElement('div');
+                item.classList.add('history-item');
+                item.setAttribute('data-chat-id', chatId);
+                item.innerHTML = `
+                    <div class="history-item-content">
+                        <p>${sanitizeMessage(chat.title)}</p>
+                        <div class="preview">${getMessagePreview(chat.messages)}</div>
+                        <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
+                    </div>
+                    <div class="options">
+                        <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
+                    </div>
+                    <div class="dropdown" id="dropdown-${chatId}">
+                        <div class="dropdown-item rename-item-${chatId}">Rename</div>
+                        <div class="dropdown-item delete-item-${chatId}">Delete</div>
+                    </div>
+                `;
+                historyList.appendChild(item);
+
+                item.addEventListener('click', () => loadChat(chatId));
+                const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
+                const dropdown = item.querySelector(`#dropdown-${chatId}`);
+                const renameItem = item.querySelector(`.rename-item-${chatId}`);
+                const deleteItem = item.querySelector(`.delete-item-${chatId}`);
+
+                optionIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+
+                renameItem.addEventListener('click', () => {
+                    renameModal.style.display = 'flex';
+                    renameInput.value = chat.title;
+                    currentChatId = chatId;
+                });
+
+                deleteItem.addEventListener('click', () => {
+                    deleteModal.style.display = 'flex';
+                    currentChatId = chatId;
+                });
+            }
+        });
     }
 
     renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
     renameSaveBtn.addEventListener('click', () => {
         const newTitle = renameInput.value.trim();
         if (newTitle) {
-            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+            let chats = cleanChatHistory();
             if (chats[currentChatId]) {
                 chats[currentChatId].title = sanitizeMessage(newTitle);
+                chats[currentChatId].timestamp = new Date().toISOString();
                 localStorage.setItem('chatHistory', JSON.stringify(chats));
                 loadChatHistory();
             }
@@ -953,7 +977,7 @@ const genres = [
 
     deleteCancelBtn.addEventListener('click', () => deleteModal.style.display = 'none');
     deleteConfirmBtn.addEventListener('click', () => {
-        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        let chats = cleanChatHistory();
         if (chats[currentChatId]) {
             delete chats[currentChatId];
             localStorage.setItem('chatHistory', JSON.stringify(chats));
@@ -966,6 +990,10 @@ const genres = [
             }
         }
         deleteModal.style.display = 'none';
+    });
+
+    searchInput.addEventListener('input', (e) => {
+        filterChats(e.target.value);
     });
 
     // Genres Modal Functionality
@@ -1039,5 +1067,6 @@ const genres = [
     });
 
     // Initialize
+    cleanChatHistory(); // Clean up on startup
     loadChatHistory();
 });
