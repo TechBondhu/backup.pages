@@ -100,7 +100,7 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
@@ -283,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
-        
                     });
                 clearPreview();
             }
@@ -906,76 +905,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         deleteModal.style.display = 'none';
-    });
-
-    // Genres Modal Functionality
-    function renderGenresList() {
-        genresList.innerHTML = '';
-        genres.forEach(genre => {
-            const genreItem = document.createElement('div');
-            genreItem.className = 'genre-item ripple-btn';
-            genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
-            genreItem.addEventListener('click', () => {
-                if (genre.message) {
-                    genresModal.classList.add('slide-out');
-                    setTimeout(() => {
-                        genresModal.style.display = 'none';
-                        genresModal.classList.remove('slide-out');
-                    }, 300);
-                    welcomeMessage.classList.add('fade-out');
-                    setTimeout(() => {
-                        welcomeMessage.style.display = 'none';
-                        welcomeMessage.classList.remove('fade-out');
-                    }, 300);
-                    displayMessage(sanitizeMessage(genre.message), 'user');
-                    saveChatHistory(sanitizeMessage(genre.message), 'user');
-                    callRasaAPI(sanitizeMessage(genre.message));
-                } else {
-                    console.error(`Message undefined for genre: ${genre.name}`);
-                    displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
-                }
-            });
-            genresList.appendChild(genreItem);
-        });
-    }
-
-    function openGenresModal() {
-        renderGenresList();
-        genresModal.classList.add('slide-in');
-        genresModal.style.display = 'flex';
-        setTimeout(() => genresModal.classList.remove('slide-in'), 300);
-    }
-
-    function closeGenresModalFunc() {
-        genresModal.classList.add('slide-out');
-        setTimeout(() => {
-            genresModal.style.display = 'none';
-            genresModal.classList.remove('slide-out');
-        }, 300);
-    }
-
-    moreOptionsBtn.addEventListener('click', openGenresModal);
-    closeGenresModal.addEventListener('click', closeGenresModalFunc);
-
-    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
-        button.classList.add('ripple-btn');
-        button.addEventListener('click', () => {
-            const genreName = button.getAttribute('data-genre');
-            const genre = genres.find(g => g.name === genreName);
-            if (genre && genre.message) {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-                displayMessage(sanitizeMessage(genre.message), 'user');
-                saveChatHistory(sanitizeMessage(genre.message), 'user');
-                callRasaAPI(sanitizeMessage(genre.message));
-            } else {
-                console.error(`Genre not found or message undefined for: ${genreName}`);
-                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
-            }
-        });
     });
 
     // Initialize
