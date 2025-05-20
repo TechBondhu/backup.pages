@@ -805,7 +805,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveChatHistory(message, sender) {
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     if (!chats[currentChatId]) {
-        // ইউজারের প্রথম মেসেজ থেকে প্রথম ৩০টি অক্ষর নিয়ে টাইটেল সেট করা
         const title = sender === 'user' ? (message.length > 30 ? message.substring(0, 30) + '...' : message) : `Chat ${Object.keys(chats).length + 1}`;
         chats[currentChatId] = { title: title, messages: [], timestamp: new Date().toISOString() };
     }
@@ -815,11 +814,17 @@ function saveChatHistory(message, sender) {
 
 function loadChatHistory() {
     historyList.innerHTML = '';
-    const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+    let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+    
+    // ডেটা স্যানিটাইজ করা: যদি chats অবজেক্ট না হয় বা ভুল ফরম্যাটে থাকে, তবে রিসেট করা
+    if (typeof chats !== 'object' || chats === null) {
+        chats = {};
+        localStorage.setItem('chatHistory', JSON.stringify(chats));
+    }
+
     Object.keys(chats).forEach(chatId => {
         const chat = chats[chatId];
-        // চেক করুন chat আছে কিনা এবং title আছে কিনা
-        if (chat && chat.title) {
+        if (chat && chat.title && chat.messages && chat.timestamp) {
             const item = document.createElement('div');
             item.classList.add('history-item');
             item.setAttribute('data-chat-id', chatId);
@@ -860,16 +865,20 @@ function loadChatHistory() {
                 currentChatId = chatId;
             });
         } else {
-            console.warn(`Chat with ID ${chatId} is missing or invalid. Skipping...`);
+            // ভুল ডেটা মুছে ফেলা
+            console.warn(`Chat with ID ${chatId} is missing or invalid. Removing...`);
+            delete chats[chatId];
+            localStorage.setItem('chatHistory', JSON.stringify(chats));
         }
     });
-    // Ensure history is visible on new tab load
+
     if (historyList.children.length > 0) {
         sidebar.classList.add('open');
         chatContainer.classList.add('sidebar-open');
+    } else {
+        startNewChat();
     }
 }
-
     function loadChat(chatId) {
         currentChatId = chatId;
         sessionStorage.setItem('chatId', currentChatId); // Update sessionStorage with selected chatId
