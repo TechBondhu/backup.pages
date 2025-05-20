@@ -802,14 +802,16 @@ document.addEventListener('DOMContentLoaded', () => {
         reviewCard.setAttribute('data-pdf-url', pdfUrl);
     }
 
-    function saveChatHistory(message, sender) {
-        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        if (!chats[currentChatId]) {
-            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
-        }
-        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
-        localStorage.setItem('chatHistory', JSON.stringify(chats));
+function saveChatHistory(message, sender) {
+    let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+    if (!chats[currentChatId]) {
+        // ইউজারের প্রথম মেসেজ থেকে প্রথম ৩০টি অক্ষর নিয়ে টাইটেল সেট করা
+        const title = sender === 'user' ? (message.length > 30 ? message.substring(0, 30) + '...' : message) : `Chat ${Object.keys(chats).length + 1}`;
+        chats[currentChatId] = { title: title, messages: [], timestamp: new Date().toISOString() };
     }
+    chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+    localStorage.setItem('chatHistory', JSON.stringify(chats));
+}
 
 function loadChatHistory() {
     historyList.innerHTML = '';
