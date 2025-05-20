@@ -39,7 +39,7 @@ const genres = [
     { name: 'পৌরসভা সেবা আবেদন', icon: 'fas fa-city', message: 'আমি পৌরসভা সেবা আবেদন করতে চাই' },
     { name: 'বন্ধকী জমি রেজিস্ট্রেশন', icon: 'fas fa-handshake', message: 'আমি বন্ধকী জমি রেজিস্ট্রেশন করতে চাই' },
     { name: 'বিবাহ নিবন্ধন আবেদন', icon: 'fas fa-ring', message: 'আমি বিবাহ নিবন্ধন করতে চাই' },
-    { name: 'তালাক নিবন্ধন আবেদন', icon: 'fas fa-heart-broken', message: 'আমি তালাক নিবন্ধন করতে চাই' },
+    { name: 'তালাক নি� Moderation: 'fas fa-heart-broken', message: 'আমি তালাক নিবন্ধন করতে চাই' },
     { name: 'জাতীয় পেনশন স্কিমে যোগদান', icon: 'fas fa-piggy-bank', message: 'আমি জাতীয় পেনশন স্কিমে যোগ দিতে চাই' },
     { name: 'পরিবেশ ছাড়পত্র আবেদন', icon: 'fas fa-leaf', message: 'আমি পরিবেশ ছাড়পত্র আবেদন করতে চাই' },
     { name: 'ফায়ার সেফটি সার্টিফিকেট', icon: 'fas fa-fire-extinguisher', message: 'আমি ফায়ার সেফটি সার্টিফিকেট আবেদন করতে চাই' },
@@ -75,7 +75,7 @@ const genres = [
     { name: 'কনস্ট্রাকশন চাকরি', icon: 'fas fa-tools', message: 'আমি কনস্ট্রাকশন চাকরির জন্য আবেদন করতে চাই' },
     { name: 'অটোমোবাইল চাকরি', icon: 'fas fa-car-side', message: 'আমি অটোমোবাইল চাকরির জন্য আবেদন করতে চাই' },
     { name: 'মার্কেটিং চাকরি', icon: 'fas fa-bullhorn', message: 'আমি মার্কেটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'একাউন্টস চাকরি', icon: 'fas fa-calculator', message: 'আমি একাউন্টস চাকরির জন্য আবেদন করতে চাই' },
+    { name: 'একাউন্টস চাকরি', icon: 'fas fa-calculator', message: 'আমি একাউন্টস চাকরির জন্য আব Lnksেদন করতে চাই' },
     { name: 'এইচআর চাকরি', icon: 'fas fa-users', message: 'আমি এইচআর চাকরির জন্য আবেদন করতে চাই' },
     { name: 'গ্রাফিক ডিজাইন চাকরি', icon: 'fas fa-paint-brush', message: 'আমি গ্রাফিক ডিজাইন চাকরির জন্য আবেদন করতে চাই' },
     { name: 'ফটোগ্রাফি চাকরি', icon: 'fas fa-camera', message: 'আমি ফটোগ্রাফি চাকরির জন্য আবেদন করতে চাই' },
@@ -283,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (data.error) {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
-        
                     });
                 clearPreview();
             }
@@ -425,12 +424,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sidebar and Chat History
     historyIcon.addEventListener('click', toggleSidebar);
     newChatIcon.addEventListener('click', startNewChat);
-    closeSidebar.addEventListener('click', toggleSidebar);
+    closeSidebar.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event propagation to parent elements
+        console.log('Close sidebar button clicked'); // Debug log
+        toggleSidebar();
+    });
     sidebarIcon.addEventListener('click', toggleSidebar);
 
     function toggleSidebar() {
-        sidebar.classList.toggle('open');
-        chatContainer.classList.toggle('sidebar-open');
+        console.log('Toggling sidebar'); // Debug log
+        const isOpen = sidebar.classList.contains('open');
+        if (isOpen) {
+            sidebar.classList.remove('open');
+            chatContainer.classList.remove('sidebar-open');
+            // Reset chat container styles to ensure UI returns to normal
+            chatContainer.style.marginLeft = '0';
+            chatContainer.style.width = '100vw';
+        } else {
+            sidebar.classList.add('open');
+            chatContainer.classList.add('sidebar-open');
+        }
         loadChatHistory();
     }
 
@@ -444,6 +457,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => chatBox.classList.remove('fade-in'), 500);
         saveChatHistory('New Chat Started', 'system');
         loadChatHistory();
+        // Ensure sidebar is closed when starting a new chat
+        sidebar.classList.remove('open');
+        chatContainer.classList.remove('sidebar-open');
+        chatContainer.style.marginLeft = '0';
+        chatContainer.style.width = '100vw';
     }
 
     function displayMessage(message, sender) {
@@ -873,6 +891,8 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
+            chatContainer.style.marginLeft = '0';
+            chatContainer.style.width = '100vw';
             loadChatHistory(); // Refresh history list
         }
     }
