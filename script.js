@@ -382,14 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
         tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
-        tempCtx.filter = `孔子অ্যাপ্লাই_বাটন_ক্লিক() {
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = cropRect.width;
-        tempCanvas.height = cropRect.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
-        tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
-        tempCtx.filter = `brightness(${100 + (Number(brightnessValue) || 0)}%) contrast(${100 + (Number(contrastValue) || 0)}%)`;
+        tempCtx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
         tempCtx.drawImage(image, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, cropRect.width, cropRect.height);
 
         editedImage = tempCanvas.toDataURL('image/jpeg');
