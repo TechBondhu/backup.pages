@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Utility: Progressive Message Loading
     function displayProgressiveMessage(message, sender) {
         const messageDiv = document.createElement('div');
-        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', slide-in');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
