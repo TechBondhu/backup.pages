@@ -811,11 +811,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('chatHistory', JSON.stringify(chats));
     }
 
-    function loadChatHistory() {
-        historyList.innerHTML = '';
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        Object.keys(chats).forEach(chatId => {
-            const chat = chats[chatId];
+function loadChatHistory() {
+    historyList.innerHTML = '';
+    const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+    Object.keys(chats).forEach(chatId => {
+        const chat = chats[chatId];
+        // চেক করুন chat আছে কিনা এবং title আছে কিনা
+        if (chat && chat.title) {
             const item = document.createElement('div');
             item.classList.add('history-item');
             item.setAttribute('data-chat-id', chatId);
@@ -855,13 +857,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteModal.style.display = 'flex';
                 currentChatId = chatId;
             });
-        });
-        // Ensure history is visible on new tab load
-        if (historyList.children.length > 0) {
-            sidebar.classList.add('open');
-            chatContainer.classList.add('sidebar-open');
+        } else {
+            console.warn(`Chat with ID ${chatId} is missing or invalid. Skipping...`);
         }
+    });
+    // Ensure history is visible on new tab load
+    if (historyList.children.length > 0) {
+        sidebar.classList.add('open');
+        chatContainer.classList.add('sidebar-open');
     }
+}
 
     function loadChat(chatId) {
         currentChatId = chatId;
