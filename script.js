@@ -99,8 +99,7 @@ const genres = [
     { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
-
- document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
@@ -206,7 +205,7 @@ const genres = [
     // Utility: Progressive Message Loading
     function displayProgressiveMessage(message, sender) {
         const messageDiv = document.createElement('div');
-        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', slide-in');
         messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
@@ -383,6 +382,13 @@ const genres = [
         const tempCtx = tempCanvas.getContext('2d');
         tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
         tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
+        tempCtx.filter = `孔子অ্যাপ্লাই_বাটন_ক্লিক() {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = cropRect.width;
+        tempCanvas.height = cropRect.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
+        tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
         tempCtx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
         tempCtx.drawImage(image, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, cropRect.width, cropRect.height);
 
@@ -424,13 +430,18 @@ const genres = [
     // Sidebar and Chat History
     historyIcon.addEventListener('click', toggleSidebar);
     newChatIcon.addEventListener('click', startNewChat);
-    closeSidebar.addEventListener('click', toggleSidebar);
+    closeSidebar.addEventListener('click', hideSidebar); // Updated to use hideSidebar
     sidebarIcon.addEventListener('click', toggleSidebar);
 
     function toggleSidebar() {
         sidebar.classList.toggle('open');
         chatContainer.classList.toggle('sidebar-open');
         loadChatHistory();
+    }
+
+    function hideSidebar() {
+        sidebar.classList.remove('open'); // Ensure sidebar is hidden
+        chatContainer.classList.remove('sidebar-open'); // Ensure chat container adjusts
     }
 
     function startNewChat() {
@@ -555,7 +566,7 @@ const genres = [
                         type: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            sender: currentChatId, // Use chatId as sender
+                            sender: currentChatId,
                             message: 'confirm_review',
                             metadata: { review_data: updatedData }
                         }),
@@ -694,7 +705,7 @@ const genres = [
 
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
-        const payload = { sender: currentChatId, message: message }; // Use currentChatId as sender
+        const payload = { sender: currentChatId, message: message };
         if (Object.keys(metadata).length > 0) {
             payload.metadata = metadata;
         }
@@ -737,7 +748,7 @@ const genres = [
                     console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                 }
             });
-        }, 500); // 500ms delay for professional feel
+        }, 500);
     }
 
     function generatePDF(reviewData, reviewCard) {
@@ -872,7 +883,7 @@ const genres = [
             welcomeMessage.style.display = 'none';
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
-            loadChatHistory(); // Refresh history list
+            loadChatHistory();
         }
     }
 
@@ -905,6 +916,76 @@ const genres = [
             }
         }
         deleteModal.style.display = 'none';
+    });
+
+    // Genres Modal Functionality
+    function renderGenresList() {
+        genresList.innerHTML = '';
+        genres.forEach(genre => {
+            const genreItem = document.createElement('div');
+            genreItem.className = 'genre-item ripple-btn';
+            genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
+            genreItem.addEventListener('click', () => {
+                if (genre.message) {
+                    genresModal.classList.add('slide-out');
+                    setTimeout(() => {
+                        genresModal.style.display = 'none';
+                        genresModal.classList.remove('slide-out');
+                    }, 300);
+                    welcomeMessage.classList.add('fade-out');
+                    setTimeout(() => {
+                        welcomeMessage.style.display = 'none';
+                        welcomeMessage.classList.remove('fade-out');
+                    }, 300);
+                    displayMessage(sanitizeMessage(genre.message), 'user');
+                    saveChatHistory(sanitizeMessage(genre.message), 'user');
+                    callRasaAPI(sanitizeMessage(genre.message));
+                } else {
+                    console.error(`Message undefined for genre: ${genre.name}`);
+                    displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+                }
+            });
+            genresList.appendChild(genreItem);
+        });
+    }
+
+    function openGenresModal() {
+        renderGenresList();
+        genresModal.classList.add('slide-in');
+        genresModal.style.display = 'flex';
+        setTimeout(() => genresModal.classList.remove('slide-in'), 300);
+    }
+
+    function closeGenresModalFunc() {
+        genresModal.classList.add('slide-out');
+        setTimeout(() => {
+            genresModal.style.display = 'none';
+            genresModal.classList.remove('slide-out');
+        }, 300);
+    }
+
+    moreOptionsBtn.addEventListener('click', openGenresModal);
+    closeGenresModal.addEventListener('click', closeGenresModalFunc);
+
+    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+        button.classList.add('ripple-btn');
+        button.addEventListener('click', () => {
+            const genreName = button.getAttribute('data-genre');
+            const genre = genres.find(g => g.name === genreName);
+            if (genre && genre.message) {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+                displayMessage(sanitizeMessage(genre.message), 'user');
+                saveChatHistory(sanitizeMessage(genre.message), 'user');
+                callRasaAPI(sanitizeMessage(genre.message));
+            } else {
+                console.error(`Genre not found or message undefined for: ${genreName}`);
+                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+            }
+        });
     });
 
     // Initialize
