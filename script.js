@@ -327,10 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
                         }
                     })
-                    .catch(error => {
-                        displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে।', 'bot');
-                        console.error('Image Upload Error:', error);
-                    });
                 clearPreview();
             }
         }
