@@ -35,7 +35,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .dropdown.active{display:block;}
 .dropdown-item{padding:8px 15px;color:#fff;font-size:14px;cursor:pointer;transition:background 0.3s ease;}
 .dropdown-item:hover{background:#3B82F6;}
-.chat-box{flex-grow:1;padding:20px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;height:100%;background: #fff;position:relative;transition:opacity 0.3s ease;}
+.chat-box{flex-grow:1;padding:20px 30px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;height:100%;background: #fff;position:relative;transition:opacity 0.3s ease;}
 .chat-box.fade-in{animation:fadeIn 0.5s ease-in-out;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 .welcome-message{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:2;width:100%;padding:20px;animation:slideUp 0.5s ease-in-out;}
@@ -97,16 +97,16 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .edit-input{padding:5px;border:1px solid #ccc;border-radius:5px;font-size:14px;width:70%;margin-left:5px;}
 .image-preview{max-width:200px;height:auto;border-radius:10px;margin-top:5px;box-shadow:0 2px 5px rgba(0,0,0,0.1);cursor:pointer;}
 .input-area{display:flex;flex-direction:column;align-items:center;padding:15px;background:transparent;position:relative;z-index:2;width:100%;margin-top:auto;gap:10px;}
-.input-wrapper{position:relative;display:flex;flex-direction:column;width:100%;background:#fff;border:1px solid #ccc;border-radius:25px;padding:10px 15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-#userInput{flex-grow:1;padding:10px 15px;font-size:18px;border:none;border-radius:20px;outline:none;background:transparent;font-family:'Tiro Bangla',serif;font-weight:700;resize:none;overflow-y:auto;max-height:100px;width:100%;box-sizing:border-box;line-height:1.5;}
+.input-wrapper{position:relative;display:flex;flex-direction:column;width:100%;background:#fff;border:1px solid #ccc;border-radius:25px;padding:10px 15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);gap:10px;}
+#userInput{flex-grow:1;padding:10px 15px;font-size:18px;border:none;border-radius:20px;outline:none;background:transparent;font-family:'Tiro Bangla',serif;font-weight:700;resize:none;overflow-y:auto;max-height:100px;width:100%;box-sizing:border-box;line-height:1.5;padding-bottom:40px;}
 #userInput:focus{border:none;}
-#sendBtn,#uploadBtn{position:static;border:none;cursor:pointer;display:flex;justify-content:center;align-items:center;transition:background 0.3s ease,transform 0.2s ease;}
+#sendBtn,#uploadBtn{position:static;border:none;cursor:pointer;display:flex;justify-content:center;align-items:center;transition:background 0.3s ease,transform 0.2s ease;align-self:flex-end;}
 #sendBtn{width:40px;height:40px;border-radius:50%;background:#1E3A8A;color:#fff;font-size:18px;}
 #sendBtn:hover{background:#3B82F6;transform:scale(1.1);}
-#uploadBtn{width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,#4B5EAA,#6B7280);color:#fff;font-size:16px;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+#uploadBtn{width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,#4B5EAA,#6B7280);color:#fff;font-size:16px;box-shadow:0 4px 10px rgba(0,0,0,0.2);margin-right:10px;}
 #uploadBtn i{font-size:16px;}
 #uploadBtn:hover{background:linear-gradient(135deg,#6B7280,#4B5EAA);transform:scale(1.1);box-shadow:0 6px 15px rgba(0,0,0,0.3);}
-.button-container{display:flex;gap:10px;margin-top:10px;}
+.button-container{display:flex;gap:10px;justify-content:flex-end;}
 .preview-container{position:absolute;left:15px;top:10px;transform:none;display:none;align-items:center;gap:5px;}
 .preview-image{width:40px;height:40px;object-fit:cover;border-radius:8px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);}
 .edit-btn{padding:5px 10px;border:none;border-radius:5px;background:#3B82F6;color:#fff;font-size:12px;cursor:pointer;transition:background 0.3s ease;}
@@ -194,7 +194,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .options i{font-size:16px;}
 .dropdown{top:35px;}
 .dropdown-item{padding:6px 12px;font-size:12px;}
-.chat-box{padding:15px;gap:15px;}
+.chat-box{padding:15px 20px;gap:15px;}
 .welcome-message h2{font-size:24px;margin-bottom:15px;}
 .welcome-buttons button{padding:8px 16px;font-size:12px;}
 .welcome-buttons button i{margin-right:3px;}
@@ -205,13 +205,13 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .review-item img{max-height:200px;}
 .image-preview{max-width:150px;}
 .input-area{padding:10px;gap:8px;}
-.input-wrapper{padding:8px 12px;}
-#userInput{padding:8px 12px;font-size:16px;max-height:80px;}
+.input-wrapper{padding:8px 12px;gap:8px;}
+#userInput{padding:8px 12px;font-size:16px;max-height:80px;padding-bottom:35px;}
 #sendBtn{width:35px;height:35px;font-size:16px;}
-#uploadBtn{width:30px;height:30px;font-size:14px;}
+#uploadBtn{width:30px;height:30px;font-size:14px;margin-right:8px;}
 #uploadBtn i{font-size:14px;}
 .preview-image{width:30px;height:30px;}
-.button-container{gap:8px;margin-top:8px;}
+.button-container{gap:8px;}
 .image-review-content{padding:15px;}
 .review-image{max-width:400px;max-height:400px;}
 .edit-modal-content{flex-direction:column;width:80%;max-width:600px;}
@@ -249,7 +249,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .options i{font-size:14px;}
 .dropdown{top:30px;}
 .dropdown-item{padding:5px 10px;font-size:10px;}
-.chat-box{padding:10px;gap:10px;}
+.chat-box{padding:10px 15px;gap:10px;}
 .welcome-message{padding:15px;}
 .welcome-message h2{font-size:20px;margin-bottom:10px;}
 .welcome-buttons{gap:8px;}
@@ -262,13 +262,13 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .review-item img{max-height:150px;}
 .image-preview{max-width:120px;}
 .input-area{padding:8px;gap:6px;}
-.input-wrapper{padding:6px 10px;}
-#userInput{padding:6px 10px;font-size:14px;max-height:60px;}
+.input-wrapper{padding:6px 10px;gap:6px;}
+#userInput{padding:6px 10px;font-size:14px;max-height:60px;padding-bottom:30px;}
 #sendBtn{width:30px;height:30px;font-size:14px;}
-#uploadBtn{width:28px;height:28px;font-size:12px;}
+#uploadBtn{width:28px;height:28px;font-size:12px;margin-right:6px;}
 #uploadBtn i{font-size:12px;}
 .preview-image{width:25px;height:25px;}
-.button-container{gap:6px;margin-top:6px;}
+.button-container{gap:6px;}
 .image-review-content{padding:10px;}
 .review-image{max-width:300px;max-height:300px;}
 .edit-modal-content{width:90%;max-width:400px;padding:15px;}
