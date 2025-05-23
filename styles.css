@@ -14,9 +14,8 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .sidebar-icon{font-size:24px;cursor:pointer;}
 .close-sidebar {font-size: 24px; cursor: pointer; color: #fff; transition: color 0.3s ease, transform 0.2s ease;}
 .close-sidebar:hover {color: #3B82F6; transform: scale(1.1);}
-.search-input{width:100%;padding:10px;font-size:16px;border:none;border-radius:20px;outline:none;background:rgba(255,255,255,0.1);color:#fff;transition:background 0.3s ease;}
+.search-input{width:100%;istit:focus{background:rgba(255,255,255,0.2);}
 .search-input::placeholder{color:rgba(255,255,255,0.6);}
-.search-input:focus{background:rgba(255,255,255,0.2);}
 .history-list{flex-grow:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:10px;padding:10px 10px 0 0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.3) rgba(255,255,255,0.1);}
 .history-list::-webkit-scrollbar{width:8px;}
 .history-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.1);}
@@ -97,9 +96,9 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .edit-input{padding:5px;border:1px solid #ccc;border-radius:5px;font-size:14px;width:70%;margin-left:5px;}
 .image-preview{max-width:200px;height:auto;border-radius:10px;margin-top:5px;box-shadow:0 2px 5px rgba(0,0,0,0.1);cursor:pointer;}
 .input-area{display:flex;flex-direction:column;align-items:center;padding:15px;background:transparent;position:relative;z-index:2;width:100%;margin-top:auto;gap:10px;}
-.input-wrapper{position:relative;display:flex;flex-direction:row;align-items:center;width:80%;max-width:800px;background:#fff;border:1px solid #ccc;border-radius:25px;padding:10px 15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);gap:10px;}
-#userInput{flex-grow:1;padding:8px 12px;font-size:16px;border:none;border-radius:20px;outline:none;background:transparent;font-family:'Tiro Bangla',serif;font-weight:700;resize:none;overflow-y:auto;max-height:60px;width:100%;box-sizing:border-box;line-height:1.5;}
-#userInput:focus{border:none;}
+.input-wrapper{position:relative;display:flex;flex-direction:row;align-items:center;width:80%;max-width:800px;background:#fff;border:1px solid #d1d5db;border-radius:25px;padding:10px 15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);gap:10px;transition:height 0.3s ease;}
+#userInput{flex-grow:1;padding:10px 12px;font-size:16px;border:none;border-radius:20px;outline:none;background:transparent;font-family:'Tiro Bangla',serif;font-weight:700;resize:none;overflow-y:auto;min-height:60px;max-height:120px;width:100%;box-sizing:border-box;line-height:1.6;transition:height 0.3s ease;}
+#userInput:focus{border:none;box-shadow:0 0 0 2px rgba(59, 130, 246, 0.3);outline:none;}
 #sendBtn,#uploadBtn{border:none;cursor:pointer;display:flex;justify-content:center;align-items:center;transition:background 0.3s ease,transform 0.2s ease;}
 #sendBtn{width:35px;height:35px;border-radius:50%;background:#1E3A8A;color:#fff;font-size:16px;}
 #sendBtn:hover{background:#3B82F6;transform:scale(1.1);}
@@ -206,7 +205,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .image-preview{max-width:150px;}
 .input-area{padding:10px;gap:8px;}
 .input-wrapper{padding:8px 12px;gap:8px;flex-direction:column;width:100%;max-width:none;}
-#userInput{padding:8px 12px;font-size:16px;max-height:80px;padding-bottom:35px;}
+#userInput{padding:8px 12px;font-size:16px;min-height:60px;max-height:100px;padding-bottom:35px;}
 #sendBtn{width:35px;height:35px;font-size:16px;}
 #uploadBtn{width:30px;height:30px;font-size:14px;margin-right:8px;margin-left:0;background:linear-gradient(135deg,#4B5EAA,#6B7280);color:#fff;}
 #uploadBtn i{font-size:14px;}
@@ -264,7 +263,7 @@ body{font-family:'Tiro Bangla','Segoe UI',sans-serif;background:#E5E7EB;color:#3
 .image-preview{max-width:120px;}
 .input-area{padding:8px;gap:6px;}
 .input-wrapper{padding:6px 10px;gap:6px;}
-#userInput{padding:6px 10px;font-size:14px;max-height:60px;padding-bottom:30px;}
+#userInput{padding:6px 10px;font-size:14px;min-height:60px;max-height:80px;padding-bottom:30px;}
 #sendBtn{width:30px;height:30px;font-size:14px;}
 #uploadBtn{width:28px;height:28px;font-size:12px;margin-right:6px;background:linear-gradient(135deg,#4B5EAA,#6B7280);color:#fff;}
 #uploadBtn i{font-size:12px;}
