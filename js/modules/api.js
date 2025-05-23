@@ -1,3 +1,5 @@
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 import { sanitizeMessage } from './utilities.js';
 import { displayMessage, showTypingIndicator } from './messaging.js';
 import { displayReview } from './review.js';
@@ -5,18 +7,23 @@ import { displayReview } from './review.js';
 let db = null;
 
 export function initializeFirebase() {
-    const firebaseConfig = {
-        apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
-        authDomain: "formbondhu-5c7b6.firebaseapp.com",
-        projectId: "formbondhu-5c7b6",
-        storageBucket: "formbondhu-5c7b6.appspot.com",
-        messagingSenderId: "399864215487",
-        appId: "1:399864215487:web:c2eb9e3601f69fadfaa5c5",
-        measurementId: "G-GF7N7W4L4P"
-    };
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    return db;
+    try {
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
+            authDomain: "formbondhu-5c7b6.firebaseapp.com",
+            projectId: "formbondhu-5c7b6",
+            storageBucket: "formbondhu-5c7b6.appspot.com",
+            messagingSenderId: "399864215487",
+            appId: "1:399864215487:web:c2eb9e3601f69fadfaa5c5",
+            measurementId: "G-GF7N7W4L4P"
+        };
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        return db;
+    } catch (error) {
+        console.error('Firebase initialization failed:', error);
+        throw error;
+    }
 }
 
 export function getDb() {
