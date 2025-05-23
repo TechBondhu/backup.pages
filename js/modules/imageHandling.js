@@ -1,7 +1,7 @@
-// js/modules/imageHandling.js
 import { callRasaAPI } from './api.js';
 import { displayMessage } from './messaging.js';
 import { sanitizeMessage } from './utilities.js';
+import { saveChatHistory } from './chatHistory.js';
 
 export function setupImageHandlers() {
     const uploadBtn = document.getElementById('uploadBtn');
@@ -236,49 +236,48 @@ export function setupImageHandlers() {
             userInput.style.paddingLeft = '15px';
         }
     }
+}
 
-    // ইমেজ মেসেজে যোগ করা
-    export function handleImageMessage() {
-        if (selectedFile) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('user-message', 'slide-in');
-            const img = document.createElement('img');
-            img.src = previewImage?.src || '';
-            img.classList.add('image-preview');
-            img.addEventListener('click', () => openImageModal(img.src));
-            messageDiv.appendChild(img);
-            if (messagesDiv) {
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-            }
-
-            const formData = new FormData();
-            formData.append('image', selectedFile);
-            fetch('http://localhost:5000/upload-image', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.image_url) {
-                        callRasaAPI(data.image_url);
-                        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-                    } else if (data.error) {
-                        displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
-                    }
-                })
-                .catch(error => {
-                    displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে।', 'bot');
-                    console.error('Image Upload Error:', error);
-                });
-            clearPreview();
+export function handleImageMessage() {
+    if (selectedFile) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('user-message', 'slide-in');
+        const img = document.createElement('img');
+        img.src = previewImage?.src || '';
+        img.classList.add('image-preview');
+        img.addEventListener('click', () => openImageModal(img.src));
+        messageDiv.appendChild(img);
+        if (messagesDiv) {
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
+        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+            welcomeMessage.classList.add('fade-out');
+            setTimeout(() => {
+                welcomeMessage.style.display = 'none';
+                welcomeMessage.classList.remove('fade-out');
+            }, 300);
+        }
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        fetch('http://localhost:5000/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    callRasaAPI(data.image_url);
+                    saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+                } else if (data.error) {
+                    displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
+                }
+            })
+            .catch(error => {
+                displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে।', 'bot');
+                console.error('Image Upload Error:', error);
+            });
+        clearPreview();
     }
 }
