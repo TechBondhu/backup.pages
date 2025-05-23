@@ -1,14 +1,13 @@
-// js/modules/utilities.js
 export function sanitizeMessage(message) {
     if (typeof message !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, ''')
-        .replace(/&/g, '&');
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/&/g, '&amp;');
 }
 
 export function displayLoading() {
