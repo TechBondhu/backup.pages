@@ -100,7 +100,6 @@ body {
 /* Table Container */
 .table-container {
     background-color: #ffffff;
-    border-radius: 8px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -124,7 +123,7 @@ body {
 #statusFilter {
     padding: 6px 8px 6px 28px;
     border: 1px solid #1E3A8A;
-    border-radius: 15px;
+    border-radius: 0; /* Rectangular shape */
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem; /* Original size maintained */
     background-color: #ffffff; /* Solid white background */
@@ -144,14 +143,20 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
+    border: 1px solid #E5E7EB;
 }
 
 th, td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #E5E7EB;
+    border-right: 1px solid #E5E7EB;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem; /* Original size maintained */
+}
+
+th:last-child, td:last-child {
+    border-right: none;
 }
 
 th {
@@ -168,7 +173,7 @@ tr:hover {
     color: #ffffff;
     border: none;
     padding: 6px 10px;
-    border-radius: 5px;
+    border-radius: 0; /* Rectangular shape */
     cursor: pointer;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.8rem; /* Original size maintained */
@@ -210,21 +215,18 @@ tr:hover {
         max-width: 150px;
     }
     table {
-        display: flex;
-        flex-direction: column;
+        display: block;
+        width: 100%;
     }
     thead {
         display: none;
     }
     tbody {
-        display: flex;
-        flex-direction: column;
+        display: block;
     }
     tr {
-        display: flex;
-        flex-direction: column;
+        display: block;
         border: 1px solid #E5E7EB;
-        border-radius: 5px;
         margin-bottom: 8px;
         background-color: #ffffff;
         padding: 5px;
@@ -235,6 +237,7 @@ tr:hover {
         align-items: center;
         padding: 6px;
         border-bottom: none;
+        border-right: none;
         font-size: 0.85rem; /* Slightly smaller for mobile */
     }
     td:before {
