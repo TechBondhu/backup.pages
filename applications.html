@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আবেদন তালিকা</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="applications.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>নেভিগেশন</h3>
+                <span class="sidebar-close"><i class="fas fa-times"></i></span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-gauge-high"></i> ড্যাশবোর্ড</a></li>
+                <li class="active"><a href="applications.html"><i class="fas fa-list"></i> আবেদন তালিকা</a></li>
+                <li><a href="notifications.html"><i class="fas fa-bell"></i> নোটিফিকেশন</a></li>
+                <li><a href="help.html"><i class="fas fa-question-circle"></i> সহায়তা</a></li>
+                <li><a href="payment.html"><i class="fas fa-credit-card"></i> পেমেন্ট ইতিহাস</a></li>
+                <li><a href="status.html"><i class="fas fa-tasks"></i> স্ট্যাটাস ট্র্যাকার</a></li>
+                <li><a href="datareview.html"><i class="fas fa-file-alt"></i> ডেটা পর্যালোচনা</a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i> ইউজার অ্যানালিটিক্স</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <span class="sidebar-toggle"><i class="fas fa-bars"></i></span>
+                <h2>আবেদন তালিকা</h2>
+                <div class="header-right">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="header-actions">
+                    <input type="text" id="searchBar" placeholder="আবেদন আইডি বা ধরন দিয়ে সার্চ করুন..." aria-label="আবেদন সার্চ">
+                    <select id="statusFilter" aria-label="স্ট্যাটাস ফিল্টার">
+                        <option value="all">সব</option>
+                        <option value="pending">পেন্ডিং</option>
+                        <option value="completed">কমপ্লিটেড</option>
+                        <option value="rejected">রিজেক্টেড</option>
+                    </select>
+                </div>
+
+                <!-- Application Table -->
+                <div class="table-container">
+                    <table id="applicationTable">
+                        <thead>
+                            <tr>
+                                <th>আবেদন আইডি</th>
+                                <th>ধরন</th>
+                                <th>জমার তারিখ</th>
+                                <th>স্ট্যাটাস</th>
+                                <th>অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                    <div id="loading" class="loading">লোড হচ্ছে...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebarClose = document.querySelector('.sidebar-close');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
