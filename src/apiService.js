@@ -59,7 +59,18 @@ export function uploadImage(selectedFile, messagesDiv, welcomeMessage, currentCh
     const img = document.createElement('img');
     img.src = previewImage.src;
     img.classList.add('image-preview');
-    img.addEventListener('click', () => openImageModal(document.getElementById('reviewImage'), document.getElementById('imageReviewModal'), img.src));
+    img.addEventListener('click', () => {
+        const reviewImage = document.getElementById('reviewImage');
+        const imageReviewModal = document.getElementById('imageReviewModal');
+        if (reviewImage && imageReviewModal) {
+            reviewImage.src = img.src;
+            imageReviewModal.style.display = 'flex';
+            imageReviewModal.classList.add('slide-in');
+            setTimeout(() => imageReviewModal.classList.remove('slide-in'), 300);
+        } else {
+            console.error('Image review modal or review image element not found');
+        }
+    });
     messageDiv.appendChild(img);
     messagesDiv.appendChild(messageDiv);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
