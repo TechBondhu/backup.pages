@@ -1,17 +1,18 @@
 body {
     margin: 0;
     font-family: 'Roboto', 'Noto Serif Bengali', sans-serif;
-    background-color: #E5E7EB; /* Light gray background as per brand */
+    background-color: #E5E7EB; /* Light gray background */
 }
 
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    position: relative;
 }
 
 .sidebar {
     width: 250px;
-    background-color: #1E3A8A; /* Primary blue from brand */
+    background-color: #1E3A8A; /* Primary blue */
     color: #ffffff; /* White text */
     transition: transform 0.3s ease-in-out;
     transform: translateX(-100%);
@@ -25,13 +26,30 @@ body {
     transform: translateX(0);
 }
 
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f3f4f6; /* Light gray for main content */
+    transition: margin-left 0.3s ease-in-out;
+}
+
+.sidebar.active ~ .main-content {
+    margin-left: 250px;
+}
+
+@media (max-width: 768px) {
+    .sidebar.active ~ .main-content {
+        margin-left: 0;
+    }
+}
+
 .sidebar-header {
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #1E3A8A; /* Same primary blue for consistency */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle divider */
+    background-color: #1E3A8A; /* Primary blue */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-header h3 {
@@ -51,7 +69,7 @@ body {
 }
 
 .sidebar-menu li a {
-    color: #ffffff; /* White text */
+    color: #ffffff;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -70,18 +88,12 @@ body {
     cursor: pointer;
 }
 
-.main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #f3f4f6; /* Light gray for main content area */
-}
-
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #1E3A8A; /* Primary blue for header */
-    color: #ffffff; /* White text */
+    color: #ffffff;
     padding: 15px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -95,7 +107,7 @@ body {
 .header-right i {
     font-size: 1.5rem;
     cursor: pointer;
-    color: #ffffff; /* White icon */
+    color: #ffffff;
 }
 
 .header-right i:hover {
@@ -119,12 +131,12 @@ body {
 }
 
 .card {
-    background-color: #ffffff; /* White card background */
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     text-align: center;
     text-decoration: none;
-    color: #333; /* Dark text for contrast */
+    color: #333;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -144,12 +156,12 @@ body {
     margin: 10px 0;
     font-family: 'Noto Serif Bengali', sans-serif;
     font-weight: 500;
-    color: #1E3A8A; /* Primary blue for card headings */
+    color: #1E3A8A;
 }
 
 .card p {
     margin: 0;
-    color: #6B7280; /* Gray for description text */
+    color: #6B7280;
     font-family: 'Roboto', sans-serif;
 }
 
