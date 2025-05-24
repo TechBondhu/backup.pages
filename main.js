@@ -540,6 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatedData[key] = value;
                 });
 
+                // Save to Firebase
                 await db.collection('submissions').add({
                     review_data: updatedData,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -554,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 editBtn.style.display = 'none';
                 confirmBtn.style.display = 'none';
 
+                // Create Download Button
                 buttonContainer.innerHTML = '';
                 const downloadBtn = document.createElement('button');
                 downloadBtn.className = 'download-btn ripple-btn';
