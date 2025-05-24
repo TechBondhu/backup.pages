@@ -24,7 +24,12 @@ export function callRasaAPI(message, metadata = {}, currentChatId, messagesDiv, 
                             displayMessage(response.text, 'bot', messagesDiv, welcomeMessage, saveChatHistory, currentChatId);
                         }
                         if (response.custom && response.custom.review_data) {
-                            displayReview(response.custom.review_data, messagesDiv, welcomeMessage, currentChatId);
+                            if (typeof displayReview === 'function') {
+                                displayReview(response.custom.review_data, messagesDiv, welcomeMessage, currentChatId);
+                            } else {
+                                console.error('displayReview is not a function');
+                                displayMessage('রিভিউ ডেটা প্রদর্শন করা যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot', messagesDiv, welcomeMessage, saveChatHistory, currentChatId);
+                            }
                         }
                         if (response.buttons) {
                             const buttonDiv = document.createElement('div');
