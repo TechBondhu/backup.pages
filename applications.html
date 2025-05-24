@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>আবেদন তালিকা</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap">
     <link rel="stylesheet" href="applications.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3>নেভিগেশন</h3>
-                <span class="sidebar-close"><i class="fas fa-times"></i></span>
+                <h3>ফর্মবন্ধু ড্যাশবোর্ড</h3>
+                <i class="fas fa-times sidebar-close" id="closeSidebar" title="Close Sidebar"></i>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="dashboard.html"><i class="fas fa-gauge-high"></i> ড্যাশবোর্ড</a></li>
@@ -31,14 +31,13 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <header class="header">
-                <span class="sidebar-toggle"><i class="fas fa-bars"></i></span>
+            <div class="header">
+                <i class="fas fa-bars sidebar-toggle" id="sidebarToggle" title="Menu"></i>
                 <h2>আবেদন তালিকা</h2>
                 <div class="header-right">
-                    <i class="fas fa-user-circle"></i>
+                    <i class="fas fa-user account-icon" title="Account" onclick="window.location.href='account.html'"></i>
                 </div>
-            </header>
-
+            </div>
             <div class="content">
                 <div class="header-actions">
                     <input type="text" id="searchBar" placeholder="আবেদন আইডি বা ধরন দিয়ে সার্চ করুন..." aria-label="আবেদন সার্চ">
@@ -74,16 +73,13 @@
 
     <script>
         // Sidebar toggle functionality
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.querySelector('.sidebar-toggle');
-        const sidebarClose = document.querySelector('.sidebar-close');
-
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.add('active');
-        });
-
-        sidebarClose.addEventListener('click', () => {
-            sidebar.classList.remove('active');
+        $(document).ready(function() {
+            $('#sidebarToggle').click(function() {
+                $('#sidebar').addClass('active');
+            });
+            $('#closeSidebar').click(function() {
+                $('#sidebar').removeClass('active');
+            });
         });
     </script>
 </body>
