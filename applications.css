@@ -153,6 +153,7 @@ th, td {
     border-right: 1px solid #E5E7EB;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem; /* Original size maintained */
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 th:last-child, td:last-child {
@@ -217,9 +218,14 @@ tr:hover {
     table {
         display: block;
         width: 100%;
+        overflow-x: auto; /* Horizontal scroll for small screens */
     }
     thead {
-        display: none;
+        display: block;
+        width: 100%;
+    }
+    th {
+        display: none; /* Hide headers on mobile, use data-label instead */
     }
     tbody {
         display: block;
@@ -239,12 +245,14 @@ tr:hover {
         border-bottom: none;
         border-right: none;
         font-size: 0.85rem; /* Slightly smaller for mobile */
+        white-space: normal; /* Allow text wrapping on mobile */
     }
     td:before {
         content: attr(data-label);
         font-weight: bold;
         flex: 1;
         font-family: 'Tiro Bangla', sans-serif;
+        margin-right: 10px;
     }
     td:last-child {
         justify-content: center;
@@ -263,5 +271,8 @@ tr:hover {
     }
     td {
         font-size: 0.8rem;
+    }
+    table {
+        overflow-x: auto; /* Ensure horizontal scroll */
     }
 }
