@@ -1,5 +1,9 @@
 $(document).ready(function() {
     $('#sidebarToggle').click(function() {
-        $('#sidebar').toggleClass('active');
+        $('#sidebar').addClass('active');
+    });
+
+    $('#closeSidebar').click(function() {
+        $('#sidebar').removeClass('active');
     });
 });
