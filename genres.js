@@ -109,15 +109,13 @@ function sanitizeMessage(message) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
+        .replace(/'/g, '&apos;')
         .replace(/&/g, '&amp;');
 }
 
-function renderGenresList(displayMessage, saveChatHistory, callRasaAPI) {
+// Render Genres List
+function renderGenresList() {
     const genresList = document.getElementById('genresList');
-    const genresModal = document.getElementById('genresModal');
-    const welcomeMessage = document.getElementById('welcomeMessage');
-
     if (genresList) {
         genresList.innerHTML = '';
         genres.forEach(genre => {
@@ -126,6 +124,8 @@ function renderGenresList(displayMessage, saveChatHistory, callRasaAPI) {
             genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
             genreItem.addEventListener('click', () => {
                 if (genre.message) {
+                    const genresModal = document.getElementById('genresModal');
+                    const welcomeMessage = document.getElementById('welcomeMessage');
                     genresModal.classList.add('slide-out');
                     setTimeout(() => {
                         genresModal.style.display = 'none';
@@ -149,19 +149,17 @@ function renderGenresList(displayMessage, saveChatHistory, callRasaAPI) {
     }
 }
 
+// Open Genres Modal
 function openGenresModal() {
     const genresModal = document.getElementById('genresModal');
-    renderGenresList(
-        window.displayMessage,
-        window.saveChatHistory,
-        window.callRasaAPI
-    );
+    renderGenresList();
     genresModal.classList.add('slide-in');
     genresModal.style.display = 'flex';
     setTimeout(() => genresModal.classList.remove('slide-in'), 300);
 }
 
-function closeGenresModal() {
+// Close Genres Modal
+function closeGenresModalFunc() {
     const genresModal = document.getElementById('genresModal');
     genresModal.classList.add('slide-out');
     setTimeout(() => {
@@ -170,7 +168,7 @@ function closeGenresModal() {
     }, 300);
 }
 
-// Initialize genres modal event listeners
+// Initialize Genres Modal Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     const moreOptionsBtn = document.getElementById('moreOptionsBtn');
     const closeGenresModal = document.getElementById('closeGenresModal');
@@ -179,6 +177,29 @@ document.addEventListener('DOMContentLoaded', () => {
         moreOptionsBtn.addEventListener('click', openGenresModal);
     }
     if (closeGenresModal) {
-        closeGenresModal.addEventListener('click', closeGenresModal);
+        closeGenresModal.addEventListener('click', closeGenresModalFunc);
     }
+
+    // Handle welcome buttons with data-genre attributes
+    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+        button.classList.add('ripple-btn');
+        button.addEventListener('click', () => {
+            const genreName = button.getAttribute('data-genre');
+            const genre = genres.find(g => g.name === genreName);
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            if (genre && genre.message) {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+                displayMessage(sanitizeMessage(genre.message), 'user');
+                saveChatHistory(sanitizeMessage(genre.message), 'user');
+                callRasaAPI(sanitizeMessage(genre.message));
+            } else {
+                console.error(`Genre not found or message undefined for: ${genreName}`);
+                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+            }
+        });
+    });
 });
