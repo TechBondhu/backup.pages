@@ -1,4 +1,5 @@
-import { displayMessage, displayLoading, removeLoading } from './domUtils.js';
+import { displayMessage, displayLoading, removeLoading, sanitizeMessage } from './domUtils.js';
+import { saveChatHistory } from './chatManager.js';
 
 export async function callRasaAPI(message, metadata, currentChatId, messagesDiv, welcomeMessage, saveChatHistory, displayReview) {
     displayLoading(messagesDiv);
