@@ -1,7 +1,7 @@
 body {
     margin: 0;
-    font-family: 'Roboto', 'Tiro Bangla', sans-serif;
-    background-color: #E5E7EB; /* Light gray background as per previous brand */
+    font-family: 'Roboto', 'Noto Serif Bengali', sans-serif;
+    background-color: #E5E7EB; /* Light gray background as per brand */
 }
 
 .dashboard-container {
@@ -11,9 +11,18 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: #1E3A8A; /* Primary blue from previous brand */
+    background-color: #1E3A8A; /* Primary blue from brand */
     color: #ffffff; /* White text */
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(-100%);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.sidebar.active {
+    transform: translateX(0);
 }
 
 .sidebar-header {
@@ -27,7 +36,8 @@ body {
 
 .sidebar-header h3 {
     margin: 0;
-    font-family: 'Tiro Bangla', sans-serif;
+    font-family: 'Noto Serif Bengali', sans-serif;
+    font-weight: 500;
 }
 
 .sidebar-menu {
@@ -46,7 +56,9 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Tiro Bangla', sans-serif;
+    font-family: 'Noto Serif Bengali', sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
 }
 
 .sidebar-menu li a:hover {
@@ -54,7 +66,7 @@ body {
     border-radius: 5px;
 }
 
-.sidebar-close, .sidebar-toggle {
+.sidebar-toggle {
     cursor: pointer;
 }
 
@@ -76,7 +88,8 @@ body {
 
 .header h2 {
     margin: 0;
-    font-family: 'Tiro Bangla', sans-serif;
+    font-family: 'Noto Serif Bengali', sans-serif;
+    font-weight: 500;
 }
 
 .header-right i {
@@ -95,7 +108,8 @@ body {
 
 .content h3 {
     color: #1E3A8A; /* Primary blue for headings */
-    font-family: 'Tiro Bangla', sans-serif;
+    font-family: 'Noto Serif Bengali', sans-serif;
+    font-weight: 500;
 }
 
 .card-grid {
@@ -128,7 +142,8 @@ body {
 
 .card h4 {
     margin: 10px 0;
-    font-family: 'Tiro Bangla', sans-serif;
+    font-family: 'Noto Serif Bengali', sans-serif;
+    font-weight: 500;
     color: #1E3A8A; /* Primary blue for card headings */
 }
 
@@ -141,10 +156,6 @@ body {
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        z-index: 1000;
     }
     .sidebar.active {
         transform: translateX(0);
