@@ -1,0 +1,192 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: 'Roboto', 'Tiro Bangla', sans-serif;
+    background-color: #E5E7EB; /* Light gray background as per previous brand */
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #1E3A8A; /* Primary blue from previous brand */
+    color: #ffffff; /* White text */
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1E3A8A; /* Same primary blue for consistency */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle divider */
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    padding: 15px 20px;
+}
+
+.sidebar-menu li a {
+    color: #ffffff; /* White text */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.sidebar-menu li a:hover,
+.sidebar-menu li.active a {
+    background-color: #3B82F6; /* Secondary blue on hover */
+    border-radius: 5px;
+}
+
+.sidebar-close, .sidebar-toggle {
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f3f4f6; /* Light gray for main content area */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1E3A8A; /* Primary blue for header */
+    color: #ffffff; /* White text */
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header h2 {
+    margin: 0;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.header-right i {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ffffff; /* White icon */
+}
+
+.header-right i:hover {
+    color: #3B82F6; /* Secondary blue on hover */
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#searchBar, #statusFilter {
+    padding: 10px;
+    border: 1px solid #1E3A8A;
+    border-radius: 5px;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+/* Table */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #E5E7EB;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+th {
+    background-color: #3B82F6;
+    color: #ffffff;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.action-btn {
+    background-color: #3B82F6;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Tiro Bangla', sans-serif;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    background-color: #1E3A8A;
+}
+
+/* Loading Animation */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Tiro Bangla', sans-serif;
+    color: #1E3A8A;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .main-content {
+        padding: 10px;
+    }
+    .header-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .table-container {
+        font-size: 14px;
+    }
+}
