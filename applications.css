@@ -100,56 +100,50 @@ body {
 /* Header Actions */
 .header-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     margin: 15px 0;
     align-items: center;
-    flex-wrap: wrap;
 }
 
 .search-container, .filter-container {
     position: relative;
     flex: 1;
-    max-width: 250px;
+    max-width: 200px; /* Smaller width for compact design */
 }
 
 .search-container .search-icon,
 .filter-container .filter-icon {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
+    font-size: 0.8rem; /* Smaller icon for compact design */
 }
 
 .search-container .search-icon {
-    color: #3B82F6; /* Vibrant blue for search icon */
+    color: #3B82F6; /* Vibrant blue */
 }
 
 .filter-container .filter-icon {
-    color: #10B981; /* Vibrant green for filter icon */
+    color: #3B82F6; /* Vibrant blue */
 }
 
 #searchBar {
-    padding: 8px 10px 8px 35px;
-    border: none;
-    border-radius: 20px;
+    padding: 6px 8px 6px 28px;
+    border: 1px solid #1E3A8A;
+    border-radius: 15px;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem; /* Original size maintained */
     width: 100%;
-    background: linear-gradient(135deg, #ffffff 0%, #e6f0fa 100%); /* Colorful gradient */
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff; /* Solid white background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 #searchBar:focus {
     outline: none;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
     transform: scale(1.02);
-}
-
-#searchBar:hover {
-    background: linear-gradient(135deg, #e6f0fa 0%, #ffffff 100%);
 }
 
 #searchBar::placeholder {
@@ -158,26 +152,22 @@ body {
 }
 
 #statusFilter {
-    padding: 8px 10px 8px 35px;
-    border: none;
-    border-radius: 20px;
+    padding: 6px 8px 6px 28px;
+    border: 1px solid #1E3A8A;
+    border-radius: 15px;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem; /* Original size maintained */
-    background: linear-gradient(135deg, #ffffff 0%, #d1fae5 100%); /* Colorful green gradient */
+    background-color: #ffffff; /* Solid white background */
     cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease, transform 0.2s ease;
     width: 100%;
 }
 
 #statusFilter:focus {
     outline: none;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
     transform: scale(1.02);
-}
-
-#statusFilter:hover {
-    background: linear-gradient(135deg, #d1fae5 0%, #ffffff 100%);
 }
 
 /* Table */
@@ -255,8 +245,9 @@ tr:hover {
     }
     .header-actions {
         flex-direction: row;
-        gap: 10px;
+        gap: 8px;
         justify-content: space-between;
+        flex-wrap: nowrap;
     }
     .search-container, .filter-container {
         max-width: 48%;
@@ -277,15 +268,17 @@ tr:hover {
         flex-direction: column;
         border: 1px solid #E5E7EB;
         border-radius: 5px;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         background-color: #ffffff;
+        padding: 5px;
     }
     td {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px;
+        padding: 6px;
         border-bottom: none;
+        font-size: 0.85rem; /* Slightly smaller for mobile */
     }
     td:before {
         content: attr(data-label);
@@ -310,6 +303,6 @@ tr:hover {
     }
     .header-actions {
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
     }
 }
