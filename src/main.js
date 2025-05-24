@@ -1,5 +1,5 @@
 import { genres, firebaseConfig } from './constants.js';
-import { displayMessage, displayLoading, removeLoading } from './domUtils.js';
+import { displayMessage, displayLoading, removeLoading, sanitizeMessage } from './domUtils.js';
 import { saveChatHistory, loadChatHistory, startNewChat, toggleSidebar, hideSidebar, loadChat } from './chatManager.js';
 import { setupImageUpload, setupImagePreview, setupImageEditing, setupImageReviewModal, selectedFile, clearPreview } from './imageHandler.js';
 import { callRasaAPI, uploadImage } from './apiService.js';
