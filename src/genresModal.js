@@ -1,5 +1,6 @@
 import { sanitizeMessage, displayMessage } from './domUtils.js';
-import { saveChatHistory, callRasaAPI } from './apiService.js';
+import { callRasaAPI } from './apiService.js';
+import { saveChatHistory } from './chatManager.js';
 
 export function renderGenresList(genresList, genres, messagesDiv, welcomeMessage, currentChatId, callRasaAPI) {
     genresList.innerHTML = '';
