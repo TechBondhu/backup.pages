@@ -55,7 +55,6 @@
                                 <th data-label="আবেদন আইডি">আবেদন আইডি</th>
                                 <th data-label="ধরন">ধরন</th>
                                 <th data-label="জমার তারিখ">জমার তারিখ</th>
-                                <th data-label="স্ট্যাটাস">স্ট্যাটাস</th>
                                 <th data-label="অ্যাকশন">অ্যাকশন</th>
                             </tr>
                         </thead>
@@ -77,6 +76,11 @@
             });
             $('#closeSidebar').click(function() {
                 $('#sidebar').removeClass('active');
+            });
+
+            // Page load animation
+            $(window).on('load', function() {
+                $('.main-content').hide().fadeIn(800).css('transform', 'translateY(0)').css('opacity', '1');
             });
         });
     </script>
