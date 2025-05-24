@@ -1,0 +1,144 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', 'Tiro Bangla', sans-serif;
+    background-color: #f4f6f9;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1a252f;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    padding: 15px 20px;
+}
+
+.sidebar-menu li a {
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.sidebar-menu li a:hover {
+    background-color: #34495e;
+    border-radius: 5px;
+}
+
+.sidebar-close, .sidebar-toggle {
+    cursor: pointer;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header h2 {
+    margin: 0;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.header-right i {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.content {
+    margin-top: 20px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card i {
+    font-size: 2rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.card h4 {
+    margin: 10px 0;
+    font-family: 'Tiro Bangla', sans-serif;
+}
+
+.card p {
+    margin: 0;
+    color: #666;
+    font-family: 'Roboto', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .main-content {
+        padding: 10px;
+    }
+    .sidebar-toggle {
+        display: block;
+    }
+}
