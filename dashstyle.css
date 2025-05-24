@@ -1,46 +1,19 @@
 body {
     margin: 0;
-    font-family: 'Roboto', 'Noto Serif Bengali', sans-serif;
-    background-color: #E5E7EB; /* Light gray background */
+    font-family: 'Roboto', 'Tiro Bangla', sans-serif;
+    background-color: #E5E7EB; /* Light gray background as per previous brand */
 }
 
 .dashboard-container {
     display: flex;
     min-height: 100vh;
-    position: relative;
 }
 
 .sidebar {
     width: 250px;
-    background-color: #1E3A8A; /* Primary blue */
+    background-color: #1E3A8A; /* Primary blue from previous brand */
     color: #ffffff; /* White text */
-    transition: transform 0.3s ease-in-out;
-    transform: translateX(-100%);
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    z-index: 1000;
-}
-
-.sidebar.active {
-    transform: translateX(0);
-}
-
-.main-content {
-    flex: 1;
-    padding: 20px;
-    background-color: #f3f4f6; /* Light gray for main content */
-    transition: margin-left 0.3s ease-in-out;
-}
-
-.sidebar.active ~ .main-content {
-    margin-left: 250px;
-}
-
-@media (max-width: 768px) {
-    .sidebar.active ~ .main-content {
-        margin-left: 0;
-    }
+    transition: transform 0.3s ease;
 }
 
 .sidebar-header {
@@ -48,14 +21,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #1E3A8A; /* Primary blue */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: #1E3A8A; /* Same primary blue for consistency */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle divider */
 }
 
 .sidebar-header h3 {
     margin: 0;
-    font-family: 'Noto Serif Bengali', sans-serif;
-    font-weight: 500;
+    font-family: 'Tiro Bangla', sans-serif;
 }
 
 .sidebar-menu {
@@ -69,14 +41,12 @@ body {
 }
 
 .sidebar-menu li a {
-    color: #ffffff;
+    color: #ffffff; /* White text */
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Noto Serif Bengali', sans-serif;
-    font-weight: 400;
-    font-size: 1.1rem;
+    font-family: 'Tiro Bangla', sans-serif;
 }
 
 .sidebar-menu li a:hover {
@@ -84,8 +54,14 @@ body {
     border-radius: 5px;
 }
 
-.sidebar-toggle {
+.sidebar-close, .sidebar-toggle {
     cursor: pointer;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f3f4f6; /* Light gray for main content area */
 }
 
 .header {
@@ -93,21 +69,20 @@ body {
     justify-content: space-between;
     align-items: center;
     background-color: #1E3A8A; /* Primary blue for header */
-    color: #ffffff;
+    color: #ffffff; /* White text */
     padding: 15px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .header h2 {
     margin: 0;
-    font-family: 'Noto Serif Bengali', sans-serif;
-    font-weight: 500;
+    font-family: 'Tiro Bangla', sans-serif;
 }
 
 .header-right i {
     font-size: 1.5rem;
     cursor: pointer;
-    color: #ffffff;
+    color: #ffffff; /* White icon */
 }
 
 .header-right i:hover {
@@ -120,8 +95,7 @@ body {
 
 .content h3 {
     color: #1E3A8A; /* Primary blue for headings */
-    font-family: 'Noto Serif Bengali', sans-serif;
-    font-weight: 500;
+    font-family: 'Tiro Bangla', sans-serif;
 }
 
 .card-grid {
@@ -131,12 +105,12 @@ body {
 }
 
 .card {
-    background-color: #ffffff;
+    background-color: #ffffff; /* White card background */
     padding: 20px;
     border-radius: 8px;
     text-align: center;
     text-decoration: none;
-    color: #333;
+    color: #333; /* Dark text for contrast */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -154,20 +128,23 @@ body {
 
 .card h4 {
     margin: 10px 0;
-    font-family: 'Noto Serif Bengali', sans-serif;
-    font-weight: 500;
-    color: #1E3A8A;
+    font-family: 'Tiro Bangla', sans-serif;
+    color: #1E3A8A; /* Primary blue for card headings */
 }
 
 .card p {
     margin: 0;
-    color: #6B7280;
+    color: #6B7280; /* Gray for description text */
     font-family: 'Roboto', sans-serif;
 }
 
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
     }
     .sidebar.active {
         transform: translateX(0);
