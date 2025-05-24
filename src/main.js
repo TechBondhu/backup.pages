@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteCancelBtn = document.getElementById('cancelDelete');
     const deleteConfirmBtn = document.getElementById('confirmDelete');
     const chatBox = document.querySelector('.chat-box');
+    const welcomeButtons = document.querySelectorAll('.welcome-btn');
 
     // State
     let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
@@ -102,6 +103,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Welcome Buttons (Hardcoded Genres)
+    if (welcomeButtons) {
+        welcomeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const genreName = button.getAttribute('data-genre');
+                const genre = genres.find(g => g.name === genreName);
+                if (genre && genre.message) {
+                    welcomeMessage.classList.add('fade-out');
+                    setTimeout(() => {
+                        welcomeMessage.style.display = 'none';
+                        welcomeMessage.classList.remove('fade-out');
+                    }, 300);
+                    displayMessage(sanitizeMessage(genre.message), 'user', messagesDiv, welcomeMessage, saveChatHistory, currentChatId);
+                    saveChatHistory(sanitizeMessage(genre.message), 'user', currentChatId);
+                    callRasaAPI(sanitizeMessage(genre.message), {}, currentChatId, messagesDiv, welcomeMessage, saveChatHistory, displayReview);
+                } else {
+                    console.error(`Message undefined for genre: ${genreName}`);
+                    displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot', messagesDiv, welcomeMessage, saveChatHistory, currentChatId);
+                }
+            });
+        });
+    }
+
     // Sidebar and Chat History
     if (historyIcon) {
         historyIcon.addEventListener('click', () => toggleSidebar(sidebar, chatContainer));
@@ -121,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeGenresModal.addEventListener('click', () => closeGenresModalFunc(genresModal));
     }
     if (genresList) {
-        renderGenresList(genresList, genres, messagesDiv, welcomeMessage, currentChatId, callRasaAPI);
+        renderGenresList(genresList, genres, messagesDiv, welcomeMessage, currentChatId);
     }
 
     // Image Handling
