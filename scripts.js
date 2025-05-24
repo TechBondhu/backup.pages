@@ -99,9 +99,9 @@ const genres = [
     { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
-
- document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements (unchanged as per request)
+ 
+document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
     const messagesDiv = document.getElementById('messages');
@@ -158,7 +158,7 @@ const genres = [
     let brightnessValue = 0;
     let contrastValue = 0;
     let bgColor = 'white';
-    let currentChatId = sessionStorage.getItem('chatId') || generateChatId();
+    let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
     sessionStorage.setItem('chatId', currentChatId);
 
     // Initialize jsPDF
@@ -187,22 +187,17 @@ const genres = [
         accountIcon.addEventListener('click', () => window.location.href = 'account.html');
     }
 
-    // Utility: Generate Unique Chat ID
-    function generateChatId() {
-        return Date.now().toString() + Math.random().toString(36).substr(2, 9);
-    }
-
     // Utility: Sanitize Message to Prevent XSS
     function sanitizeMessage(message) {
         if (typeof message !== 'string') return '';
         const div = document.createElement('div');
         div.textContent = message;
         return div.innerHTML
-            .replace(/</g, '<')
-            .replace(/>/g, '>')
-            .replace(/"/g, '"')
-            .replace(/'/g, ''')
-            .replace(/&/g, '&');
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/&/g, '&amp;');
     }
 
     // Utility: Show Typing Indicator
@@ -288,55 +283,50 @@ const genres = [
     }
 
     function sendMessage() {
-        const message = userInput?.value.trim() || '';
-        if (message || selectedFile) {
-            if (message) {
-                const sanitizedMessage = sanitizeMessage(message);
-                displayMessage(sanitizedMessage, 'user');
-                callRasaAPI(sanitizedMessage);
-                userInput.value = '';
+        const message = userInput?.value.trim();
+        if (message) {
+            displayMessage(message, 'user');
+            callRasaAPI(message);
+            userInput.value = '';
+        } else if (selectedFile) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('user-message', 'slide-in');
+            const img = document.createElement('img');
+            img.src = previewImage?.src || '';
+            img.classList.add('image-preview');
+            img.addEventListener('click', () => openImageModal(img.src));
+            messageDiv.appendChild(img);
+            if (messagesDiv) {
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
-            if (selectedFile) {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('user-message', 'slide-in');
-                const img = document.createElement('img');
-                img.src = previewImage?.src || '';
-                img.classList.add('image-preview');
-                img.addEventListener('click', () => openImageModal(img.src));
-                messageDiv.appendChild(img);
-                if (messagesDiv) {
-                    messagesDiv.appendChild(messageDiv);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                }
-                if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-                    welcomeMessage.classList.add('fade-out');
-                    setTimeout(() => {
-                        welcomeMessage.style.display = 'none';
-                        welcomeMessage.classList.remove('fade-out');
-                    }, 300);
-                }
+            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+            }
 
-                const formData = new FormData();
-                formData.append('image', selectedFile);
-                fetch('http://localhost:5000/upload-image', {
-                    method: 'POST',
-                    body: formData
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            fetch('http://localhost:5000/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.image_url) {
+                        callRasaAPI(data.image_url);
+                        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+                    } else if (data.error) {
+                        console.error('Image Upload Error:', data.error);
+                    }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.image_url) {
-                            callRasaAPI(data.image_url);
-                            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-                        } else if (data.error) {
-                            displayMessage(`ইমেজ আপলোডে ত্রুটি: ${sanitizeMessage(data.error)}`, 'bot');
-                        }
-                    })
-                    .catch(error => {
-                        displayMessage('ইমেজ আপলোডে ত্রুটি হয়েছে।', 'bot');
-                        console.error('Image Upload Error:', error);
-                    });
-                clearPreview();
-            }
+                .catch(error => {
+                    console.error('Image Upload Error:', error);
+                });
+            clearPreview();
         }
     }
 
@@ -571,7 +561,7 @@ const genres = [
     }
 
     function startNewChat() {
-        currentChatId = generateChatId();
+        currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
         sessionStorage.setItem('chatId', currentChatId);
         if (messagesDiv) {
             messagesDiv.innerHTML = '';
@@ -583,21 +573,7 @@ const genres = [
             chatBox.classList.add('fade-in');
             setTimeout(() => chatBox.classList.remove('fade-in'), 500);
         }
-        try {
-            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            // Clean invalid chats (e.g., ID 0)
-            Object.keys(chats).forEach(id => {
-                if (!id || id === '0' || !chats[id] || (!chats[id].messages && !chats[id].title)) {
-                    delete chats[id];
-                }
-            });
-            chats[currentChatId] = { title: '', messages: [], timestamp: new Date().toISOString() };
-            localStorage.setItem('chatHistory', JSON.stringify(chats));
-            console.log(`New chat initialized with ID: ${currentChatId}`);
-        } catch (error) {
-            console.error('Error initializing new chat in localStorage:', error);
-            displayMessage('নতুন চ্যাট শুরু করতে সমস্যা হয়েছে।', 'bot');
-        }
+        saveChatHistory('New Chat Started', 'system');
         loadChatHistory();
     }
 
@@ -664,6 +640,7 @@ const genres = [
                     updatedData[key] = value;
                 });
 
+                // ফায়ারবেজে ডেটা সেভ করা
                 await db.collection('submissions').add({
                     review_data: updatedData,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -671,13 +648,14 @@ const genres = [
                 });
 
                 displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-                await generatePDF(updatedData, reviewCard);
+                await generatePDF(updatedData, reviewCard); // await যোগ করা
                 reviewCard.setAttribute('data-confirmed', 'true');
                 reviewCard.setAttribute('data-editable', 'false');
                 editBtn.disabled = true;
                 editBtn.style.display = 'none';
                 confirmBtn.style.display = 'none';
 
+                // ডাউনলোড বাটন তৈরি
                 buttonContainer.innerHTML = '';
                 const downloadBtn = document.createElement('button');
                 downloadBtn.className = 'download-btn ripple-btn';
@@ -862,11 +840,7 @@ const genres = [
                                     const button = document.createElement('button');
                                     button.innerText = sanitizeMessage(btn.title);
                                     button.classList.add('ripple-btn');
-                                    button.addEventListener('click', () => {
-                                        const payload = btn.payload || btn.title;
-                                        displayMessage(sanitizeMessage(payload), 'user');
-                                        callRasaAPI(payload);
-                                    });
+                                    button.addEventListener('click', () => sendMessage(btn.payload));
                                     buttonDiv.appendChild(button);
                                 });
                                 if (messagesDiv) {
@@ -947,78 +921,227 @@ const genres = [
     }
 
     function saveChatHistory(message, sender) {
-        if (!currentChatId || currentChatId === '0') {
-            console.error('Invalid chat ID:', currentChatId);
-            displayMessage('চ্যাট আইডি অবৈধ। নতুন চ্যাট শুরু করুন।', 'bot');
-            startNewChat();
-            return;
+        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        if (!chats[currentChatId]) {
+            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
         }
-
-        try {
-            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            if (!chats[currentChatId]) {
-                chats[currentChatId] = { title: '', messages: [], timestamp: new Date().toISOString() };
-                console.log(`Initialized chat with ID: ${currentChatId}`);
-            }
-
-            if (sender === 'user' && chats[currentChatId].messages.length === 0) {
-                let title = message;
-                if (message.startsWith('[Image:')) {
-                    title = 'Image Chat';
-                } else {
-                    title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-                }
-                chats[currentChatId].title = sanitizeMessage(title);
-                console.log(`Set chat title for ID ${currentChatId}: ${title}`);
-            }
-
-            chats[currentChatId].messages.push({
-                text: message,
-                sender: sender,
-                time: new Date().toISOString()
-            });
-
-            localStorage.setItem('chatHistory', JSON.stringify(chats));
-            console.log(`Saved message to chat ID ${currentChatId}: ${message}`);
-        } catch (error) {
-            console.error('Error saving chat history to localStorage:', error);
-            displayMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।', 'bot');
-        }
+        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
+        localStorage.setItem('chatHistory', JSON.stringify(chats));
     }
 
     function loadChatHistory() {
         if (historyList) {
             historyList.innerHTML = '';
         }
-        try {
-            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            let cleanedChats = {};
-
-            Object.keys(chats).forEach(chatId => {
-                const chat = chats[chatId];
-                if (chatId && chatId !== '0' && chat && (chat.messages || chat.title)) {
-                    cleanedChats[chatId] = chat;
-                } else {
-                    console.warn(`Removing invalid chat with ID ${chatId}`);
-                }
-            });
-
-            chats = cleanedChats;
-            localStorage.setItem('chatHistory', JSON.stringify(chats));
-
-            Object.keys(chats).forEach(chatId => {
-                const chat = chats[chatId];
-                const displayTitle = chat.title || 'Untitled Chat';
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        Object.keys(chats).forEach(chatId => {
+            const chat = chats[chatId];
+            if (chat && chat.title) {
                 const item = document.createElement('div');
                 item.classList.add('history-item');
                 item.setAttribute('data-chat-id', chatId);
                 item.innerHTML = `
                     <div class="history-item-content">
-                        <p>${sanitizeMessage(displayTitle)}</p>
+                        <p>${sanitizeMessage(chat.title)}</p>
                         <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
                     </div>
                     <div class="options">
                         <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
                     </div>
                     <div class="dropdown" id="dropdown-${chatId}">
-                        <div class="dropdown
+                        <div class="dropdown-item rename-item-${chatId}">Rename</div>
+                        <div class="dropdown-item delete-item-${chatId}">Delete</div>
+                    </div>
+                `;
+                historyList.appendChild(item);
+
+                item.addEventListener('click', () => loadChat(chatId));
+                const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
+                const dropdown = item.querySelector(`#dropdown-${chatId}`);
+                const renameItem = item.querySelector(`.rename-item-${chatId}`);
+                const deleteItem = item.querySelector(`.delete-item-${chatId}`);
+
+                optionIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+
+                renameItem.addEventListener('click', () => {
+                    if (renameModal) {
+                        renameModal.style.display = 'flex';
+                    }
+                    if (renameInput) {
+                        renameInput.value = chat.title;
+                    }
+                    currentChatId = chatId;
+                });
+
+                deleteItem.addEventListener('click', () => {
+                    if (deleteModal) {
+                        deleteModal.style.display = 'flex';
+                    }
+                    currentChatId = chatId;
+                });
+            } else {
+                console.warn(`Chat with ID ${chatId} is missing or invalid. Skipping...`);
+            }
+        });
+
+        if (historyList && historyList.children.length > 0) {
+            sidebar.classList.add('open');
+            chatContainer.classList.add('sidebar-open');
+        }
+    }
+
+    function loadChat(chatId) {
+        currentChatId = chatId;
+        sessionStorage.setItem('chatId', currentChatId);
+        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+        const chat = chats[chatId];
+        if (chat) {
+            messagesDiv.innerHTML = '';
+            chat.messages.forEach(msg => {
+                displayMessage(msg.text, msg.sender);
+            });
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'none';
+            }
+            sidebar.classList.remove('open');
+            chatContainer.classList.remove('sidebar-open');
+            loadChatHistory();
+        }
+    }
+
+    if (renameCancelBtn) {
+        renameCancelBtn.addEventListener('click', () => {
+            if (renameModal) {
+                renameModal.style.display = 'none';
+            }
+        });
+    }
+
+    if (renameSaveBtn) {
+        renameSaveBtn.addEventListener('click', () => {
+            const newTitle = renameInput?.value.trim() || '';
+            if (newTitle) {
+                let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+                if (chats[currentChatId]) {
+                    chats[currentChatId].title = sanitizeMessage(newTitle);
+                    localStorage.setItem('chatHistory', JSON.stringify(chats));
+                    loadChatHistory();
+                }
+            }
+            if (renameModal) {
+                renameModal.style.display = 'none';
+            }
+        });
+    }
+
+    if (deleteCancelBtn) {
+        deleteCancelBtn.addEventListener('click', () => {
+            if (deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+    }
+
+    if (deleteConfirmBtn) {
+        deleteConfirmBtn.addEventListener('click', () => {
+            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+            if (chats[currentChatId]) {
+                delete chats[currentChatId];
+                localStorage.setItem('chatHistory', JSON.stringify(chats));
+                loadChatHistory();
+                if (Object.keys(chats).length === 0) {
+                    startNewChat();
+                } else {
+                    messagesDiv.innerHTML = '';
+                    if (welcomeMessage) {
+                        welcomeMessage.style.display = 'block';
+                    }
+                }
+            }
+            if (deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+    }
+
+    function renderGenresList() {
+        if (genresList) {
+            genresList.innerHTML = '';
+            genres.forEach(genre => {
+                const genreItem = document.createElement('div');
+                genreItem.className = 'genre-item ripple-btn';
+                genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
+                genreItem.addEventListener('click', () => {
+                    if (genre.message) {
+                        genresModal.classList.add('slide-out');
+                        setTimeout(() => {
+                            genresModal.style.display = 'none';
+                            genresModal.classList.remove('slide-out');
+                        }, 300);
+                        welcomeMessage.classList.add('fade-out');
+                        setTimeout(() => {
+                            welcomeMessage.style.display = 'none';
+                            welcomeMessage.classList.remove('fade-out');
+                        }, 300);
+                        displayMessage(sanitizeMessage(genre.message), 'user');
+                        saveChatHistory(sanitizeMessage(genre.message), 'user');
+                        callRasaAPI(sanitizeMessage(genre.message));
+                    } else {
+                        console.error(`Message undefined for genre: ${genre.name}`);
+                        displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+                    }
+                });
+                genresList.appendChild(genreItem);
+            });
+        }
+    }
+
+    function openGenresModal() {
+        renderGenresList();
+        genresModal.classList.add('slide-in');
+        genresModal.style.display = 'flex';
+        setTimeout(() => genresModal.classList.remove('slide-in'), 300);
+    }
+
+    function closeGenresModalFunc() {
+        genresModal.classList.add('slide-out');
+        setTimeout(() => {
+            genresModal.style.display = 'none';
+            genresModal.classList.remove('slide-out');
+        }, 300);
+    }
+
+    if (moreOptionsBtn) {
+        moreOptionsBtn.addEventListener('click', openGenresModal);
+    }
+    if (closeGenresModal) {
+        closeGenresModal.addEventListener('click', closeGenresModalFunc);
+    }
+
+    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
+        button.classList.add('ripple-btn');
+        button.addEventListener('click', () => {
+            const genreName = button.getAttribute('data-genre');
+            const genre = genres.find(g => g.name === genreName);
+            if (genre && genre.message) {
+                welcomeMessage.classList.add('fade-out');
+                setTimeout(() => {
+                    welcomeMessage.style.display = 'none';
+                    welcomeMessage.classList.remove('fade-out');
+                }, 300);
+                displayMessage(sanitizeMessage(genre.message), 'user');
+                saveChatHistory(sanitizeMessage(genre.message), 'user');
+                callRasaAPI(sanitizeMessage(genre.message));
+            } else {
+                console.error(`Genre not found or message undefined for: ${genreName}`);
+                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+            }
+        });
+    });
+
+    // Initialize
+    loadChatHistory();
+});
