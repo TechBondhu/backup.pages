@@ -71,6 +71,9 @@ body {
     flex: 1;
     padding: 15px;
     background-color: #f3f4f6; /* Light gray for main content area */
+    transform: translateY(-20px); /* Initial position for animation */
+    opacity: 0; /* Initial opacity for fade-in */
+    transition: transform 0.6s ease, opacity 0.6s ease;
 }
 
 .header {
@@ -184,6 +187,7 @@ tr:hover {
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.8rem; /* Original size maintained */
     text-decoration: none;
+    margin-right: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -242,6 +246,10 @@ tr:hover {
     .table-container {
         padding: 10px;
     }
+    .action-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -260,6 +268,10 @@ tr:hover {
     }
     .sidebar {
         width: 200px; /* Slightly narrower sidebar on very small screens */
+    }
+    .action-btn {
+        padding: 3px 6px;
+        font-size: 0.6rem;
     }
 }
 
