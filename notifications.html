@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap">
     <link rel="stylesheet" href="notifications.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="notifications.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -47,25 +48,11 @@
                         <option value="read">পঠিত</option>
                     </select>
                 </div>
-                <div class="notification-container">
-                    <div class="notification-card unread">
-                        <i class="fas fa-bell notification-icon"></i>
-                        <div class="notification-content">
-                            <h3>নতুন আবেদন জমা হয়েছে</h3>
-                            <p>আপনার আবেদন #123 জমা হয়েছে।</p>
-                            <span class="notification-time">২৫ মে ২০২৫, ৯:৫৪ AM</span>
-                        </div>
-                        <a href="#" class="action-btn">বিস্তারিত দেখুন</a>
-                    </div>
-                    <div class="notification-card">
-                        <i class="fas fa-info-circle notification-icon"></i>
-                        <div class="notification-content">
-                            <h3>পেমেন্ট সফল হয়েছে</h3>
-                            <p>আপনার লেনদেন #456 সম্পন্ন।</p>
-                            <span class="notification-time">২৪ মে ২০২৫, ৩:২০ PM</span>
-                        </div>
-                        <a href="#" class="action-btn">বিস্তারিত দেখুন</a>
-                    </div>
+                <div class="notification-container" id="notificationContainer">
+                    <!-- Notifications will be populated dynamically -->
+                </div>
+                <div id="noNotifications" class="no-notifications">
+                    <p>কোনো নোটিফিকেশন নেই।</p>
                 </div>
             </div>
         </div>
@@ -82,18 +69,11 @@
 
             // Page load animation
             $(window).on('load', function() {
-                $('.main-content').hide().fadeIn(800).css('transform', 'translateY(0)').css('opacity', '1');
+                $('.main-content').hide().fadeIn(600).css('transform', 'translateY(0)').css('opacity', '1');
             });
 
-            // Hover effect on notification cards
-            $('.notification-card').hover(
-                function() {
-                    $(this).css('transform', 'scale(1.02)').css('box-shadow', '0 4px 12px rgba(0, 0, 0, 0.2)');
-                },
-                function() {
-                    $(this).css('transform', 'scale(1)').css('box-shadow', '0 2px 6px rgba(0, 0, 0, 0.1)');
-                }
-            );
+            // Load notifications on page load
+            loadNotifications();
         });
     </script>
 </body>
