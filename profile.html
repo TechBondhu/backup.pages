@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোফাইল তথ্য</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="main-content">
+            <div class="header">
+                <a href="account.html" class="back-icon"><i class="fas fa-arrow-left"></i></a>
+                <h2>প্রোফাইল তথ্য</h2>
+                <div class="header-right">
+                    <i class="fas fa-sign-out-alt" title="লগআউট" onclick="window.location.href='logout.html'"></i>
+                </div>
+            </div>
+            <div class="content">
+                <form class="profile-form">
+                    <div class="form-group">
+                        <label for="name">নাম</label>
+                        <input type="text" id="name" value="ইউজার নাম" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">ইমেইল</label>
+                        <input type="email" id="email" value="user@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">ফোন নম্বর</label>
+                        <input type="tel" id="phone" value="+8801234567890">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">ঠিকানা</label>
+                        <textarea id="address">ঢাকা, বাংলাদেশ</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="userId">ইউজার আইডি</label>
+                        <input type="text" id="userId" value="USR123456" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePic">প্রোফাইল ছবি</label>
+                        <input type="file" id="profilePic" accept="image/*">
+                    </div>
+                    <button type="submit" class="submit-btn">সংরক্ষণ করুন</button>
+                </form>
+            </div>
+            <div class="footer">
+                <p>© ২০২৫ ফর্মবন্ধু | সব স্বত্ব সংরক্ষিত</p>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
