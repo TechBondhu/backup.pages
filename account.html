@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অ্যাকাউন্ট সেটিংস</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="account.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar (তোমার আগের সেটিংস পেজের মতো) -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>ফর্মবন্ধু সেটিংস</h3>
+                <i class="fas fa-times sidebar-close" id="closeSidebar" title="Close Sidebar"></i>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-gauge-high"></i> ড্যাশবোর্ড</a></li>
+                <li><a href="applications.html"><i class="fas fa-list"></i> আবেদন তালিকা</a></li>
+                <li><a href="notifications.html"><i class="fas fa-bell"></i> নোটিফিকেশন</a></li>
+                <li><a href="help.html"><i class="fas fa-question-circle"></i> সহায়তা</a></li>
+                <li><a href="payment.html"><i class="fas fa-credit-card"></i> পেমেন্ট ইতিহাস</a></li>
+                <li><a href="status.html"><i class="fas fa-tasks"></i> স্ট্যাটাস ট্র্যাকার</a></li>
+                <li class="active"><a href="account.html"><i class="fas fa-user"></i> অ্যাকাউন্ট</a></li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <i class="fas fa-bars sidebar-toggle" id="sidebarToggle" title="Menu"></i>
+                <h2>অ্যাকাউন্ট সেটিংস</h2>
+                <div class="header-right">
+                    <i class="fas fa-sign-out-alt" title="লগআউট" onclick="window.location.href='logout.html'"></i>
+                </div>
+            </div>
+            <div class="content">
+                <div class="card-grid">
+                    <!-- প্রোফাইল তথ্য -->
+                    <div class="card">
+                        <i class="fas fa-user"></i>
+                        <h4>প্রোফাইল তথ্য</h4>
+                        <p>আপনার নাম, ইমেইল, এবং ছবি আপডেট করুন</p>
+                        <button class="action-btn" onclick="showProfileForm()">এডিট করুন</button>
+                    </div>
+                    <!-- পাসওয়ার্ড এবং নিরাপত্তা -->
+                    <div class="card">
+                        <i class="fas fa-lock"></i>
+                        <h4>পাসওয়ার্ড এবং নিরাপত্তা</h4>
+                        <p>পাসওয়ার্ড পরিবর্তন এবং 2FA সেটআপ</p>
+                        <button class="action-btn" onclick="showSecurityForm()">এডিট করুন</button>
+                    </div>
+                    <!-- নোটিফিকেশন সেটিংস -->
+                    <div class="card">
+                        <i class="fas fa-bell"></i>
+                        <h4>নোটিফিকেশন সেটিংস</h4>
+                        <p>ইমেইল, পুশ, এবং এসএমএস নোটিফিকেশন নিয়ন্ত্রণ করুন</p>
+                        <button class="action-btn" onclick="showNotificationForm()">এডিট করুন</button>
+                    </div>
+                    <!-- ভাষা এবং থিম -->
+                    <div class="card">
+                        <i class="fas fa-globe"></i>
+                        <h4>ভাষা এবং থিম</h4>
+                        <p>ভাষা এবং ডিসপ্লে থিম বেছে নিন</p>
+                        <button class="action-btn" onclick="showLanguageForm()">এডিট করুন</button>
+                    </div>
+                    <!-- অ্যাকাউন্ট ম্যানেজমেন্ট -->
+                    <div class="card">
+                        <i class="fas fa-cog"></i>
+                        <h4>অ্যাকাউন্ট ম্যানেজমেন্ট</h4>
+                        <p>ডাটা এক্সপোর্ট বা অ্যাকাউন্ট ডিলিট করুন</p>
+                        <button class="action-btn" onclick="showAccountManagement()">এডিট করুন</button>
+                    </div>
+                </div>
+            </div>
+            <!-- ফুটার -->
+            <div class="footer">
+                <p>© ২০২৫ ফর্মবন্ধু | সব স্বত্ব সংরক্ষিত</p>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
