@@ -4,62 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="ফর্মবন্ধু স্ট্যাটাস ট্র্যাকার পেজ">
+    <meta name="description" content="স্ট্যাটাস ট্র্যাকার - আপনার আবেদনের স্ট্যাটাস চেক করুন">
     <title>স্ট্যাটাস ট্র্যাকার</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap">
     <link rel="stylesheet" href="status.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Main Content -->
         <div class="main-content">
             <div class="header">
-                <div class="header-left">
-                    <i class="fas fa-list-check header-icon"></i>
-                    <h2>স্ট্যাটাস ট্র্যাকার</h2>
-                </div>
+                <h2>স্ট্যাটাস ট্র্যাকার</h2>
                 <div class="header-right">
-                    <i class="fas fa-cog settings-icon" title="Settings" onclick="window.location.href='settings.html'"></i>
+                    <i class="fas fa-cog settings-icon" title="Account" onclick="window.location.href='settings.html'"></i>
                 </div>
             </div>
             <div class="content">
-                <div class="search-section">
-                    <h2 class="search-title">আপনার আবেদন ট্র্যাক করুন</h2>
-                    <div class="search-container">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="searchInput" placeholder="আবেদন আইডি লিখুন" aria-label="সার্চ">
+                <div class="search-container">
+                    <h3>আপনার আবেদন ট্র্যাক করুন</h3>
+                    <div class="search-card">
+                        <input type="text" id="applicationId" placeholder="আবেদন আইডি লিখুন" class="search-input">
                         <button id="searchBtn" class="search-btn">সার্চ</button>
                     </div>
+                    <p id="noResult" class="no-result">আবেদন আইডি নেই সার্চ করা</p>
                 </div>
-                <div class="result-container">
-                    <!-- Default Message -->
-                    <div class="default-message">
-                        <p>আবেদন আইডি দিয়ে সার্চ করুন</p>
-                    </div>
-                    <!-- Dummy Data for Preview -->
-                    <div class="application-card" style="display: none;">
-                        <div class="card-header">
-                            <span class="application-id">APP123</span>
-                            <span class="application-status status-completed">কমপ্লিটেড</span>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>আবেদনের ধরন:</strong> পাসপোর্ট আবেদন</p>
-                            <p><strong>জমার তারিখ:</strong> ২০২৫-০৫-১৫</p>
-                            <p><strong>স্ট্যাটাস:</strong> <span class="status-completed">কমপ্লিটেড</span></p>
-                            <p><strong>পরবর্তী ধাপ:</strong> পাসপোর্ট সংগ্রহ করুন</p>
-                        </div>
-                    </div>
-                </div>
-                <div id="loading" class="loading">লোড হচ্ছে...</div>
             </div>
-            <!-- Footer -->
             <div class="footer">
-                <p>© ২০২৫ ফর্মবন্ধু | সব স্বত্ব সংরক্ষিত</p>
+                <p>© ২০২৫ কামরুন | সব স্বত্ব সংরক্ষিত</p>
             </div>
         </div>
     </div>
-    <script src="main.js"></script>
+    <script src="status-tracker.js"></script>
 </body>
 </html>
