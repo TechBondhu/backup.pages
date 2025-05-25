@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="ফর্মবন্ধু পেমেন্ট ইতিহাস পেজ">
+    <title>পেমেন্ট ইতিহাস</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap">
+    <link rel="stylesheet" href="payment.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <i class="fas fa-credit-card header-icon"></i>
+                    <h2>পেমেন্ট ইতিহাস</h2>
+                </div>
+                <div class="header-right">
+                    <i class="fas fa-cog settings-icon" title="Settings" onclick="window.location.href='settings.html'"></i>
+                </div>
+            </div>
+            <div class="content">
+                <div class="table-container">
+                    <table id="paymentTable">
+                        <thead>
+                            <tr>
+                                <th data-label="পেমেন্ট আইডি">পেমেন্ট আইডি</th>
+                                <th data-label="পরিমাণ">পরিমাণ</th>
+                                <th data-label="মেথড">মেথড</th>
+                                <th data-label="তারিখ">তারিখ</th>
+                                <th data-label="স্ট্যাটাস">স্ট্যাটাস</th>
+                                <th data-label="বিস্তারিত">বিস্তারিত</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                    <div id="loading" class="loading">লোড হচ্ছে...</div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="footer">
+                <p>© ২০২৫ ফর্মবন্ধু | সব স্বত্ব সংরক্ষিত</p>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
