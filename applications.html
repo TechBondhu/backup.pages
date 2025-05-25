@@ -38,11 +38,81 @@
                                 <th data-label="আবেদন আইডি">আবেদন আইডি</th>
                                 <th data-label="ধরন">ধরন</th>
                                 <th data-label="জমার তারিখ">জমার তারিখ</th>
+                                <th data-label="স্ট্যাটাস">স্ট্যাটাস</th>
                                 <th data-label="অ্যাকশন">বিস্তারিত</th>
                             </tr>
                         </thead>
                         <tbody id="applicationTableBody">
-                            <!-- Data will be populated by JavaScript -->
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP101</td>
+                                <td data-label="ধরন">পাসপোর্ট আবেদন</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-২৩</td>
+                                <td data-label="স্ট্যাটাস" class="status-completed">কমপ্লিটেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP102</td>
+                                <td data-label="ধরন">ভিসা আবেদন</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-২০</td>
+                                <td data-label="স্ট্যাটাস" class="status-pending">পেন্ডিং</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP103</td>
+                                <td data-label="ধরন">ড্রাইভিং লাইসেন্স</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-১৮</td>
+                                <td data-label="স্ট্যাটাস" class="status-rejected">রিজেক্টেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP104</td>
+                                <td data-label="ধরন">জাতীয় পরিচয়পত্র</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-১৫</td>
+                                <td data-label="স্ট্যাটাস" class="status-completed">কমপ্লিটেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP105</td>
+                                <td data-label="ধরন">পাসপোর্ট আবেদন</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-১২</td>
+                                <td data-label="স্ট্যাটাস" class="status-pending">পেন্ডিং</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP106</td>
+                                <td data-label="ধরন">ভিসা আবেদন</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-১০</td>
+                                <td data-label="স্ট্যাটাস" class="status-rejected">রিজেক্টেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP107</td>
+                                <td data-label="ধরন">টিন সার্টিফিকেট</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-০৮</td>
+                                <td data-label="স্ট্যাটাস" class="status-completed">কমপ্লিটেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP108</td>
+                                <td data-label="ধরন">জন্ম সনদ</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৫-০৫</td>
+                                <td data-label="স্ট্যাটাস" class="status-pending">পেন্ডিং</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP109</td>
+                                <td data-label="ধরন">ভিসা আবেদন</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৪-৩০</td>
+                                <td data-label="স্ট্যাটাস" class="status-completed">কমপ্লিটেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
+                            <tr>
+                                <td data-label="আবেদন আইডি">APP110</td>
+                                <td data-label="ধরন">পাসপোর্ট আবেদন</td>
+                                <td data-label="জমার তারিখ">২০২৫-০৪-২৮</td>
+                                <td data-label="স্ট্যাটাস" class="status-rejected">রিজেক্টেড</td>
+                                <td data-label="অ্যাকশন"><button class="action-btn">বিস্তারিত</button></td>
+                            </tr>
                         </tbody>
                     </table>
                     <div id="loading" class="loading">লোড হচ্ছে...</div>
