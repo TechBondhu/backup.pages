@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>নোটিফিকেশন</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap">
+    <link rel="stylesheet" href="notifications.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>ফর্মবন্ধু ড্যাশবোর্ড</h3>
+                <i class="fas fa-times sidebar-close" id="closeSidebar" title="Close Sidebar"></i>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-gauge-high"></i> ড্যাশবোর্ড</a></li>
+                <li><a href="applications.html"><i class="fas fa-list"></i> আবেদন তালিকা</a></li>
+                <li class="active"><a href="notifications.html"><i class="fas fa-bell"></i> নোটিফিকেশন</a></li>
+                <li><a href="help.html"><i class="fas fa-question-circle"></i> সহায়তা</a></li>
+                <li><a href="payment.html"><i class="fas fa-credit-card"></i> পেমেন্ট ইতিহাস</a></li>
+                <li><a href="status.html"><i class="fas fa-tasks"></i> স্ট্যাটাস ট্র্যাকার</a></li>
+                <li><a href="datareview.html"><i class="fas fa-file-alt"></i> ডেটা পর্যালোচনা</a></li>
+                <li><a href="analytics.html"><i class="fas fa-chart-line"></i> ইউজার অ্যানালিটিক্স</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <i class="fas fa-bars sidebar-toggle" id="sidebarToggle" title="Menu"></i>
+                <h2>নোটিফিকেশন</h2>
+                <div class="header-right">
+                    <i class="fas fa-user account-icon" title="Account" onclick="window.location.href='account.html'"></i>
+                </div>
+            </div>
+            <div class="content">
+                <div class="filter-container">
+                    <i class="fas fa-filter filter-icon"></i>
+                    <select id="notificationFilter" aria-label="নোটিফিকেশন ফিল্টার">
+                        <option value="all">সব</option>
+                        <option value="unread">অপঠিত</option>
+                        <option value="read">পঠিত</option>
+                    </select>
+                </div>
+                <div class="notification-container">
+                    <div class="notification-card unread">
+                        <i class="fas fa-bell notification-icon"></i>
+                        <div class="notification-content">
+                            <h3>নতুন আবেদন জমা হয়েছে</h3>
+                            <p>আপনার আবেদন #123 জমা হয়েছে।</p>
+                            <span class="notification-time">২৫ মে ২০২৫, ৯:৫৪ AM</span>
+                        </div>
+                        <a href="#" class="action-btn">বিস্তারিত দেখুন</a>
+                    </div>
+                    <div class="notification-card">
+                        <i class="fas fa-info-circle notification-icon"></i>
+                        <div class="notification-content">
+                            <h3>পেমেন্ট সফল হয়েছে</h3>
+                            <p>আপনার লেনদেন #456 সম্পন্ন।</p>
+                            <span class="notification-time">২৪ মে ২০২৫, ৩:২০ PM</span>
+                        </div>
+                        <a href="#" class="action-btn">বিস্তারিত দেখুন</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#sidebarToggle').click(function() {
+                $('#sidebar').addClass('active');
+            });
+            $('#closeSidebar').click(function() {
+                $('#sidebar').removeClass('active');
+            });
+
+            // Page load animation
+            $(window).on('load', function() {
+                $('.main-content').hide().fadeIn(800).css('transform', 'translateY(0)').css('opacity', '1');
+            });
+
+            // Hover effect on notification cards
+            $('.notification-card').hover(
+                function() {
+                    $(this).css('transform', 'scale(1.02)').css('box-shadow', '0 4px 12px rgba(0, 0, 0, 0.2)');
+                },
+                function() {
+                    $(this).css('transform', 'scale(1)').css('box-shadow', '0 2px 6px rgba(0, 0, 0, 0.1)');
+                }
+            );
+        });
+    </script>
+</body>
+</html>
