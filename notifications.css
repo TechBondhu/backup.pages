@@ -73,7 +73,7 @@ body {
 /* Main Content */
 .main-content {
     flex: 1;
-    padding: 20px;
+    padding: 0;
     background: transparent;
 }
 
@@ -85,7 +85,7 @@ body {
     color: #ffffff;
     padding: 15px 25px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    border-radius: 0 0 10px 10px;
+    border-radius: 0; /* Radius সরানো হয়েছে */
 }
 
 .header h2 {
@@ -109,12 +109,12 @@ body {
 /* Notification Area */
 .notification-area {
     min-height: 400px;
-    background: linear-gradient(90deg, #1E3A8A, #2A5298);
-    border: none;
+    background-color: #ffffff;
+    border: 1px solid #E5E7EB;
     border-radius: 0;
     padding: 20px;
     text-align: center;
-    color: #ffffff;
+    color: #6B7280;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 1.1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -148,11 +148,10 @@ body {
         transform: translateX(0);
     }
     .main-content {
-        padding: 15px;
+        padding: 0;
     }
     .header {
         padding: 10px 15px;
-        border-radius: 0;
     }
     .header h2 {
         font-size: 1.2rem;
