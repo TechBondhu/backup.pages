@@ -9,7 +9,7 @@ body {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
-    flex-direction: column;
+    flex-direction: row; /* Changed to row for desktop */
 }
 
 /* Sidebar */
@@ -28,6 +28,21 @@ body {
 
 .sidebar.active {
     transform: translateX(0); /* Show sidebar when active */
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.sidebar-overlay.active {
+    display: block;
 }
 
 .sidebar-header {
@@ -84,7 +99,12 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    width: 100%; /* Full width since sidebar is hidden by default */
+    width: 100%;
+    transition: width 0.3s ease; /* Smooth width transition for desktop */
+}
+
+.sidebar.active ~ .main-content {
+    width: calc(100% - 250px); /* Shrink main content when sidebar is active */
 }
 
 /* Header */
@@ -107,14 +127,6 @@ body {
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 1.4rem;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Space between icon and text */
-}
-
-.header h2 i {
-    color: #ffffff;
-    font-size: 1.4rem;
 }
 
 .header-right i {
@@ -143,6 +155,8 @@ body {
     border-radius: 5px;
     flex: 1;
     min-height: calc(100vh - 135px); /* Adjust for header and footer */
+    overflow-x: auto; /* Smooth scrolling for mobile */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
 }
 
 /* Filter */
@@ -260,13 +274,22 @@ tr:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column; /* Stack vertically on mobile */
+    }
+    .sidebar {
+        width: 100%; /* Full width on mobile */
+    }
+    .sidebar.active ~ .main-content {
+        width: 100%; /* No shrink on mobile */
+    }
+    .sidebar.active ~ .sidebar-overlay {
+        display: block; /* Show overlay on mobile */
+    }
     .header {
         padding: 10px 15px;
     }
     .header h2 {
-        font-size: 1.2rem;
-    }
-    .header h2 i {
         font-size: 1.2rem;
     }
     .header-right i, .sidebar-toggle {
@@ -277,7 +300,6 @@ tr:hover {
     }
     .table-container {
         padding: 10px;
-        overflow-x: auto;
         min-height: calc(100vh - 110px); /* Adjust for mobile header and footer */
     }
     table {
@@ -303,20 +325,16 @@ tr:hover {
     .header h2 {
         font-size: 1rem;
     }
-    .header h2 i {
-        font-size: 1rem;
-    }
     .header-right i, .sidebar-toggle {
         font-size: 1rem;
     }
     .sidebar {
-        width: 200px;
+        width: 100%;
     }
     .content {
         padding: 10px;
     }
     .table-container {
-        padding: 10px;
         min-height: calc(100vh - 100px); /* Adjust for smaller header and footer */
     }
     th, td {
@@ -350,6 +368,6 @@ tr:hover {
 }
 
 /* Performance optimization */
-*:not(.main-content, .action-btn, .sidebar-menu li a, #statusFilter, .sidebar) {
+*:not(.main-content, .action-btn, .sidebar-menu li a, #statusFilter, .sidebar, .sidebar-overlay) {
     transition: none !important;
 }
