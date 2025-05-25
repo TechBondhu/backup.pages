@@ -35,7 +35,7 @@
         <div class="main-content">
             <div class="header">
                 <i class="fas fa-bars sidebar-toggle" id="sidebarToggle" title="Menu"></i>
-                <h2>আবেদন তালিকা</h2>
+                <h2><i class="fas fa-list"></i> আবেদন তালিকা</h2>
                 <div class="header-right">
                     <i class="fas fa-user account-icon" title="Account" onclick="window.location.href='account.html'"></i>
                 </div>
@@ -75,13 +75,10 @@
     </div>
 
     <script>
-        // Sidebar toggle functionality
+        // Sidebar toggle functionality with animation
         $(document).ready(function() {
-            $('#sidebarToggle').click(function() {
-                $('#sidebar').addClass('active');
-            });
-            $('#closeSidebar').click(function() {
-                $('#sidebar').removeClass('active');
+            $('#sidebarToggle, #closeSidebar').click(function() {
+                $('#sidebar').toggleClass('active');
             });
 
             // Page load animation
