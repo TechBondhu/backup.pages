@@ -129,14 +129,9 @@ th, td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #E5E7EB;
-    border-right: 1px solid #E5E7EB;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem;
     white-space: nowrap;
-}
-
-th:last-child, td:last-child {
-    border-right: none;
 }
 
 th {
