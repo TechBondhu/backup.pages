@@ -2,7 +2,7 @@ body {
     margin: 0;
     font-family: 'Roboto', 'Tiro Bangla', sans-serif;
     background-color: #E5E7EB;
-    overflow-x: hidden; /* Prevent horizontal scroll on body */
+    overflow-x: hidden;
 }
 
 .dashboard-container {
@@ -10,20 +10,14 @@ body {
     min-height: 100vh;
     flex-direction: column;
     width: 100%;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 
-/* Sidebar (Styled like notification-area) */
+/* Sidebar (Styled like notifications sidebar with blue background and white text) */
 .sidebar {
     width: 250px;
-    background-color: #ffffff;
-    border: 1px solid #E5E7EB;
-    border-radius: 5px;
-    padding: 20px;
-    color: #6B7280;
-    font-family: 'Tiro Bangla', sans-serif;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #1E3A8A, #2A5298);
+    color: #ffffff;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -34,8 +28,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    overflow-y: auto; /* Vertical scroll for sidebar */
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar.active {
@@ -43,19 +38,21 @@ body {
 }
 
 .sidebar-header {
-    padding: 0;
+    padding: 20px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: none;
+    background: #1E3A8A;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
 }
 
 .sidebar-header h3 {
     margin: 0;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 1.2rem;
-    color: #1E3A8A;
+    color: #ffffff;
 }
 
 .sidebar-menu {
@@ -66,12 +63,13 @@ body {
 }
 
 .sidebar-menu li {
-    padding: 15px 0;
+    padding: 15px 20px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .sidebar-menu li a {
-    color: #1E3A8A;
+    color: #ffffff;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -79,19 +77,21 @@ body {
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 1rem;
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 0;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 .sidebar-menu li a:hover {
-    background-color: #E5E7EB;
-    border-radius: 5px;
+    background: linear-gradient(90deg, #3B82F6, #60A5FA);
+    border-radius: 0;
+    transform: translateX(5px);
 }
 
 .sidebar-close, .sidebar-toggle {
     cursor: pointer;
     font-size: 1.2rem;
-    color: #1E3A8A;
+    color: #ffffff;
 }
 
 /* Main Content */
@@ -101,7 +101,7 @@ body {
     background-color: #f3f4f6;
     width: 100%;
     box-sizing: border-box;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 
 /* Header */
@@ -154,7 +154,7 @@ body {
     margin-top: 20px;
     width: 100%;
     box-sizing: border-box;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 
 .content h3 {
