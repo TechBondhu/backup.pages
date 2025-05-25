@@ -230,10 +230,14 @@ body {
         justify-content: space-between;
     }
     .detail-btn {
-        width: 100%;
-        padding: 8px;
+        max-width: 200px; /* বাটনের সাইজ সীমিত করা */
+        width: auto; /* 100% থেকে অটো */
+        padding: 8px 15px;
         font-size: 0.9rem;
-        margin-top: 10px;
+        margin-top: 15px; /* নিচে অতিরিক্ত স্পেস */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
     .footer {
         padding: 10px 15px;
@@ -264,6 +268,8 @@ body {
         font-size: 0.85rem;
     }
     .detail-btn {
+        max-width: 180px; /* ছোট স্ক্রিনে বাটন সাইজ কম */
+        padding: 6px 12px;
         font-size: 0.85rem;
     }
     .footer {
