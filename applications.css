@@ -9,10 +9,10 @@ body {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
-    flex-direction: row;
+    flex-direction: column; /* Changed to column to match layout */
 }
 
-/* Sidebar */
+/* Sidebar (Copied from the first code) */
 .sidebar {
     width: 250px;
     background: linear-gradient(135deg, #1E3A8A, #2A5298);
@@ -60,11 +60,6 @@ body {
     font-size: 1.2rem;
 }
 
-.sidebar-close, .sidebar-toggle {
-    cursor: pointer;
-    font-size: 1.2rem;
-}
-
 .sidebar-menu {
     list-style: none;
     padding: 0;
@@ -92,6 +87,11 @@ body {
     color: #ffffff;
     border-radius: 0;
     transform: translateX(5px);
+}
+
+.sidebar-close, .sidebar-toggle {
+    cursor: pointer;
+    font-size: 1.2rem;
 }
 
 /* Main Content */
@@ -333,32 +333,9 @@ tr:hover {
     }
     .sidebar {
         width: 100%;
-        transform: translateX(-100%);
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    .sidebar.active ~ .main-content {
-        width: 100%;
-    }
-    .sidebar.active ~ .sidebar-overlay {
-        display: block;
-    }
-    .header {
-        padding: 10px 15px;
-    }
-    .header h2 {
-        font-size: 1.2rem;
-    }
-    .header h2 i {
-        font-size: 1.2rem;
-    }
-    .header-right i, .sidebar-toggle {
-        font-size: 1.2rem;
     }
     .content {
         padding: 10px;
-        flex: 1;
     }
     .table-container {
         min-height: calc(100vh - 100px);
@@ -394,6 +371,6 @@ tr:hover {
 }
 
 /* Performance optimization */
-*:not(.main-content, .action-btn, .sidebar-menu li a, #statusFilter, .sidebar, .sidebar-overlay, .sidebar-close) {
+*:not(.main-content, .action-btn, .sidebar-menu li a, #statusFilter, .sidebar, .sidebar-overlay) {
     transition: none !important;
 }
