@@ -153,4 +153,4 @@ function closeGenresModalFunc(genresModal) {
 
 // Export Functions
 export { genres, renderGenresList, openGenresModal, closeGenresModalFunc };
-```
+ 
