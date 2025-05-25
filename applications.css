@@ -52,7 +52,7 @@ body {
     align-items: center;
     background: #1E3A8A;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    position: relative; /* Ensure cross button positioning */
+    position: relative;
 }
 
 .sidebar-header h3 {
@@ -63,14 +63,14 @@ body {
 
 .sidebar-close {
     cursor: pointer;
-    font-size: 1.4rem; /* Slightly larger for visibility */
+    font-size: 1.4rem;
     color: #ffffff;
     transition: color 0.3s ease;
     position: absolute;
     right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1001; /* Ensure above other elements */
+    z-index: 1001;
 }
 
 .sidebar-close:hover {
@@ -340,7 +340,7 @@ tr:hover {
         font-size: 0.85rem;
     }
     .sidebar-close {
-        font-size: 1.3rem; /* Slightly larger for mobile */
+        font-size: 1.3rem;
         right: 15px;
     }
 }
