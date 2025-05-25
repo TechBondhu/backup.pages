@@ -52,7 +52,6 @@ body {
     align-items: center;
     background: #1E3A8A;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    position: relative;
 }
 
 .sidebar-header h3 {
@@ -61,20 +60,9 @@ body {
     font-size: 1.2rem;
 }
 
-.sidebar-close {
+.sidebar-close, .sidebar-toggle {
     cursor: pointer;
     font-size: 1.2rem;
-    color: #ffffff;
-    transition: color 0.3s ease;
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1001;
-}
-
-.sidebar-close:hover {
-    color: #60A5FA;
 }
 
 .sidebar-menu {
@@ -104,11 +92,6 @@ body {
     color: #ffffff;
     border-radius: 0;
     transform: translateX(5px);
-}
-
-.sidebar-toggle {
-    cursor: pointer;
-    font-size: 1.2rem;
 }
 
 /* Main Content */
