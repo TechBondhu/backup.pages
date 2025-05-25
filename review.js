@@ -1,4 +1,3 @@
-```javascript
 // Display Review
 function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatId, generatePDF, displayMessage, sanitizeMessage) {
     const reviewCard = document.createElement('div');
@@ -272,4 +271,4 @@ async function generatePDF(reviewData, reviewCard) {
 
 // Export Functions
 export { displayReview, toggleEditMode, generatePDF };
-```
+ 
