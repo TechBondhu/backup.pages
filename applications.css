@@ -333,9 +333,32 @@ tr:hover {
     }
     .sidebar {
         width: 100%;
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .sidebar.active ~ .main-content {
+        width: 100%;
+    }
+    .sidebar.active ~ .sidebar-overlay {
+        display: block;
+    }
+    .header {
+        padding: 10px 15px;
+    }
+    .header h2 {
+        font-size: 1.2rem;
+    }
+    .header h2 i {
+        font-size: 1.2rem;
+    }
+    .header-right i, .sidebar-toggle {
+        font-size: 1.2rem;
     }
     .content {
-        padding: 5px;
+        padding: 10px;
+        flex: 1;
     }
     .table-container {
         min-height: calc(100vh - 100px);
