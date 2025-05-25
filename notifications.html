@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap">
     <link rel="stylesheet" href="notifications.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="notifications.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -48,33 +46,15 @@
                         <option value="read">পঠিত</option>
                     </select>
                 </div>
-                <div class="notification-container" id="notificationContainer">
-                    <!-- Notifications will be populated dynamically -->
+                <div class="notification-area">
+                    <p>নোটিফিকেশন এলাকা (পরে ডাটা যোগ হবে)</p>
                 </div>
-                <div id="noNotifications" class="no-notifications">
-                    <p>কোনো নোটিফিকেশন নেই।</p>
-                </div>
+            </div>
+            <!-- Footer (Optional) -->
+            <div class="footer">
+                <p>© ২০২৫ ফর্মবন্ধু | সব স্বত্ব সংরক্ষিত</p>
             </div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            $('#sidebarToggle').click(function() {
-                $('#sidebar').addClass('active');
-            });
-            $('#closeSidebar').click(function() {
-                $('#sidebar').removeClass('active');
-            });
-
-            // Page load animation
-            $(window).on('load', function() {
-                $('.main-content').hide().fadeIn(600).css('transform', 'translateY(0)').css('opacity', '1');
-            });
-
-            // Load notifications on page load
-            loadNotifications();
-        });
-    </script>
 </body>
 </html>
