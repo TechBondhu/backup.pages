@@ -130,4 +130,4 @@ function hideSidebar(sidebar, chatContainer) {
 
 // Export Functions
 export { saveChatHistory, loadChatHistory, loadChat, startNewChat, toggleSidebar, hideSidebar };
-```
+ 
