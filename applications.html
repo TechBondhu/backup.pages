@@ -30,12 +30,13 @@
                 <li><a href="analytics.html"><i class="fas fa-chart-line"></i> ইউজার অ্যানালিটিক্স</a></li>
             </ul>
         </div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Main Content -->
         <div class="main-content">
             <div class="header">
                 <i class="fas fa-bars sidebar-toggle" id="sidebarToggle" title="Menu"></i>
-                <h2><i class="fas fa-list"></i> আবেদন তালিকা</h2>
+                <h2>আবেদন তালিকা</h2>
                 <div class="header-right">
                     <i class="fas fa-user account-icon" title="Account" onclick="window.location.href='account.html'"></i>
                 </div>
@@ -74,18 +75,6 @@
         </div>
     </div>
 
-    <script>
-        // Sidebar toggle functionality with animation
-        $(document).ready(function() {
-            $('#sidebarToggle, #closeSidebar').click(function() {
-                $('#sidebar').toggleClass('active');
-            });
-
-            // Page load animation
-            $(window).on('load', function() {
-                $('.main-content').hide().fadeIn(800).css('transform', 'translateY(0)').css('opacity', '1');
-            });
-        });
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>
