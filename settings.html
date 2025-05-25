@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formbondhu Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="dashstyle.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="ফর্মবন্ধু সেটিংস পেজ">
+    <title>সেটিংস</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Tiro+Bangla:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="settings.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -26,64 +28,46 @@
                 <li><a href="status.html"><i class="fas fa-tasks"></i> স্ট্যাটাস ট্র্যাকার</a></li>
                 <li><a href="datareview.html"><i class="fas fa-file-alt"></i> ডেটা পর্যালোচনা</a></li>
                 <li><a href="analytics.html"><i class="fas fa-chart-line"></i> ইউজার অ্যানালিটিক্স</a></li>
+                <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> সেটিংস</a></li>
             </ul>
         </div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <!-- Main Content -->
         <div class="main-content">
             <div class="header">
                 <i class="fas fa-bars sidebar-toggle" id="sidebarToggle" title="Menu"></i>
-                <h2>ফর্মবন্ধু ড্যাশবোর্ড</h2>
+                <h2>সেটিংস</h2>
                 <div class="header-right">
                     <i class="fas fa-user account-icon" title="Account" onclick="window.location.href='account.html'"></i>
                 </div>
             </div>
             <div class="content">
-                <h3>ওভারভিউ</h3>
-                <div class="card-grid">
-                    <a href="dashboard.html" class="card">
-                        <i class="fas fa-gauge-high"></i>
-                        <h4>ড্যাশবোর্ড</h4>
-                        <p>আপনার সকল তথ্যের সারাংশ দেখুন</p>
-                    </a>
-                    <a href="applications.html" class="card">
-                        <i class="fas fa-list"></i>
-                        <h4>আবেদন তালিকা</h4>
-                        <p>আপনার সকল আবেদনের তালিকা</p>
-                    </a>
-                    <a href="notifications.html" class="card">
-                        <i class="fas fa-bell"></i>
-                        <h4>নোটিফিকেশন</h4>
-                        <p>বিজ্ঞপ্তি এবং গুরুত্বপূর্ণ ঘোষণা</p>
-                    </a>
-                    <a href="help.html" class="card">
-                        <i class="fas fa-question-circle"></i>
-                        <h4>সহায়তা</h4>
-                        <p>FAQ এবং সহায়তা তথ্য</p>
-                    </a>
-                    <a href="payment.html" class="card">
-                        <i class="fas fa-credit-card"></i>
-                        <h4>পেমেন্ট ইতিহাস</h4>
-                        <p>আপনার পেমেন্টের বিস্তারিত</p>
-                    </a>
-                    <a href="status.html" class="card">
-                        <i class="fas fa-tasks"></i>
-                        <h4>স্ট্যাটাস ট্র্যাকার</h4>
-                        <p>আবেদনের স্ট্যাটাস ট্র্যাক করুন</p>
-                    </a>
-                    <a href="datareview.html" class="card">
-                        <i class="fas fa-file-alt"></i>
-                        <h4>ডেটা পর্যালোচনা</h4>
-                        <p>আপনার ডেটা পর্যালোচনা করুন</p>
-                    </a>
-                    <a href="analytics.html" class="card">
-                        <i class="fas fa-chart-line"></i>
-                        <h4>ইউজার অ্যানালিটিক্স</h4>
-                        <p>আপনার কার্যকলাপের বিশ্লেষণ</p>
-                    </a>
+                <h3>সেটিংস</h3>
+                <div class="settings-container">
+                    <div class="setting-item">
+                        <h4>প্রোফাইল সেটিংস</h4>
+                        <p>নাম, ইমেইল এবং পাসওয়ার্ড আপডেট করুন</p>
+                        <button class="action-btn">এডিট প্রোফাইল</button>
+                    </div>
+                    <div class="setting-item">
+                        <h4>নোটিফিকেশন সেটিংস</h4>
+                        <p>ইমেইল এবং পুশ নোটিফিকেশন ম্যানেজ করুন</p>
+                        <button class="action-btn">ম্যানেজ নোটিফিকেশন</button>
+                    </div>
+                    <div class="setting-item">
+                        <h4>ভাষা সেটিংস</h4>
+                        <p>আপনার পছন্দের ভাষা নির্বাচন করুন</p>
+                        <button class="action-btn">ভাষা পরিবর্তন</button>
+                    </div>
                 </div>
+            </div>
+            <!-- Footer -->
+            <div class="footer">
+                <p>© ২০২৫ ফর্মবন্ধু | সব স্বত্ব সংরক্ষিত</p>
             </div>
         </div>
     </div>
     <script src="main.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'944d8967ed407c39',t:'MTc0ODA5NzUwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
