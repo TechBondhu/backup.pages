@@ -70,18 +70,23 @@ body {
     background: transparent;
 }
 
+/* Table Container */
 .table-container {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: 60vh;
-    overflow-y: auto;
+    flex: 1;
+    min-height: calc(100vh - 135px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
+/* Table */
 #paymentTable {
     width: 100%;
     border-collapse: collapse;
+    border: 1px solid #E5E7EB;
 }
 
 #paymentTable th, #paymentTable td {
@@ -90,6 +95,7 @@ body {
     border-bottom: 1px solid #E5E7EB;
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 #paymentTable th {
@@ -136,6 +142,7 @@ body {
     transform: scale(1.05);
 }
 
+/* Loading Animation */
 .loading {
     text-align: center;
     color: #3B82F6;
@@ -174,8 +181,8 @@ body {
     }
     .table-container {
         padding: 0;
-        max-height: none;
-        overflow-y: visible;
+        min-height: calc(100vh - 110px);
+        overflow-x: hidden;
         background: transparent;
         box-shadow: none;
     }
@@ -230,11 +237,11 @@ body {
         justify-content: space-between;
     }
     .detail-btn {
-        max-width: 200px; /* বাটনের সাইজ সীমিত করা */
-        width: auto; /* 100% থেকে অটো */
+        max-width: 200px;
+        width: auto;
         padding: 8px 15px;
         font-size: 0.9rem;
-        margin-top: 15px; /* নিচে অতিরিক্ত স্পেস */
+        margin-top: 15px;
         display: block;
         margin-left: auto;
         margin-right: auto;
@@ -259,7 +266,7 @@ body {
         padding: 10px;
     }
     .table-container {
-        padding: 0;
+        min-height: calc(100vh - 100px);
     }
     #paymentTable tr {
         padding: 10px;
@@ -268,7 +275,7 @@ body {
         font-size: 0.85rem;
     }
     .detail-btn {
-        max-width: 180px; /* ছোট স্ক্রিনে বাটন সাইজ কম */
+        max-width: 180px;
         padding: 6px 12px;
         font-size: 0.85rem;
     }
