@@ -82,22 +82,81 @@ body {
     font-size: 1.1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 }
 
-.notification-area p {
+.notification-list {
+    list-style: none;
+    padding: 0;
     margin: 0;
+}
+
+.notification-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding: 15px;
+    border-bottom: 1px solid #E5E7EB;
+    transition: background-color 0.3s ease;
 }
 
-.notification-area i {
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background-color: #F5F5F5;
+}
+
+.notification-icon {
+    margin-right: 15px;
+}
+
+.notification-icon i {
     color: #1E3A8A;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-content h3 {
+    margin: 0;
+    font-family: 'Tiro Bangla', sans-serif;
+    font-size: 1.1rem;
+    color: #1E3A8A;
+}
+
+.notification-content p {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    color: #6B7280;
+}
+
+.notification-time {
+    display: block;
+    font-size: 0.8rem;
+    color: #9CA3AF;
+    margin-top: 5px;
+}
+
+.action-btn {
+    background-color: #3B82F6;
+    color: #ffffff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 0;
+    cursor: pointer;
+    font-family: 'Tiro Bangla', sans-serif;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: #1E3A8A;
+    transform: scale(1.05);
 }
 
 /* Footer */
@@ -140,6 +199,22 @@ body {
         min-height: calc(100vh - 60px - 50px); /* Adjust for header (60px) and footer (50px) */
         margin-bottom: 50px; /* Space for fixed footer */
     }
+    .notification-item {
+        padding: 10px;
+    }
+    .notification-content h3 {
+        font-size: 1rem;
+    }
+    .notification-content p {
+        font-size: 0.85rem;
+    }
+    .notification-time {
+        font-size: 0.75rem;
+    }
+    .action-btn {
+        font-size: 0.75rem;
+        padding: 5px 8px;
+    }
     .footer {
         position: fixed;
         bottom: 0;
@@ -168,6 +243,22 @@ body {
         min-height: calc(100vh - 50px - 45px); /* Adjust for smaller header and footer */
         margin-bottom: 45px;
     }
+    .notification-item {
+        padding: 8px;
+    }
+    .notification-content h3 {
+        font-size: 0.9rem;
+    }
+    .notification-content p {
+        font-size: 0.8rem;
+    }
+    .notification-time {
+        font-size: 0.7rem;
+    }
+    .action-btn {
+        font-size: 0.7rem;
+        padding: 4px 6px;
+    }
     .footer {
         padding: 10px 15px;
         font-size: 0.8rem;
@@ -190,6 +281,6 @@ body {
 }
 
 /* Performance optimization */
-*:not(.main-content, .header-right i, .notification-area i) {
+*:not(.main-content, .header-right i, .notification-area i, .notification-item, .action-btn) {
     transition: none !important;
 }
