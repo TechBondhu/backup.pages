@@ -9,6 +9,7 @@ body {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
+    flex-direction: column;
 }
 
 /* Sidebar */
@@ -16,12 +17,17 @@ body {
     width: 250px;
     background: linear-gradient(135deg, #1E3A8A, #2A5298);
     color: #ffffff;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease; /* Smooth animation for sidebar */
     position: fixed;
     top: 0;
     bottom: 0;
     z-index: 1000;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    transform: translateX(-100%); /* Hide sidebar by default */
+}
+
+.sidebar.active {
+    transform: translateX(0); /* Show sidebar when active */
 }
 
 .sidebar-header {
@@ -78,7 +84,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin-left: 250px; /* Match sidebar width for desktop */
+    width: 100%; /* Full width since sidebar is hidden by default */
 }
 
 /* Header */
@@ -101,6 +107,14 @@ body {
     font-family: 'Tiro Bangla', sans-serif;
     font-size: 1.4rem;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+.header h2 i {
+    color: #ffffff;
+    font-size: 1.4rem;
 }
 
 .header-right i {
@@ -246,19 +260,13 @@ tr:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    .main-content {
-        margin-left: 0; /* Remove sidebar space on mobile */
-    }
     .header {
         padding: 10px 15px;
     }
     .header h2 {
+        font-size: 1.2rem;
+    }
+    .header h2 i {
         font-size: 1.2rem;
     }
     .header-right i, .sidebar-toggle {
@@ -293,6 +301,9 @@ tr:hover {
 
 @media (max-width: 480px) {
     .header h2 {
+        font-size: 1rem;
+    }
+    .header h2 i {
         font-size: 1rem;
     }
     .header-right i, .sidebar-toggle {
@@ -339,6 +350,6 @@ tr:hover {
 }
 
 /* Performance optimization */
-*:not(.main-content, .action-btn, .sidebar-menu li a, #statusFilter) {
+*:not(.main-content, .action-btn, .sidebar-menu li a, #statusFilter, .sidebar) {
     transition: none !important;
 }
