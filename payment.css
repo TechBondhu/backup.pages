@@ -1,0 +1,245 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: 'Tiro Bangla', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #E5E7EB, #F3F4F6);
+    overscroll-behavior: none;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: row;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #1E3A8A, #2A5298);
+    color: #ffffff;
+    padding: 15px 25px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 0;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon {
+    font-size: 1.4rem;
+}
+
+.header h2 {
+    margin: 0;
+    font-family: 'Tiro Bangla', sans-serif;
+    font-size: 1.4rem;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-right i {
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+.header-right i:hover {
+    color: #60A5FA;
+}
+
+/* Content */
+.content {
+    flex: 1;
+    padding: 20px;
+    background: transparent;
+}
+
+.table-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#paymentTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#paymentTable th, #paymentTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #E5E7EB;
+    font-family: 'Tiro Bangla', sans-serif;
+    font-size: 0.9rem;
+}
+
+#paymentTable th {
+    background-color: #3B82F6;
+    color: #ffffff;
+}
+
+#paymentTable tr:hover {
+    background-color: #F5F5F5;
+}
+
+.status-success {
+    color: #10B981;
+    font-weight: 500;
+}
+
+.status-pending {
+    color: #FBBF24;
+    font-weight: 500;
+}
+
+.status-failed {
+    color: #EF4444;
+    font-weight: 500;
+}
+
+.detail-btn {
+    background-color: #3B82F6;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Tiro Bangla', sans-serif;
+    font-size: 0.85rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.detail-btn:hover {
+    background-color: #1E3A8A;
+    transform: scale(1.05);
+}
+
+.loading {
+    text-align: center;
+    color: #3B82F6;
+    font-family: 'Tiro Bangla', sans-serif;
+    font-size: 1rem;
+    margin-top: 20px;
+    display: none;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 15px 25px;
+    background-color: #1E3A8A;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    width: 100%;
+    z-index: 900;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 15px;
+    }
+    .header h2 {
+        font-size: 1.2rem;
+    }
+    .header-icon, .header-right i {
+        font-size: 1.2rem;
+    }
+    .content {
+        padding: 15px;
+    }
+    .table-container {
+        padding: 15px;
+    }
+    #paymentTable {
+        display: block;
+        overflow-x: auto;
+    }
+    #paymentTable thead {
+        display: none;
+    }
+    #paymentTable tr {
+        display: block;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #E5E7EB;
+    }
+    #paymentTable td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+    #paymentTable td:before {
+        content: attr(data-label);
+        font-weight: 500;
+        color: #1E3A8A;
+        flex: 1;
+    }
+    .footer {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+        position: fixed;
+        bottom: 0;
+        min-height: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h2 {
+        font-size: 1rem;
+    }
+    .header-icon, .header-right i {
+        font-size: 1rem;
+    }
+    .content {
+        padding: 10px;
+    }
+    .table-container {
+        padding: 10px;
+    }
+    #paymentTable td {
+        font-size: 0.8rem;
+    }
+    .footer {
+        font-size: 0.8rem;
+        min-height: 45px;
+    }
+}
+
+/* Cross-browser compatibility */
+@supports (-webkit-overflow-scrolling: touch) {
+    .table-container {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@-moz-document url-prefix() {
+    .table-container {
+        text-indent: 0.01px;
+        text-overflow: '';
+    }
+}
+
+/* Performance optimization */
+*:not(.main-content, .header-right i, .detail-btn) {
+    transition: none !important;
+}
