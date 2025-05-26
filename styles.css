@@ -49,19 +49,37 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    transition: gap 0.3s ease;
+}
+.header-brand.active .brand-logo {
+    transform: translateX(-10px);
 }
 .brand-logo {
     font-size: 24px;
     font-weight: 700;
+    transition: transform 0.3s ease;
 }
 .dynamic-text {
-    font-size: 18px;
+    font-size: 16px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid #3B82F6;
+    border-radius: 12px;
+    padding: 5px 10px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .dynamic-text.active {
     opacity: 1;
-    animation: fadeIn 0.5s forwards;
+    transform: translateY(0);
+    animation: floatIn 0.5s ease-out;
+}
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 .header-icons {
     position: absolute;
@@ -1174,15 +1192,16 @@ body {
     .header-brand {
         gap: 8px;
     }
+    .header-brand.active .brand-logo {
+        transform: translateX(-8px);
+    }
     .brand-logo {
         font-size: 20px;
     }
     .dynamic-text {
         font-size: 14px;
+        padding: 4px 8px;
         max-width: 100px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
     .header-icons {
         left: 10px;
@@ -1432,15 +1451,16 @@ body {
     .header-brand {
         gap: 6px;
     }
+    .header-brand.active .brand-logo {
+        transform: translateX(-6px);
+    }
     .brand-logo {
         font-size: 18px;
     }
     .dynamic-text {
         font-size: 12px;
+        padding: 3px 6px;
         max-width: 80px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
     .header-icons {
         left: 8px;
