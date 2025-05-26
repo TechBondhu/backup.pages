@@ -62,8 +62,8 @@ body {
 .dynamic-text {
     font-size: 16px;
     opacity: 0;
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid #3B82F6;
+    background: rgba(255, 204, 0, 0.3); /* নতুন উজ্জ্বল হলুদ ব্যাকগ্রাউন্ড */
+    border: 1px solid #FFD700; /* গোল্ডেন বর্ডার */
     border-radius: 12px;
     padding: 5px 10px;
     transition: opacity 0.3s ease, transform 0.3s ease;
