@@ -1,5 +1,6 @@
- // Save Chat History
-function saveChatHistory(message, sender) {
+```javascript
+// Save Chat History
+function saveChatHistory(currentChatId, message, sender) {
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     if (!chats[currentChatId]) {
         chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
@@ -47,20 +48,21 @@ function loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welco
             });
 
             renameItem.addEventListener('click', () => {
+                const renameModal = document.getElementById('renameModal');
+                const renameInput = document.getElementById('renameInput');
                 if (renameModal) {
                     renameModal.style.display = 'flex';
                 }
                 if (renameInput) {
                     renameInput.value = chat.title;
                 }
-                currentChatId = chatId;
             });
 
             deleteItem.addEventListener('click', () => {
+                const deleteModal = document.getElementById('deleteModal');
                 if (deleteModal) {
                     deleteModal.style.display = 'flex';
                 }
-                currentChatId = chatId;
             });
         } else {
             console.warn(`Chat with ID ${chatId} is missing or invalid. Skipping...`);
@@ -75,8 +77,7 @@ function loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welco
 
 // Load Specific Chat
 function loadChat(chatId, messagesDiv, welcomeMessage, sidebar, chatContainer, displayMessage, sanitizeMessage) {
-    currentChatId = chatId;
-    sessionStorage.setItem('chatId', currentChatId);
+    sessionStorage.setItem('chatId', chatId);
     const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     const chat = chats[chatId];
     if (chat) {
@@ -89,12 +90,11 @@ function loadChat(chatId, messagesDiv, welcomeMessage, sidebar, chatContainer, d
         }
         sidebar.classList.remove('open');
         chatContainer.classList.remove('sidebar-open');
-        loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welcomeMessage, displayMessage, sanitizeMessage);
     }
 }
 
 // Start New Chat
-function startNewChat(messagesDiv, welcomeMessage, chatBox, saveChatHistory, loadChatHistory) {
+function startNewChat(currentChatId, messagesDiv, welcomeMessage, chatBox, saveChatHistory) {
     currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
     sessionStorage.setItem('chatId', currentChatId);
     if (messagesDiv) {
@@ -107,8 +107,7 @@ function startNewChat(messagesDiv, welcomeMessage, chatBox, saveChatHistory, loa
         chatBox.classList.add('fade-in');
         setTimeout(() => chatBox.classList.remove('fade-in'), 500);
     }
-    saveChatHistory('New Chat Started', 'system');
-    loadChatHistory();
+    saveChatHistory(currentChatId, 'New Chat Started', 'system');
 }
 
 // Toggle Sidebar
@@ -130,4 +129,4 @@ function hideSidebar(sidebar, chatContainer) {
 
 // Export Functions
 export { saveChatHistory, loadChatHistory, loadChat, startNewChat, toggleSidebar, hideSidebar };
- 
+```
