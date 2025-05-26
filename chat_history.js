@@ -1,4 +1,4 @@
-```javascript
+ 
 // Save Chat History
 function saveChatHistory(currentChatId, message, sender) {
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
@@ -129,4 +129,4 @@ function hideSidebar(sidebar, chatContainer) {
 
 // Export Functions
 export { saveChatHistory, loadChatHistory, loadChat, startNewChat, toggleSidebar, hideSidebar };
-```
+ 
