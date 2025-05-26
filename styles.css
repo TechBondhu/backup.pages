@@ -40,11 +40,28 @@ body {
     padding: 15px;
     font-size: 24px;
     font-weight: 700;
-    text-align: center;
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+}
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.brand-logo {
+    font-size: 24px;
+    font-weight: 700;
+}
+.dynamic-text {
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.dynamic-text.active {
+    opacity: 1;
+    animation: fadeIn 0.5s forwards;
 }
 .header-icons {
     position: absolute;
@@ -1062,16 +1079,16 @@ body {
     transition: background 0.3s ease, transform 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 8px; /* Reduced gap for better spacing */
-    justify-content: flex-start; /* Align items to the left for natural spacing */
+    gap: 8px;
+    justify-content: flex-start;
 }
 .genre-item i {
     font-size: 18px;
     color: #fff;
 }
 .genre-item span {
-    display: inline-block; /* Remove flex to prevent over-stretching */
-    text-align: left; /* Ensure text aligns naturally */
+    display: inline-block;
+    text-align: left;
 }
 .genre-item:hover {
     background: linear-gradient(135deg, #2563EB, #1E3A8A);
@@ -1157,6 +1174,19 @@ body {
     .header {
         padding: 10px;
         font-size: 20px;
+    }
+    .header-brand {
+        gap: 8px;
+    }
+    .brand-logo {
+        font-size: 20px;
+    }
+    .dynamic-text {
+        font-size: 14px;
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .header-icons {
         left: 10px;
@@ -1375,8 +1405,8 @@ body {
     .genre-item {
         padding: 10px;
         font-size: 12px;
-        gap: 8px; /* Consistent gap for mobile */
-        justify-content: flex-start; /* Align items to the left */
+        gap: 8px;
+        justify-content: flex-start;
     }
     .genre-item i {
         font-size: 16px;
@@ -1402,6 +1432,19 @@ body {
     .header {
         padding: 8px;
         font-size: 18px;
+    }
+    .header-brand {
+        gap: 6px;
+    }
+    .brand-logo {
+        font-size: 18px;
+    }
+    .dynamic-text {
+        font-size: 12px;
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .header-icons {
         left: 8px;
@@ -1618,8 +1661,8 @@ body {
     .genre-item {
         padding: 8px;
         font-size: 12px;
-        gap: 6px; /* Adjusted gap for smaller screens */
-        justify-content: flex-start; /* Align items to the left */
+        gap: 6px;
+        justify-content: flex-start;
     }
     .genre-item i {
         font-size: 14px;
@@ -1628,4 +1671,8 @@ body {
         padding: 6px 15px;
         font-size: 10px;
     }
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
