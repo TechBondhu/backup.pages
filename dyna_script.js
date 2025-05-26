@@ -1,8 +1,10 @@
- function updateDynamicHeader(genreName) {
+function updateDynamicHeader(genreName) {
   const dynamicText = document.getElementById('dynamicHeaderText');
-  if (dynamicText) {
+  const headerBrand = document.querySelector('.header-brand');
+  if (dynamicText && headerBrand) {
     dynamicText.textContent = genreName || '';
     dynamicText.classList.toggle('active', !!genreName);
+    headerBrand.classList.toggle('active', !!genreName);
     // Save genre to session storage
     if (genreName) {
       sessionStorage.setItem('selectedGenre', genreName);
