@@ -1,5 +1,4 @@
-// Display Review
-function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatId, generatePDF, displayMessage, sanitizeMessage) {
+function displayReview(reviewData, messagesDiv, welcomeMessage, currentChatId, db, jsPDF, sanitizeMessage, displayMessage, saveChatHistory) {
     const reviewCard = document.createElement('div');
     reviewCard.classList.add('review-card', 'slide-in');
     reviewCard.setAttribute('data-editable', 'true');
@@ -10,6 +9,7 @@ function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatI
     const reviewContent = document.createElement('div');
     reviewContent.classList.add('review-content');
 
+    // Dynamically create review items for each field in reviewData
     for (const [key, value] of Object.entries(reviewData)) {
         const reviewItem = document.createElement('div');
         reviewItem.classList.add('review-item');
@@ -22,6 +22,7 @@ function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatI
         if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
             const img = document.createElement('img');
             img.src = value;
+            img.classList.add('review-image');
             reviewItem.appendChild(img);
         } else {
             const p = document.createElement('p');
@@ -38,7 +39,7 @@ function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatI
     const editBtn = document.createElement('button');
     editBtn.className = 'edit-btn ripple-btn';
     editBtn.innerText = 'Edit';
-    editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData, displayMessage, sanitizeMessage));
+    editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData, sanitizeMessage, displayMessage));
 
     const confirmBtn = document.createElement('button');
     confirmBtn.className = 'confirm-btn ripple-btn';
@@ -57,11 +58,12 @@ function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatI
                 const key = item.getAttribute('data-key');
                 const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
                 if (!value) {
-                    console.warn(`কোনো মান পাওয়া যায়নি: ${key}`);
+                    console.warn(`No value found for key: ${key}`);
                 }
                 updatedData[key] = value;
             });
 
+            // Save to Firebase
             await db.collection('submissions').add({
                 review_data: updatedData,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -69,13 +71,14 @@ function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatI
             });
 
             displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-            await generatePDF(updatedData, reviewCard);
+            await generatePDF(updatedData, reviewCard, jsPDF); // Generate PDF
             reviewCard.setAttribute('data-confirmed', 'true');
             reviewCard.setAttribute('data-editable', 'false');
             editBtn.disabled = true;
             editBtn.style.display = 'none';
             confirmBtn.style.display = 'none';
 
+            // Create Download Button
             buttonContainer.innerHTML = '';
             const downloadBtn = document.createElement('button');
             downloadBtn.className = 'download-btn ripple-btn';
@@ -123,10 +126,11 @@ function displayReview(reviewData, messagesDiv, welcomeMessage, db, currentChatI
             welcomeMessage.classList.remove('fade-out');
         }, 300);
     }
+
+    saveChatHistory('Review displayed', 'system');
 }
 
-// Toggle Edit Mode
-function toggleEditMode(card, reviewData, displayMessage, sanitizeMessage) {
+function toggleEditMode(card, reviewData, sanitizeMessage, displayMessage) {
     if (card.getAttribute('data-confirmed') === 'true') {
         displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
         return;
@@ -150,6 +154,7 @@ function toggleEditMode(card, reviewData, displayMessage, sanitizeMessage) {
             if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
                 const img = document.createElement('img');
                 img.src = value;
+                img.classList.add('review-image');
                 item.appendChild(img);
 
                 const replaceIcon = document.createElement('i');
@@ -200,7 +205,7 @@ function toggleEditMode(card, reviewData, displayMessage, sanitizeMessage) {
                 item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><p>${sanitizeMessage(newValue)}</p>`;
             } else if (img) {
                 updatedData[key] = img.src;
-                item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}">`;
+                item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}" class="review-image">`;
             }
         });
 
@@ -210,8 +215,7 @@ function toggleEditMode(card, reviewData, displayMessage, sanitizeMessage) {
     }
 }
 
-// Generate PDF
-async function generatePDF(reviewData, reviewCard) {
+async function generatePDF(reviewData, reviewCard, jsPDF) {
     const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -269,6 +273,4 @@ async function generatePDF(reviewData, reviewCard) {
     reviewCard.setAttribute('data-pdf-url', pdfUrl);
 }
 
-// Export Functions
 export { displayReview, toggleEditMode, generatePDF };
- 
