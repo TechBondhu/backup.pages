@@ -102,7 +102,7 @@ const genres = [
 ];
 
 // Render Genres List
-function renderGenresList(genresList, welcomeMessage, genresModal, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage) {
+function renderGenresList(genresList, welcomeMessage, genresModal, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage, currentChatId) {
     if (genresList) {
         genresList.innerHTML = '';
         genres.forEach(genre => {
@@ -122,7 +122,7 @@ function renderGenresList(genresList, welcomeMessage, genresModal, displayMessag
                         welcomeMessage.classList.remove('fade-out');
                     }, 300);
                     displayMessage(sanitizeMessage(genre.message), 'user');
-                    saveChatHistory(sanitizeMessage(genre.message), 'user');
+                    saveChatHistory(currentChatId, sanitizeMessage(genre.message), 'user');
                     callRasaAPI(sanitizeMessage(genre.message));
                 } else {
                     console.error(`Message undefined for genre: ${genre.name}`);
@@ -135,8 +135,8 @@ function renderGenresList(genresList, welcomeMessage, genresModal, displayMessag
 }
 
 // Open Genres Modal
-function openGenresModal(genresModal, renderGenresList, genresList, welcomeMessage, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage) {
-    renderGenresList(genresList, welcomeMessage, genresModal, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage);
+function openGenresModal(genresModal, renderGenresList, genresList, welcomeMessage, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage, currentChatId) {
+    renderGenresList(genresList, welcomeMessage, genresModal, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage, currentChatId);
     genresModal.classList.add('slide-in');
     genresModal.style.display = 'flex';
     setTimeout(() => genresModal.classList.remove('slide-in'), 300);
@@ -150,6 +150,9 @@ function closeGenresModalFunc(genresModal) {
         genresModal.classList.remove('slide-out');
     }, 300);
 }
+
+// Export Functions
+export { genres, renderGenresList, openGenresModal, closeGenresModalFunc };
 
 // Export Functions
 export { genres, renderGenresList, openGenresModal, closeGenresModalFunc };
