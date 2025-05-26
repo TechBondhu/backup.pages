@@ -63,8 +63,8 @@ body {
     font-size: 16px;
     opacity: 0;
     background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
-    color: #000000; /* Pure Black টেক্সট */
-    border: none; /* বর্ডার রিমুভ */
+    color: #1E3A8A; /* নীল টেক্সট কালার (ব্র্যান্ড মানানসই) */
+    border: none; /* বর্ডার নেই */
     border-radius: 12px;
     padding: 5px 10px;
     transition: opacity 0.3s ease, transform 0.3s ease;
