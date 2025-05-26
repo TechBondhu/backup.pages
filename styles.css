@@ -64,7 +64,7 @@ body {
     opacity: 0;
     background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
     color: #000000; /* Pure Black টেক্সট */
-    border: 1px solid #000000; /* Pure Black বর্ডার */
+    border: none; /* বর্ডার রিমুভ */
     border-radius: 12px;
     padding: 5px 10px;
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -1701,7 +1701,7 @@ body {
         max-width: 100px;
         background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
         color: #000000; /* Pure Black টেক্সট */
-        border: 1px solid #000000; /* Pure Black বর্ডার */
+        border: none; /* বর্ডার রিমুভ */
     }
 }
 
@@ -1712,6 +1712,6 @@ body {
         max-width: 80px;
         background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
         color: #000000; /* Pure Black টেক্সট */
-        border: 1px solid #000000; /* Pure Black বর্ডার */
+        border: none; /* বর্ডার রিমুভ */
     }
 }
