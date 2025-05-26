@@ -1702,8 +1702,12 @@ body {
         font-size: 14px;
         padding: 4px 8px;
         max-width: 100px;
-        background: rgba(255, 204, 0, 0.3); /* মোবাইলে একই উজ্জ্বল হলুদ */
-        border: 1px solid #FFD700; /* মোবাইলে গোল্ডেন বর্ডার */
+        background: #1C1C1C; /* Charcoal Black ব্যাকগ্রাউন্ড */
+        color: transparent; /* টেক্সট কালার গ্র্যাডিয়েন্টের জন্য */
+        background-clip: text;
+        -webkit-background-clip: text;
+        background-image: linear-gradient(to right, #FFD700, #FFA500); /* Gold Gradient */
+        border: 1px solid #FFFFFF; /* Pure White বর্ডার */
     }
 }
 
@@ -1712,7 +1716,11 @@ body {
         font-size: 12px;
         padding: 3px 6px;
         max-width: 80px;
-        background: rgba(255, 204, 0, 0.3); /* ছোট স্ক্রিনে একই কালার */
-        border: 1px solid #FFD700; /* ছোট স্ক্রিনে গোল্ডেন বর্ডার */
+        background: #1C1C1C; /* Charcoal Black ব্যাকগ্রাউন্ড */
+        color: transparent; /* টেক্সট কালার গ্র্যাডিয়েন্টের জন্য */
+        background-clip: text;
+        -webkit-background-clip: text;
+        background-image: linear-gradient(to right, #FFD700, #FFA500); /* Gold Gradient */
+        border: 1px solid #FFFFFF; /* Pure White বর্ডার */
     }
 }
