@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentIndex++;
                 setTimeout(addNextWord, 100);
             } else {
-                saveChatHistory(message, sender);
+                saveChatHistory(currentChatId, message, sender);
             }
         }
 
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     welcomeMessage.classList.remove('fade-out');
                 }, 300);
             }
-            saveChatHistory(message, sender);
+            saveChatHistory(currentChatId, message, sender);
         }
     }
 
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.image_url) {
                         callRasaAPI(data.image_url);
-                        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+                        saveChatHistory(currentChatId, `[Image: ${selectedFile.name}]`, 'user');
                     } else if (data.error) {
                         console.error('Image Upload Error:', data.error);
                     }
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historyIcon.addEventListener('click', () => toggleSidebar(sidebar, chatContainer, () => loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welcomeMessage, displayMessage, sanitizeMessage)));
     }
     if (newChatIcon) {
-        newChatIcon.addEventListener('click', () => startNewChat(messagesDiv, welcomeMessage, chatBox, saveChatHistory, () => loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welcomeMessage, displayMessage, sanitizeMessage)));
+        newChatIcon.addEventListener('click', () => startNewChat(currentChatId, messagesDiv, welcomeMessage, chatBox, saveChatHistory));
     }
     if (closeSidebar) {
         closeSidebar.addEventListener('click', () => hideSidebar(sidebar, chatContainer));
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('chatHistory', JSON.stringify(chats));
                 loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welcomeMessage, displayMessage, sanitizeMessage);
                 if (Object.keys(chats).length === 0) {
-                    startNewChat(messagesDiv, welcomeMessage, chatBox, saveChatHistory, () => loadChatHistory(historyList, sidebar, chatContainer, messagesDiv, welcomeMessage, displayMessage, sanitizeMessage));
+                    startNewChat(currentChatId, messagesDiv, welcomeMessage, chatBox, saveChatHistory);
                 } else {
                     messagesDiv.innerHTML = '';
                     if (welcomeMessage) {
@@ -505,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Genres Modal
     if (moreOptionsBtn) {
         moreOptionsBtn.addEventListener('click', () => {
-            openGenresModal(genresModal, renderGenresList, genresList, welcomeMessage, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage);
+            openGenresModal(genresModal, renderGenresList, genresList, welcomeMessage, displayMessage, saveChatHistory, callRasaAPI, sanitizeMessage, currentChatId);
         });
     }
 
@@ -644,3 +644,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+ 
