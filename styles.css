@@ -62,12 +62,9 @@ body {
 .dynamic-text {
     font-size: 16px;
     opacity: 0;
-    background: #1C1C1C; /* Charcoal Black ব্যাকগ্রাউন্ড */
-    color: transparent; /* টেক্সট কালার গ্র্যাডিয়েন্টের জন্য */
-    background-clip: text;
-    -webkit-background-clip: text;
-    background-image: linear-gradient(to right, #FFD700, #FFA500); /* Gold Gradient */
-    border: 1px solid #FFFFFF; /* Pure White বর্ডার */
+    background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
+    color: #000000; /* Pure Black টেক্সট */
+    border: 1px solid #000000; /* Pure Black বর্ডার */
     border-radius: 12px;
     padding: 5px 10px;
     transition: opacity 0.3s ease, transform 0.3s ease;
