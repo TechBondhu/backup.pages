@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formbondhu Chatbot</title>
+    <title>ফর্মবন্ধু চ্যাটবট</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -20,10 +20,13 @@
                 <i class="fas fa-bars history-icon" id="historyIcon" title="Chat History"></i>
                 <i class="fas fa-pen-to-square new-chat-icon" id="newChatIcon" title="New Chat"></i>
             </div>
-            ফর্মবন্ধু
+            <div class="header-brand">
+                <span class="brand-logo">ফর্মবন্ধু</span>
+                <span class="dynamic-text" id="dynamicHeaderText"></span>
+            </div>
             <div class="header-right-icons">
-                <i class="fas fa-cog settings-icon" id="settingsIcon" title="Settings" onclick="window.location.href='settings.html'"></i>
-                <i class="fas fa-user account-icon" id="accountIcon" title="Account" onclick="window.location.href='account.html'"></i>
+                <i class="fas fa-cog settings-icon" id="settingsIcon" title="সেটিংস" onclick="window.location.href='settings.html'"></i>
+                <i class="fas fa-user-cog account-icon" title="অ্যাকাউন্ট সেটিংস" onclick="window.location.href='account.html'"></i>
             </div>
         </div>
         <div class="sidebar" id="sidebar">
@@ -40,7 +43,7 @@
                 <div class="welcome-buttons">
                     <button class="welcome-btn" data-genre="এনআইডি আবেদন"><i class="fas fa-id-card"></i> এনআইডি আবেদন</button>
                     <button class="welcome-btn" data-genre="পাসপোর্ট আবেদন"><i class="fas fa-passport"></i> পাসপোর্ট আবেদন</button>
-                    <button class="welcome-btn" data-genre="কোম্পানি রেজিস্ট্রেশন"><i class="fas fa-building"></i> কোম্পানি রেজিস্ট্রেশন</button>
+                    <button class="welcome-btn" data-genre="কোম্পানি রেজিস্ট্রেশন"><i class="fas fa-building"></i> কোম্পানি রেজিস্ট্রেশন</button> 
                     <button id="moreOptionsBtn"><i class="fas fa-ellipsis-h"></i> আরও </button>
                 </div>
             </div>
@@ -126,6 +129,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src="src_main.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
