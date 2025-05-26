@@ -1692,3 +1692,23 @@ body {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 768px) {
+    .dynamic-text {
+        font-size: 14px;
+        padding: 4px 8px;
+        max-width: 100px;
+        background: rgba(255, 204, 0, 0.3); /* মোবাইলে একই উজ্জ্বল হলুদ */
+        border: 1px solid #FFD700; /* মোবাইলে গোল্ডেন বর্ডার */
+    }
+}
+
+@media (max-width: 480px) {
+    .dynamic-text {
+        font-size: 12px;
+        padding: 3px 6px;
+        max-width: 80px;
+        background: rgba(255, 204, 0, 0.3); /* ছোট স্ক্রিনে একই কালার */
+        border: 1px solid #FFD700; /* ছোট স্ক্রিনে গোল্ডেন বর্ডার */
+    }
+}
