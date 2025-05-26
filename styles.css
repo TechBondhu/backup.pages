@@ -1700,8 +1700,8 @@ body {
         padding: 4px 8px;
         max-width: 100px;
         background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
-        color: #000000; /* Pure Black টেক্সট */
-        border: none; /* বর্ডার রিমুভ */
+        color: #1E3A8A; /* নীল টেক্সট কালার (ব্র্যান্ড মানানসই) */
+        border: none; /* বর্ডার নেই */
     }
 }
 
@@ -1711,7 +1711,7 @@ body {
         padding: 3px 6px;
         max-width: 80px;
         background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
-        color: #000000; /* Pure Black টেক্সট */
-        border: none; /* বর্ডার রিমুভ */
+        color: #1E3A8A; /* নীল টেক্সট কালার (ব্র্যান্ড মানানসই) */
+        border: none; /* বর্ডার নেই */
     }
 }
