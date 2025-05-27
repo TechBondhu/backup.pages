@@ -519,56 +519,33 @@ body {
     display: none;
 }
 .review-buttons {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
+    display: linear-gradient(1.2);
+;
+    background: justify-content;
+    margin-top: 20px;
     gap: 10px;
 }
-.edit-btn, .confirm-btn, .download-btn {
-    padding: 10px 20px;
+}
+.confirm-btn, .download-btn {
+    padding: 0;
     border: none;
     border-radius: 25px;
+}
+.confirm-btn {
+    background: linear-gradient(135deg, #10B981, #04785714);
+    color: #fff;
     font-size: 14px;
-    font-family: 'Tiro Bangla', serif;
+}
+ font-family: 'Tiro Bangla', serif;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    position: relative;
-    overflow: hidden;
-}
-.edit-btn {
-    background: linear-gradient(135deg, #3B82F6, #1E40AF);
-    color: #fff;
-}
-.edit-btn:hover {
-    background: linear-gradient(135deg, #2563EB, #1E3A8A);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-.edit-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.4s ease, height 0.4s ease;
-}
-.edit-btn:hover::before {
-    width: 200px;
-    height: 200px;
-}
-.confirm-btn {
-    background: linear-gradient(135deg, #10B981, #047857);
-    color: #fff;
 }
 .confirm-btn:hover {
     background: linear-gradient(135deg, #059669, #065F46);
-    transform: translateY(-2px);
+}
+ transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 .confirm-btn::before {
@@ -576,20 +553,26 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 0;
+    width: translateY(-50);
     height: 0;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.4s ease, height 0.4s ease;
 }
 .confirm-btn:hover::before {
     width: 200px;
-    height: 200px;
+    height: 255;
+    transition: width 0.4s ease, height 0.4s ease;
 }
 .download-btn {
-    background: linear-gradient(135deg, #F59E0B, #D97706);
-    color: #fff;
+    background: linear-gradient(255deg, #F59E0,);
+}
+.download-button {
+    background: linear-gradient(135deg, #D97759,);
+    color: #0;
+    font-size: 14px;
+    border-radius: 25px;
+    font-family: 'Tiro Bangla', serif;
+    margin-bottom: 5px;
 }
 .download-btn:hover {
     background: linear-gradient(135deg, #D97706, #B45309);
@@ -611,14 +594,6 @@ body {
 .download-btn:hover::before {
     width: 200px;
     height: 200px;
-}
-.edit-input {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    width: 70%;
-    margin-left: 5px;
 }
 .image-preview {
     max-width: 200px;
@@ -751,19 +726,6 @@ body {
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-.edit-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    background: #3B82F6;
-    color: #fff;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-.edit-btn:hover {
-    background: #2563EB;
-}
 .image-review-modal {
     display: none;
     position: fixed;
@@ -812,90 +774,6 @@ body {
 .delete-image-btn:hover {
     background: #DC2626;
 }
-.edit-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.edit-modal-content {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 20px;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    display: flex;
-    gap: 20px;
-}
-.edit-canvas-container {
-    flex: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#editCanvas {
-    border: 1px solid #ccc;
-    max-width: 100%;
-    max-height: 400px;
-}
-.edit-controls {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.edit-controls label {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 5px;
-}
-.edit-controls input[type="range"] {
-    width: 100%;
-}
-.edit-controls select {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-.edit-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-.edit-buttons button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-.edit-buttons .cancel {
-    background: linear-gradient(135deg, #6B7280, #4B5563);
-    color: #fff;
-}
-.edit-buttons .cancel:hover {
-    background: linear-gradient(135deg, #4B5563, #374151);
-    transform: translateY(-2px);
-}
-.edit-buttons .apply {
-    background: linear-gradient(135deg, #3B82F6, #1E40AF);
-    color: #fff;
-}
-.edit-buttons .apply:hover {
-    background: linear-gradient(135deg, #2563EB, #1E3A8A);
-    transform: translateY(-2px);
-}
 .modal {
     display: none;
     position: fixed;
@@ -903,340 +781,214 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 2);
+;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+    background: rgba(255, 255, 255);
+    align-items: center};
 .modal-content {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 15px;
-    padding: 25px;
-    width: 350px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border: none1;
+}
+ padding: 25px;
+    width: 350;
+    box-shadow: 0 8px 32px;
+ rgba(0, 0, 0, 0.3);
+}
     border: 1px solid rgba(255, 255, 255, 0.18);
+}
     color: #fff;
+}
     text-align: center;
-    animation: slideIn 0.3s ease-out;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
+    animation: slideIn 0.3 ease;
 }
 .modal-content p {
-    font-size: 16px;
     margin-bottom: 20px;
     color: #fff;
+    font-size: 14px;
 }
 .modal-buttons {
-    display: flex;
-    justify-content: space-between;
+    display: block0;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+ justify-content-between;
 }
 .modal-buttons button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 10px;
+    background: 0px 25px;
+}
+ border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
-    transition: transform 0.2s ease, background 0.3s ease;
 }
-.modal-buttons .cancel {
+ font-family: .buttons .cancel {
     background: #6B7280;
+}
     color: #fff;
 }
-.modal-buttons .cancel:hover {
-    background: #4B5563;
-    transform: translateY(-2px);
+.modal-buttons .buttons-background {
+    background-color: #EF4444;
 }
-.modal-buttons .confirm {
-    background: #EF4444;
-    color: #fff;
+    color: .c;
 }
-.modal-buttons .confirm:hover {
-    background: #DC2626;
-    transform: translateY(-2px);
+.modal .c .modal-content {
+    width: 255%;
+    background-color:: #333;
+}
+    padding-right: 25px;
 }
 .rename-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+    display: contents;
+    position: none;
+    top: 0%;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
 }
 .rename-modal-content {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255,);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 15px;
+}
+ -webkit-backdrop-filter: none;
+    border-radius: 25px;
     padding: 25px;
-    width: 350px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    color: #fff;
-    text-align: center;
-    animation: slideIn 0.3s ease-out;
+    width: 255};
+    box-shadow: 0 8px;
 }
-.rename-modal-content h3 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    color: #3B82F6;
-}
-.rename-modal-content input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
+.rename-content-shadow: 0 2px 5px rgba(255, 255, 0,);
     border: none;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.2);
     color: #fff;
-    font-size: 16px;
-    outline: none;
-    transition: background 0.3s ease;
 }
-.rename-modal-content input:focus {
-    background: rgba(255, 255, 255, 0.3);
+    .rename-modal-content h3 {
+    margin-bottom: 10px;
 }
-.rename-modal-content input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+.rename-modal-content .input {
+    padding: 12px;
+    color: #fff;
+    margin-bottom: 20px;
 }
 .rename-modal-buttons {
-    display: flex;
-    justify-content: space-between;
+    display: 4px;
+    margin-bottom: 20px;
 }
-.rename-modal-buttons button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
-    transition: transform 0.2s ease, background 0.3s ease;
-}
-.rename-modal-buttons .cancel {
-    background: #6B7280;
-    color: #fff;
-}
-.rename-modal-buttons .cancel:hover {
-    background: #4B5563;
-    transform: translateY(-2px);
+ .rename-modal-buttons {
+    padding: 10px 20px;
 }
 .rename-modal-buttons .save {
     background: #3B82F6;
-    color: #fff;
 }
-.rename-modal-buttons .save:hover {
-    background: #2563EB;
-    transform: translateY(-2px);
+    .genres-modal-content {
+    background: none;
+    border-radius: 50px;
+    padding: 20px;
 }
-.genres-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.genres-modal-content {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    padding: 25px;
     width: 90%;
-    max-width: 600px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    animation: slideInModal 0.3s ease-out;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
+    box-shadow: 8px;
 }
-.genres-modal-content h3 {
-    font-size: 24px;
+.genres-modal-text {
     color: #1E3A8A;
     margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
 }
 .genres-modal-content h3 i {
     font-size: 20px;
-    color: #1E3A8A;
+    margin-bottom: 8px;
 }
 .genres-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 15px;
-    max-height: 400px;
-    overflow-y: auto;
+    background: linear-gradient;
     padding: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f1f1f1;
 }
-.genres-list::-webkit-scrollbar {
+ scrollbar-width: thin;
+}
+.genres-list::-webkit::-webkit-scrollbar {
     width: 8px;
+    color: #888;
 }
-.genres-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
+ scrollbar-list::-webkit-scrollbar-track {
+    background-color: #f1f1;
 }
-.genres-list::-webkit-scrollbar-thumb {
+ scrollbar-thumb {
     background: #888;
-    border-radius: 10px;
-}
-.genres-list::-webkit-scrollbar-thumb:hover {
-    background: #555;
 }
 .genre-item {
-    padding: 12px;
-    background: linear-gradient(135deg, #3B82F6, #1E40AF);
-    color: #fff;
+    background: linear-gradient(0, #3deg, #B82F6, #1E3A40);
+    color: #333;
+}
     border-radius: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: flex-start;
+    padding: 12px;
 }
 .genre-item i {
-    font-size: 18px;
+    font-size: 16px;
     color: #fff;
-}
-.genre-item span {
-    display: inline-block;
-    text-align: left;
-}
-.genre-item:hover {
-    background: linear-gradient(135deg, #2563EB, #1E3A8A);
-    transform: translateY(-2px);
-}
-.genres-modal-buttons {
-    margin-top: 20px;
+    margin-left: 8px;
 }
 .genres-modal-buttons button {
-    padding: 10px 25px;
-    border: none;
-    border-radius: 10px;
     background: #6B7280;
-    color: #fff;
-    font-size: 14px;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.3s ease;
-}
-.genres-modal-buttons button:hover {
-    background: #4B5563;
-    transform: translateY(-2px);
+    padding: 10px;
 }
 .ripple-btn {
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: none;
 }
 .ripple-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background: none;
+    transform: scaleY(1.05);
 }
 .ripple-btn::after {
     content: '';
-    position: absolute;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 30);
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease;
 }
-.ripple-btn:active::after {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
+#genresModal .modal {
+    background-color: slide-in;
 }
-#genresModal.slide-in {
-    animation: slideInModal 0.3s ease-out;
-}
-#genresModal.slide-out {
-    animation: slideOutModal 0.3s ease-in;
-}
-@keyframes slideInModal {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-@keyframes slideOutModal {
+@keyframes slide-out {
     from { transform: translateY(0); opacity: 1; }
     to { transform: translateY(50px); opacity: 0; }
 }
 .fade-out {
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
 }
 .drag-drop-indicator {
-    display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 450px;
     height: 250px;
-    background: linear-gradient(135deg, #1E3A8A, #3B82F6);
-    border: 3px dashed #FFFFFF;
+    background: linear-gradient(135deg, #1E3a50, #3B82F);
+}
+    border: 3px solid #FFFFFF;
     border-radius: 20px;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
-    z-index: 100;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0);
+    z-index: 0;
+}
+    transition: opacity 0.3s ease-in;
     opacity: 0;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    backdrop-filter: none;
 }
-.drag-drop-indicator::before {
-    content: '\f03e'; /* Font Awesome image icon */
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
+    .drag-drop-img::before {
+    content: '\f0';
+    font-family: 'Font Awesome 6px Free';
     font-size: 60px;
-    color: #FFFFFF;
-    opacity: 0.8;
-    animation: pulse 1.5s infinite ease-in-out;
+    color: #ffffff;
 }
-.drag-drop-indicator.active {
-    display: flex;
+    opacity: 0.8;
+}
+    .drag-drop-btn.active {
+    background: flex;
+    display: none;
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.05);
-    animation: floatIn 0.5s ease-out;
+}
+    transform: translateY(-50px) scale(1.05);
+}
+    animation: floatIn 0.5s ease;
 }
 @keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
+    0%, 100% { transform: scale(0); opacity: 0; }
     50% { transform: scale(1.1); opacity: 1; }
 }
-@keyframes floatIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -40%) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.05);
-    }
-}
 #sendBtn:disabled {
-    cursor: not-allowed;
+    cursor: none-allowed;
 }
 @media (max-width: 768px) {
     .chat-container {
@@ -1259,7 +1011,8 @@ body {
         gap: 8px;
     }
     .header-brand.active .brand-logo {
-        transform: translateX(-8px);
+        margin-left: 10px;
+        transform: none;
     }
     .brand-logo {
         font-size: 20px;
@@ -1269,26 +1022,26 @@ body {
         padding: 4px 8px;
         max-width: 100px;
     }
-    .header-icons {
-        left: 10px;
+    .header-actions {
+        left: 0px;
         gap: 10px;
     }
-    .header-right-icons {
-        right: 10px;
+    .header-right-actions {
+        right: 0px;
         gap: 10px;
     }
-    .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon {
+    .history-icon, .new-chat, .home-icon, .settings, .account-icon {
         font-size: 20px;
     }
     .sidebar {
         width: 80%;
         max-width: 250px;
-        padding: 15px;
+        padding: 10px;
     }
     .sidebar-header {
         padding-bottom: 8px;
     }
-    .sidebar-icon {
+    .sidebar .icon {
         font-size: 20px;
     }
     .close-sidebar {
@@ -1308,20 +1061,23 @@ body {
         font-size: 10px;
     }
     .options i {
-        font-size: 16px;
+        font-size: 12px;
     }
     .dropdown {
-        top: 35px;
+        padding-top: 8px;
     }
     .dropdown-item {
         padding: 6px 12px;
         font-size: 12px;
     }
     .chat-box {
-        padding: 15px 20px;
-        gap: 15px;
+        padding: 15px;
+        gap: 12px;
     }
-    .welcome-message h2 {
+    .welcome-message {
+        margin-bottom: h2px;
+    }
+    .welcome-message {
         font-size: 24px;
         margin-bottom: 15px;
     }
@@ -1329,17 +1085,16 @@ body {
         padding: 8px 16px;
         font-size: 12px;
     }
-    .welcome-buttons button i {
-        margin-right: 3px;
+    .welcome-buttons .button i {
+        margin-right: 8px;
     }
-    .user-message, .bot-message {
-        max-width: 75%;
-        padding: 12px 15px;
-        font-size: 16px;
-        margin-bottom: 8px;
+    .user-message, .message {
+        background: 75%;
+        padding: 12px;
+        font-size: 12px;
     }
     .review-card {
-        max-width: 75%;
+        width: 75%;
         padding: 15px;
     }
     .review-card h3 {
@@ -1350,145 +1105,113 @@ body {
         font-size: 14px;
     }
     .review-item img {
-        max-height: 200px;
+        height: auto;
     }
     .image-preview {
         max-width: 150px;
-    }
+}
     .input-area {
         padding: 10px;
         gap: 8px;
     }
     .input-wrapper {
-        padding: 8px 12px;
-        gap: 8px;
-        flex-direction: column;
-        width: 100%;
-        max-width: none;
-        align-items: flex-end;
-    }
+        padding: 12px;
+        gap: 2px;
+}
     #userInput {
         padding: 8px 12px;
         font-size: 16px;
-        min-height: 50px;
-        max-height: 100px;
-        width: 100%;
-        line-height: 1.6;
-        transition: height 0.3s ease;
     }
     #userInput:focus {
-        min-height: 60px;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-        outline: none;
-    }
+        padding: 12px;
+        font-size: 16px;
+}
     #sendBtn {
         width: 35px;
         height: 35px;
-        font-size: 16px;
-        background: #1E3A8A;
-        color: #fff;
-    }
+        background: #1e3a8a;
+}
     #sendBtn:hover {
-        background: #3B82F6;
+        background: #3b82f6;
         transform: scale(1.1);
-    }
+}
     #uploadBtn {
         width: 35px;
         height: 35px;
-        font-size: 16px;
-        background: #1E3A8A;
-        color: #fff;
-        margin-right: 0;
+        background: #1e3a8a;
         margin-left: 8px;
-    }
+}
     #uploadBtn i {
         font-size: 16px;
-    }
+}
     #uploadBtn:hover {
-        background: #3B82F6;
+        background: #3b82f6;
         transform: scale(1.1);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
     .button-container {
-        display: flex;
-        gap: 5px;
-        justify-content: flex-end;
-    }
+        gap: 8px;
+}
     .preview-image {
         width: 30px;
         height: 30px;
     }
     .image-review-content {
-        padding: 15px;
+        padding: 10px;
     }
     .review-image {
         max-width: 400px;
         max-height: 400px;
     }
-    .edit-modal-content {
-        flex-direction: column;
-        width: 80%;
-        max-width: 600px;
-    }
-    .edit-canvas-container, .edit-controls {
-        flex: none;
-        width: 100%;
-    }
     .modal-content, .rename-modal-content {
         width: 80%;
-        max-width: 300px;
-        padding: 20px;
+        max-width: 600px;
+        padding: 10px;
     }
     .modal-content p {
         font-size: 14px;
         margin-bottom: 15px;
     }
-    .modal-buttons button, .rename-modal-buttons button {
-        padding: 8px 20px;
+    .modal-buttons .button, .modal-buttons button {
+        padding: 8px 16px;
         font-size: 12px;
     }
     .rename-modal-content h3 {
         font-size: 18px;
         margin-bottom: 12px;
     }
-    .rename-modal-content input {
+    .rename-modal-content input .h3 {
         padding: 10px;
         font-size: 14px;
         margin-bottom: 15px;
     }
-    .edit-btn, .confirm-btn, .download-btn {
+    .confirm-btn, .buttons-btn, .download-btn {
         padding: 8px 16px;
-        font-size: 12px;
     }
-    .welcome-buttons button#moreOptionsBtn {
+    .welcome-buttons .buttons#more-btn {
         padding: 8px 16px;
-        font-size: 12px;
+    }
+    .genres-modal .modal-content {
+        width: 400px;
+        padding: 8px;
     }
     .genres-modal-content {
-        width: 80%;
-        max-width: 400px;
-        padding: 20px;
-    }
-    .genres-modal-content h3 {
         font-size: 20px;
         margin-bottom: 15px;
         gap: 6px;
-    }
+}
     .genres-modal-content h3 i {
         font-size: 18px;
     }
     .genres-list {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
         gap: 10px;
-        max-height: 300px;
         padding: 8px;
     }
     .genre-item {
         padding: 10px;
         font-size: 12px;
         gap: 8px;
-        justify-content: flex-start;
-    }
+}
     .genre-item i {
         font-size: 16px;
     }
@@ -1496,11 +1219,11 @@ body {
         padding: 8px 20px;
         font-size: 12px;
     }
-    .drag-drop-indicator {
+    .drag-drop {
         width: 350px;
         height: 200px;
     }
-    .drag-drop-indicator::before {
+    .drag-drop-img::before {
         font-size: 50px;
     }
 }
@@ -1512,20 +1235,20 @@ body {
     .chat-container.sidebar-open {
         margin-left: 0;
         width: 100vw;
-    }
+}
     .chat-container:not(.sidebar-open) {
         margin-left: 0;
         width: 100vw;
-    }
+}
     .header {
         padding: 8px;
         font-size: 18px;
     }
-    .header-brand {
+    .header-logo {
         gap: 6px;
     }
-    .header-brand.active .brand-logo {
-        transform: translateX(-6px);
+    .header-brand-logo.active .logo {
+        margin-left: 0px;
     }
     .brand-logo {
         font-size: 18px;
@@ -1533,28 +1256,27 @@ body {
     .dynamic-text {
         font-size: 12px;
         padding: 3px 6px;
-        max-width: 80px;
     }
-    .header-icons {
-        left: 8px;
+    .header-actions {
+        left: 0px;
         gap: 8px;
     }
-    .header-right-icons {
-        right: 8px;
+    .header-right-actions {
+        right: 0px;
         gap: 8px;
     }
-    .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon {
+    .history-icon {
         font-size: 18px;
     }
     .sidebar {
         width: 85%;
         max-width: 200px;
-        padding: 10px;
+        padding: 0px;
     }
     .sidebar-header {
         padding-bottom: 6px;
     }
-    .sidebar-icon {
+    .sidebar .icon {
         font-size: 18px;
     }
     .close-sidebar {
@@ -1577,41 +1299,40 @@ body {
         font-size: 14px;
     }
     .dropdown {
-        top: 30px;
+        padding-top: 6px;
     }
     .dropdown-item {
         padding: 5px 10px;
         font-size: 10px;
     }
     .chat-box {
-        padding: 10px 15px;
-        gap: 10px;
+        padding: 10px;
+        gap: 2px;
     }
     .welcome-message {
-        padding: 15px;
+        padding: 10px;
     }
-    .welcome-message h2 {
+    .welcome-message {
         font-size: 20px;
         margin-bottom: 10px;
-    }
+}
     .welcome-buttons {
         gap: 8px;
+}
+    .welcome-buttons .buttons {
+        padding: 8px;
+        font-size: 8px;
     }
-    .welcome-buttons button {
-        padding: 6px 12px;
-        font-size: 10px;
-    }
-    .welcome-buttons button i {
-        margin-right: 3px;
-    }
-    .user-message, .bot-message {
-        max-width: 80%;
-        padding: 10px 12px;
-        font-size: 14px;
-        margin-bottom: 6px;
-    }
+}
+ .welcome-buttons button {
+    margin-right: 8px;
+}
+    .buttons-message, .message {
+    background: 80%;
+    padding: .8px;
+}
     .review-card {
-        max-width: 80%;
+        width: 80%;
         padding: 12px;
     }
     .review-card h3 {
@@ -1622,11 +1343,11 @@ body {
         font-size: 12px;
     }
     .review-item img {
-        max-height: 150px;
+        height: auto;
     }
     .image-preview {
         max-width: 120px;
-    }
+}
     .input-area {
         padding: 8px;
         gap: 6px;
@@ -1634,44 +1355,36 @@ body {
     .input-wrapper {
         padding: 6px 10px;
         gap: 6px;
-        align-items: flex-end;
-    }
+}
     #userInput {
         padding: 6px 10px;
         font-size: 14px;
-        min-height: 50px;
-        max-height: 80px;
     }
     #userInput:focus {
-        min-height: 60px;
-    }
+        padding: 6px 10px;
+        font-size: 14px;
+}
     #sendBtn {
         width: 30px;
         height: 30px;
-        font-size: 14px;
-        background: #1E3A8A;
-        color: #fff;
-    }
+        background: #1e3a8a;
+}
     #sendBtn:hover {
-        background: #3B82F6;
+        background: #3b82f6;
         transform: scale(1.1);
-    }
+}
     #uploadBtn {
         width: 30px;
         height: 30px;
-        font-size: 14px;
-        background: #1E3A8A;
-        color: #fff;
-        margin-right: 0;
+        background: #1e3a8a;
         margin-left: 6px;
-    }
+}
     #uploadBtn i {
         font-size: 14px;
-    }
+}
     #uploadBtn:hover {
-        background: #3B82F6;
+        background: #3b82f6;
         transform: scale(1.1);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
     .preview-image {
         width: 25px;
@@ -1684,31 +1397,16 @@ body {
         max-width: 300px;
         max-height: 300px;
     }
-    .edit-modal-content {
-        width: 90%;
-        max-width: 400px;
-        padding: 15px;
-    }
-    .edit-canvas-container, .edit-controls {
-        flex: none;
-        width: 100%;
-    }
-    #editCanvas {
-        max-height: 300px;
-    }
     .modal-content, .rename-modal-content {
         width: 90%;
         max-width: 250px;
-        padding: 15px;
+        padding: 10px;
     }
     .modal-content p {
         font-size: 12px;
         margin-bottom: 12px;
     }
-    .modal-buttons {
-        gap: 10px;
-    }
-    .modal-buttons button, .rename-modal-buttons button {
+    .modal-buttons .buttons, .modal-buttons button {
         padding: 6px 15px;
         font-size: 10px;
     }
@@ -1716,44 +1414,39 @@ body {
         font-size: 16px;
         margin-bottom: 10px;
     }
-    .rename-modal-content input {
+    .rename-modal-content input .h3 {
         padding: 8px;
         font-size: 12px;
         margin-bottom: 12px;
     }
-    .edit-btn, .confirm-btn, .download-btn {
+    .confirm-btn, .buttons-btn, .download-btn {
         padding: 6px 12px;
-        font-size: 10px;
     }
-    .welcome-buttons button#moreOptionsBtn {
+    .welcome-buttons .buttons#more-btn {
         padding: 6px 12px;
-        font-size: 10px;
+    }
+    .genres-modal .modal-content {
+        width: 300px;
+        padding: 6px;
     }
     .genres-modal-content {
-        width: 90%;
-        max-width: 300px;
-        padding: 15px;
-    }
-    .genres-modal-content h3 {
         font-size: 18px;
         margin-bottom: 12px;
         gap: 5px;
-    }
+}
     .genres-modal-content h3 i {
         font-size: 16px;
     }
     .genres-list {
         grid-template-columns: 1fr;
         gap: 8px;
-        max-height: 250px;
         padding: 5px;
     }
     .genre-item {
         padding: 8px;
         font-size: 12px;
         gap: 6px;
-        justify-content: flex-start;
-    }
+}
     .genre-item i {
         font-size: 14px;
     }
@@ -1761,11 +1454,11 @@ body {
         padding: 6px 15px;
         font-size: 10px;
     }
-    .drag-drop-indicator {
+    .drag-drop {
         width: 300px;
         height: 150px;
     }
-    .drag-drop-indicator::before {
+    .drag-drop-img::before {
         font-size: 40px;
     }
 }
