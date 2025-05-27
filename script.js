@@ -1,4 +1,3 @@
-/* Existing CSS remains unchanged until welcome-message and welcome-buttons */
 * {
     margin: 0;
     padding: 0;
@@ -288,7 +287,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    z-index: 1; /* Reduced from 2 to avoid overlap */
+    z-index: 1;
     width: 100%;
     padding: 20px;
     animation: slideUp 0.5s ease-in-out;
@@ -310,7 +309,7 @@ body {
     justify-content: center;
     gap: 10px;
     position: relative;
-    z-index: 2; /* Ensure buttons are clickable */
+    z-index: 2;
 }
 .welcome-buttons button {
     padding: 10px 20px;
@@ -324,16 +323,16 @@ body {
     gap: 5px;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
-    min-width: 150px; /* Ensure minimum clickable area */
-    min-height: 50px; /* Ensure minimum clickable area */
-    touch-action: manipulation; /* Improve touch responsiveness */
+    min-width: 150px;
+    min-height: 50px;
+    touch-action: manipulation;
 }
 .welcome-buttons button:hover {
     background: #f0f0f0;
     transform: scale(1.05);
 }
 .welcome-buttons button:active {
-    transform: scale(0.95); /* Visual feedback on tap */
+    transform: scale(0.95);
 }
 .welcome-buttons button i {
     margin-right: 5px;
@@ -1012,39 +1011,6 @@ body {
     margin-bottom: 15px;
     font-family: 'Tiro Bangla', serif;
     font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.genres-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.genre-item {
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #f9f9f9;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-.genre-item:hover {
-    background: #f0f0f0;
-    transform: translateX(5px);
-}
-.genre-item i {
-    font-size: 18px;
-    color: #3B82F6;
-}
-.genre-item span {
-    font-size: 16px;
-    color: #333;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
 }
 .genres-modal-buttons {
     display: flex;
@@ -1061,6 +1027,98 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+.genres-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+.genres-list::-webkit {
+    width: 8px;
+}
+.genres-list::-webkit-scrollbars {
+    background: #f1f1;
+}
+    scrollbar-track {
+        background: #f1f1f1;
+    }
+    .genres-list::-webkit- {
+        scrollbar-width: #888;
+        border-radius: 10px;
+    }
+    .genres-list::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+    .genres-list::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+.genre-item {
+    padding: 15px;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: #fff;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s ease;
+    transform: translateY 0.2s ease;
+    box-shadow: 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.genre-item i {
+    font-size: 18px;
+    color: #fff;
+}
+.genre-item span {
+    display: inline-block;
+    text-align: left;
+}
+.genre-item:hover {
+    background: linear-gradient(135deg, #2563EB, #1E3A8A);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0,0.2);
+}
+.genre-item:active::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    transition: transform 0.4s ease;
+    opacity: 0.4s ease;
+}
+    .genre-item::after {
+    content: rgba(255, 255,255, 0.3);
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: transform 0.4s ease;
+    opacity: transform 0.4s ease;
+}
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -1075,11 +1133,12 @@ body {
     top: 50%;
     left: 50%;
     width: 0;
-    height: 0;
+    height: rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    transition: width 0.4s ease, height 0.4s ease;
+    transition: width 0.4s ease;
+    height: 0.4s ease;
 }
 .ripple-btn:hover::before {
     width: 200px;
@@ -1102,6 +1161,7 @@ body {
 }
 .edit-btn:hover {
     background: linear-gradient(135deg, #2563EB, #1E40AF);
+}
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
@@ -1115,14 +1175,15 @@ body {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    transition: width 0.4s ease, height 0.4s ease;
+    transition: width 0.4s ease;
+    height: 0.4s ease;
 }
-.edit-btn:hover::before {
+    .edit-btn:hover::before {
     width: 200px;
     height: 200px;
 }
 .edit-input {
-    padding: 5px;
+    padding: 10px;
     font-size: 14px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -1149,11 +1210,11 @@ body {
     .chat-box {
         padding: 15px;
     }
-    .welcome-buttons button {
+    .welcome-buttons {
         padding: 8px 16px;
         font-size: 12px;
-        min-width: 120px; /* Adjusted for smaller screens */
-        min-height: 40px; /* Adjusted for smaller screens */
+        min-width: 120px;
+        min-height: 40px;
     }
     .welcome-buttons button i {
         margin-right: 3px;
@@ -1195,8 +1256,8 @@ body {
     .welcome-buttons button {
         padding: 6px 12px;
         font-size: 10px;
-        min-width: 100px; /* Further adjusted for very small screens */
-        min-height: 36px; /* Further adjusted for very small screens */
+        min-width: 100px;
+        min-height: 36px;
     }
     .user-message, .bot-message {
         max-width: 90%;
@@ -1222,6 +1283,28 @@ body {
     #sendBtn, #uploadBtn {
         width: 30px;
         height: 30px;
+        font-size: 14px;
+    }
+    .genres-list {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        padding: 10px;
+        max-height: 250px;
+        touch-action: manipulation;
+    }
+    .genre-item {
+        padding: 12px;
+        font-size: 14px;
+        min-height: 48px;
+        gap: 8px;
+        justify-content: center;
+        touch-action: manipulation;
+        position: relative;
+        z-index: 10;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    .genre-item i {
         font-size: 14px;
     }
 }
