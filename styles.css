@@ -1431,7 +1431,7 @@ body {
         padding: 8px 20px;
         font-size: 12px;
     }
- /* Drag and Drop Indicator Styles */
+/* Drag and Drop Indicator Styles */
 .drag-drop-indicator {
     display: none; /* ডিফল্টভাবে হিডেন */
     position: fixed; /* ফ্লোটিং এফেক্টের জন্য ফিক্সড পজিশন */
@@ -1512,6 +1512,11 @@ body {
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Send Button Styles for Visual Feedback */
+#sendBtn:disabled {
+    cursor: not-allowed;
 }
 @media (max-width: 480px) {
     .chat-container {
