@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const reviewImage = document.getElementById('reviewImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
 
-    // Drag and Drop Area (using input-area as the drop zone)
-    const dropZone = document.querySelector('.input-area');
+    // Drag and Drop Area (using the entire window as the drop zone)
+    const dropZone = document.body; // পুরো পেজ জুড়ে ড্রাগ জোন
     const dragDropIndicator = document.getElementById('dragDropIndicator');
 
     // Prevent default behavior for drag events
@@ -32,8 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
         dragDropIndicator.classList.add('active');
     });
 
-    dropZone.addEventListener('dragleave', () => {
-        dragDropIndicator.classList.remove('active');
+    dropZone.addEventListener('dragleave', (e) => {
+        // যদি ড্রাগ পেজের বাইরে চলে যায় তবেই হিডেন হবে
+        if (e.relatedTarget === null) {
+            dragDropIndicator.classList.remove('active');
+        }
     });
 
     // Handle dropped files
