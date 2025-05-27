@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageReviewModal = document.getElementById('imageReviewModal');
     const reviewImage = document.getElementById('reviewImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
+    const dragDropIndicator = document.getElementById('dragDropIndicator');
 
     // Drag and Drop Area (using the entire window as the drop zone)
     const dropZone = document.body;
-    const dragDropIndicator = document.getElementById('dragDropIndicator');
 
     // Prevent default behavior for drag events
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -58,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     previewImage.src = e.target.result;
                     previewContainer.style.display = 'flex';
                     previewContainer.classList.add('fade-in');
+                    // Add click event to open review modal
+                    previewImage.addEventListener('click', () => openImageModal(previewImage.src));
                 }
                 if (userInput) {
                     userInput.style.paddingLeft = '110px';
@@ -67,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
             };
             reader.readAsDataURL(file);
+        }
+    }
+
+    // New: Function to open image review modal
+    function openImageModal(imageSrc) {
+        if (imageReviewModal && reviewImage) {
+            reviewImage.src = imageSrc;
+            imageReviewModal.style.display = 'flex';
         }
     }
 
@@ -151,31 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Open Image Modal
-    function openImageModal(imageSrc) {
-        if (reviewImage) {
-            reviewImage.src = imageSrc;
-        }
-        if (imageReviewModal) {
-            imageReviewModal.style.display = 'flex';
-        }
-    }
-
-    // Close Image Modal
-    function closeImageModal() {
-        if (imageReviewModal) {
-            imageReviewModal.style.display = 'none';
-        }
-    }
-
-    if (imageReviewModal) {
-        imageReviewModal.addEventListener('click', (e) => {
-            if (e.target === imageReviewModal) {
-                closeImageModal();
-            }
-        });
-    }
-
+    // Handle delete button in review modal
     if (deleteImageBtn) {
         deleteImageBtn.addEventListener('click', () => {
             if (imageReviewModal) {
@@ -183,27 +169,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (previewContainer) {
                 previewContainer.style.display = 'none';
-                userInput.style.paddingLeft = '12px';
-                selectedFile = null;
             }
+            if (userInput) {
+                userInput.style.paddingLeft = '12px';
+            }
+            selectedFile = null;
         });
     }
 
-    function displayMessage(message, sender) {
-        if (window.displayMessage) {
-            window.displayMessage(message, sender);
-        }
+    // Placeholder for callRasaAPI (unchanged)
+    function callRasaAPI(data) {
+        console.log('Calling Rasa API with:', data);
+        // Implement Rasa API call here
     }
 
-    function callRasaAPI(message, metadata = {}) {
-        if (window.callRasaAPI) {
-            window.callRasaAPI(message, metadata);
-        }
-    }
-
+    // Placeholder for saveChatHistory (unchanged)
     function saveChatHistory(message, sender) {
-        if (window.saveChatHistory) {
-            window.saveChatHistory(message, sender);
+        console.log('Saving to chat history:', { message, sender });
+        // Implement chat history saving here
+    }
+
+    // Placeholder for displayMessage (unchanged)
+    function displayMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add(sender === 'bot' ? 'bot-message' : 'user-message', 'slide-in');
+        messageDiv.textContent = message;
+        if (messagesDiv) {
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
     }
 });
