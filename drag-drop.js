@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // New: Function to open image review modal
+    // Function to open image review modal
     function openImageModal(imageSrc) {
         if (imageReviewModal && reviewImage) {
             reviewImage.src = imageSrc;
@@ -163,7 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle delete button in review modal
     if (deleteImageBtn) {
-        deleteImageBtn.addEventListener('click', () => {
+        deleteImageBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent modal click event from firing
             if (imageReviewModal) {
                 imageReviewModal.style.display = 'none';
             }
@@ -174,6 +175,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 userInput.style.paddingLeft = '12px';
             }
             selectedFile = null;
+        });
+    }
+
+    // Close modal when clicking outside the image content
+    if (imageReviewModal) {
+        imageReviewModal.addEventListener('click', (e) => {
+            // Check if the click is on the modal background (not on the content)
+            if (e.target === imageReviewModal) {
+                imageReviewModal.style.display = 'none';
+            }
+        });
+    }
+
+    // Prevent modal from closing when clicking inside the image content
+    const imageReviewContent = document.querySelector('.image-review-content');
+    if (imageReviewContent) {
+        imageReviewContent.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
     }
 
