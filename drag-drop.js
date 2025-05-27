@@ -1,4 +1,3 @@
-// drag-drop.js
 document.addEventListener('DOMContentLoaded', () => {
     const previewContainer = document.getElementById('previewContainer');
     const previewImage = document.getElementById('previewImage');
@@ -12,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteImageBtn = document.getElementById('deleteImageBtn');
 
     // Drag and Drop Area (using the entire window as the drop zone)
-    const dropZone = document.body; // পুরো পেজ জুড়ে ড্রাগ জোন
+    const dropZone = document.body;
     const dragDropIndicator = document.getElementById('dragDropIndicator');
 
     // Prevent default behavior for drag events
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dropZone.addEventListener('dragleave', (e) => {
-        // যদি ড্রাগ পেজের বাইরে চলে যায় তবেই হিডেন হবে
         if (e.relatedTarget === null) {
             dragDropIndicator.classList.remove('active');
         }
@@ -48,20 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle files for preview (without immediate upload)
-    let selectedFile = null; // Store the file for later upload
+    // Handle files for preview
+    let selectedFile = null;
     function handleFiles(files) {
         const file = files[0];
         if (file && file.type.startsWith('image/')) {
-            selectedFile = file; // Store the file for later upload
+            selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (previewImage) {
                     previewImage.src = e.target.result;
-                    previewContainer.style.display = 'flex'; // Show preview
+                    previewContainer.style.display = 'flex';
+                    previewContainer.classList.add('fade-in');
                 }
                 if (userInput) {
-                    userInput.style.paddingLeft = '110px'; // Adjust input padding
+                    userInput.style.paddingLeft = '110px';
                 }
             };
             reader.onerror = () => {
@@ -72,19 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle upload and send via sendBtn with locking mechanism
-    let isUploading = false; // লকিং মেকানিজমের জন্য ফ্ল্যাগ
+    let isUploading = false;
     if (sendBtn) {
         sendBtn.addEventListener('click', () => {
-            if (isUploading) return; // যদি আপলোড চলমান থাকে, তাহলে কিছু করবে না
+            if (isUploading) return;
 
             const message = userInput.value.trim();
             if (selectedFile || message) {
-                // লকিং শুরু
                 isUploading = true;
-                sendBtn.disabled = true; // বাটন ডিজেবল করা
-                sendBtn.style.opacity = '0.5'; // ভিজ্যুয়াল ফিডব্যাক
+                sendBtn.disabled = true;
+                sendBtn.style.opacity = '0.5';
 
-                // Handle image upload if exists
                 if (selectedFile) {
                     const formData = new FormData();
                     formData.append('image', selectedFile);
@@ -111,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             } else if (data.error) {
                                 console.error('Image Upload Error:', data.error);
                             }
-                            // Reset preview
                             previewContainer.style.display = 'none';
                             userInput.style.paddingLeft = '12px';
                             selectedFile = null;
@@ -121,14 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             displayMessage('ইমেজ আপলোডে সমস্যা হয়েছে।', 'bot');
                         })
                         .finally(() => {
-                            // লকিং শেষ
                             isUploading = false;
-                            sendBtn.disabled = false; // বাটন আবার এনেবল করা
-                            sendBtn.style.opacity = '1'; // ভিজ্যুয়াল ফিডব্যাক
+                            sendBtn.disabled = false;
+                            sendBtn.style.opacity = '1';
                         });
                 }
 
-                // Handle text message
                 if (message) {
                     const messageDiv = document.createElement('div');
                     messageDiv.classList.add('user-message', 'slide-in');
@@ -140,13 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     callRasaAPI(message);
                     saveChatHistory(message, 'user');
 
-                    // লকিং শেষ (টেক্সট মেসেজের জন্যও)
                     isUploading = false;
                     sendBtn.disabled = false;
                     sendBtn.style.opacity = '1';
                 }
 
-                // Reset input
                 userInput.value = '';
                 if (welcomeMessage && welcomeMessage.style.display !== 'none') {
                     welcomeMessage.classList.add('fade-out');
@@ -176,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add click event to close modal when clicking outside
     if (imageReviewModal) {
         imageReviewModal.addEventListener('click', (e) => {
             if (e.target === imageReviewModal) {
@@ -185,13 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add click event to delete image button
     if (deleteImageBtn) {
         deleteImageBtn.addEventListener('click', () => {
             if (imageReviewModal) {
                 imageReviewModal.style.display = 'none';
             }
-            // Reset preview if needed
             if (previewContainer) {
                 previewContainer.style.display = 'none';
                 userInput.style.paddingLeft = '12px';
@@ -200,21 +189,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Reuse displayMessage function from scripts.js
     function displayMessage(message, sender) {
         if (window.displayMessage) {
             window.displayMessage(message, sender);
         }
     }
 
-    // Reuse callRasaAPI function from scripts.js
     function callRasaAPI(message, metadata = {}) {
         if (window.callRasaAPI) {
             window.callRasaAPI(message, metadata);
         }
     }
 
-    // Reuse saveChatHistory function from scripts.js
     function saveChatHistory(message, sender) {
         if (window.saveChatHistory) {
             window.saveChatHistory(message, sender);
