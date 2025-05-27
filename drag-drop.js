@@ -71,11 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Handle upload and send via sendBtn
+    // Handle upload and send via sendBtn with locking mechanism
+    let isUploading = false; // লকিং মেকানিজমের জন্য ফ্ল্যাগ
     if (sendBtn) {
         sendBtn.addEventListener('click', () => {
+            if (isUploading) return; // যদি আপলোড চলমান থাকে, তাহলে কিছু করবে না
+
             const message = userInput.value.trim();
             if (selectedFile || message) {
+                // লকিং শুরু
+                isUploading = true;
+                sendBtn.disabled = true; // বাটন ডিজেবল করা
+                sendBtn.style.opacity = '0.5'; // ভিজ্যুয়াল ফিডব্যাক
+
                 // Handle image upload if exists
                 if (selectedFile) {
                     const formData = new FormData();
@@ -110,6 +118,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                         .catch(error => {
                             console.error('Image Upload Error:', error);
+                            displayMessage('ইমেজ আপলোডে সমস্যা হয়েছে।', 'bot');
+                        })
+                        .finally(() => {
+                            // লকিং শেষ
+                            isUploading = false;
+                            sendBtn.disabled = false; // বাটন আবার এনেবল করা
+                            sendBtn.style.opacity = '1'; // ভিজ্যুয়াল ফিডব্যাক
                         });
                 }
 
@@ -124,6 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     callRasaAPI(message);
                     saveChatHistory(message, 'user');
+
+                    // লকিং শেষ (টেক্সট মেসেজের জন্যও)
+                    isUploading = false;
+                    sendBtn.disabled = false;
+                    sendBtn.style.opacity = '1';
                 }
 
                 // Reset input
