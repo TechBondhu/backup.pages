@@ -62,9 +62,9 @@ body {
 .dynamic-text {
     font-size: 16px;
     opacity: 0;
-    background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
-    color: #1E3A8A; /* নীল টেক্সট কালার (ব্র্যান্ড মানানসই) */
-    border: none; /* বর্ডার নেই */
+    background: #FFFFFF;
+    color: #1E3A8A;
+    border: none;
     border-radius: 12px;
     padding: 5px 10px;
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -730,6 +730,18 @@ body {
     display: none;
     align-items: center;
     gap: 5px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: fadeInPreview 0.3s ease-out;
+}
+@keyframes fadeInPreview {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.preview-container.fade-in {
+    animation: fadeInPreview 0.3s ease-out;
 }
 .preview-image {
     width: 40px;
@@ -1173,6 +1185,43 @@ body {
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
+.drag-drop-indicator {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 246, 255, 0.95));
+    border: 3px dashed #3B82F6;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.drag-drop-indicator.active {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+    animation: floatIn 0.5s ease-out;
+}
+@keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+#sendBtn:disabled {
+    cursor: not-allowed;
+}
 @media (max-width: 768px) {
     .chat-container {
         width: 100vw;
@@ -1431,92 +1480,10 @@ body {
         padding: 8px 20px;
         font-size: 12px;
     }
-/* Drag and Drop Indicator Styles */
-.drag-drop-indicator {
-    display: none; /* ডিফল্টভাবে হিডেন */
-    position: fixed; /* ফ্লোটিং এফেক্টের জন্য ফিক্সড পজিশন */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* কেন্দ্রে রাখা */
-    width: 300px; /* ফ্লোটিং পেজের সাইজ */
-    height: 150px;
-    background: rgba(255, 255, 255, 0.95); /* সাদা ব্যাকগ্রাউন্ড সাথে হালকা ট্রান্সপারেন্সি */
-    border: 2px dashed #3B82F6; /* সেকেন্ডারি ব্র্যান্ড কালারে ড্যাশড বর্ডার */
-    border-radius: 15px; /* গোলাকার কোণ */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* ফ্লোটিং এফেক্টের জন্য শ্যাডো */
-    justify-content: center;
-    align-items: center;
-    color: #1E3A8A; /* ব্র্যান্ড কালারে টেক্সট */
-    font-size: 18px;
-    font-family: 'Tiro Bangla', serif;
-    font-weight: 700;
-    z-index: 100; /* অন্য উপাদানের উপরে থাকবে */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* স্মুথ ট্রানজিশন */
-    opacity: 0; /* ডিফল্টভাবে অদৃশ্য */
-}
-
-.drag-drop-indicator.active {
-    display: flex; /* ড্রাগ ওভারে দৃশ্যমান */
-    opacity: 1; /* দৃশ্যমান হওয়ার সময় */
-    transform: translate(-50%, -50%) scale(1.05); /* ফ্লোটিং এফেক্ট */
-    animation: floatIn 0.5s ease-out; /* ভেসে ওঠার অ্যানিমেশন */
-}
-
-@keyframes floatIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -40%) scale(0.95);
+    .drag-drop-indicator {
+        width: 300px;
+        height: 150px;
     }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.05);
-    }
-}
-
-.drag-drop-indicator i {
-    margin-right: 10px;
-    font-size: 24px;
-    color: #3B82F6; /* সেকেন্ডারি ব্র্যান্ড কালার */
-    animation: pulse 1.5s infinite ease-in-out; /* আইকনের পালস এফেক্ট */
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
-    }
-}
-
-/* Preview Container Styles */
-.preview-container {
-    position: absolute;
-    left: 15px;
-    top: 10px;
-    transform: none;
-    display: none;
-    align-items: center;
-    gap: 5px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    padding: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Preview Image Styles */
-.preview-image {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Send Button Styles for Visual Feedback */
-#sendBtn:disabled {
-    cursor: not-allowed;
 }
 @media (max-width: 480px) {
     .chat-container {
@@ -1691,9 +1658,6 @@ body {
         width: 25px;
         height: 25px;
     }
-    .button-container {
-        gap: 6px;
-    }
     .image-review-content {
         padding: 10px;
     }
@@ -1774,62 +1738,12 @@ body {
         padding: 6px 15px;
         font-size: 10px;
     }
+    .drag-drop-indicator {
+        width: 250px;
+        height: 120px;
+    }
 }
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 768px) {
-    .dynamic-text {
-        font-size: 14px;
-        padding: 4px 8px;
-        max-width: 100px;
-        background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
-        color: #1E3A8A; /* নীল টেক্সট কালার (ব্র্যান্ড মানানসই) */
-        border: none; /* বর্ডার নেই */
-    }
-}
-
-@media (max-width: 480px) {
-    .dynamic-text {
-        font-size: 12px;
-        padding: 3px 6px;
-        max-width: 80px;
-        background: #FFFFFF; /* Pure White ব্যাকগ্রাউন্ড */
-        color: #1E3A8A; /* নীল টেক্সট কালার (ব্র্যান্ড মানানসই) */
-        border: none; /* বর্ডার নেই */
-    }
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .drag-drop-indicator {
-        width: 250px;
-        height: 120px;
-        font-size: 16px;
-    }
-    .drag-drop-indicator i {
-        font-size: 20px;
-        margin-right: 8px;
-    }
-    .preview-image {
-        width: 30px;
-        height: 30px;
-    }
-}
-
-@media (max-width: 480px) {
-    .drag-drop-indicator {
-        width: 200px;
-        height: 100px;
-        font-size: 14px;
-    }
-    .drag-drop-indicator i {
-        font-size: 18px;
-        margin-right: 6px;
-    }
-    .preview-image {
-        width: 25px;
-        height: 25px;
-    }
 }
