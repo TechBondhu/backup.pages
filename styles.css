@@ -1191,23 +1191,39 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 350px;
-    height: 200px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 246, 255, 0.95));
-    border: 3px dashed #3B82F6;
+    width: 450px;
+    height: 250px;
+    background: linear-gradient(135deg, #1E3A8A, #3B82F6);
+    border: 3px dashed #FFFFFF;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
     z-index: 100;
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 0;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.drag-drop-indicator::before {
+    content: '\f03e'; /* Font Awesome image icon */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 60px;
+    color: #FFFFFF;
+    opacity: 0.8;
+    animation: pulse 1.5s infinite ease-in-out;
 }
 .drag-drop-indicator.active {
     display: flex;
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.05);
     animation: floatIn 0.5s ease-out;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
 }
 @keyframes floatIn {
     from {
@@ -1481,8 +1497,11 @@ body {
         font-size: 12px;
     }
     .drag-drop-indicator {
-        width: 300px;
-        height: 150px;
+        width: 350px;
+        height: 200px;
+    }
+    .drag-drop-indicator::before {
+        font-size: 50px;
     }
 }
 @media (max-width: 480px) {
@@ -1670,6 +1689,10 @@ body {
         max-width: 400px;
         padding: 15px;
     }
+    .edit-canvas-container, .edit-controls {
+        flex: none;
+        width: 100%;
+    }
     #editCanvas {
         max-height: 300px;
     }
@@ -1739,8 +1762,11 @@ body {
         font-size: 10px;
     }
     .drag-drop-indicator {
-        width: 250px;
-        height: 120px;
+        width: 300px;
+        height: 150px;
+    }
+    .drag-drop-indicator::before {
+        font-size: 40px;
     }
 }
 @keyframes fadeIn {
