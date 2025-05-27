@@ -1114,12 +1114,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
-    // Updated Event Listeners for Welcome Buttons
+    if (moreOptionsBtn) {
+        moreOptionsBtn.addEventListener('click', openGenresModal);
+    }
+    if (closeGenresModal) {
+        closeGenresModal.addEventListener('click', closeGenresModalFunc);
+    }
+
     document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
         button.classList.add('ripple-btn');
-        const handleClick = (e) => {
-            e.preventDefault(); // Prevent any default behavior
-            console.log('Clicked genre:', button.getAttribute('data-genre')); // Debugging
+        button.addEventListener('click', () => {
             const genreName = button.getAttribute('data-genre');
             const genre = genres.find(g => g.name === genreName);
             if (genre && genre.message) {
@@ -1135,25 +1139,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
                 displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
             }
-        };
-        button.addEventListener('click', handleClick);
-        button.addEventListener('touchstart', handleClick); // Added touch support
+        });
     });
-
-    // Updated Event Listener for More Options Button
-    if (moreOptionsBtn) {
-        const handleMoreClick = (e) => {
-            e.preventDefault(); // Prevent any default behavior
-            console.log('More options clicked'); // Debugging
-            openGenresModal();
-        };
-        moreOptionsBtn.addEventListener('click', handleMoreClick);
-        moreOptionsBtn.addEventListener('touchstart', handleMoreClick); // Added touch support
-    }
-
-    if (closeGenresModal) {
-        closeGenresModal.addEventListener('click', closeGenresModalFunc);
-    }
 
     // Initialize
     loadChatHistory();
