@@ -6,9 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('fileInput');
     const messagesDiv = document.getElementById('messages');
     const welcomeMessage = document.getElementById('welcomeMessage');
+    const uploadConfirmBtn = document.getElementById('uploadConfirmBtn');
+    const imageReviewModal = document.getElementById('imageReviewModal');
+    const reviewImage = document.getElementById('reviewImage');
+    const deleteImageBtn = document.getElementById('deleteImageBtn');
 
     // Drag and Drop Area (using input-area as the drop zone)
     const dropZone = document.querySelector('.input-area');
+    const dragDropIndicator = document.getElementById('dragDropIndicator');
 
     // Prevent default behavior for drag events
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -18,54 +23,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Highlight drop zone when dragging
+    // Show drag drop indicator when dragging
+    dropZone.addEventListener('dragenter', () => {
+        dragDropIndicator.classList.add('active');
+    });
+
     dropZone.addEventListener('dragover', () => {
-        dropZone.style.background = '#f3f4f6';
-        dropZone.style.border = '2px dashed #1E3A8A';
+        dragDropIndicator.classList.add('active');
     });
 
     dropZone.addEventListener('dragleave', () => {
-        dropZone.style.background = 'transparent';
-        dropZone.style.border = 'none';
+        dragDropIndicator.classList.remove('active');
     });
 
     // Handle dropped files
     dropZone.addEventListener('drop', (e) => {
-        dropZone.style.background = 'transparent';
-        dropZone.style.border = 'none';
-
+        dragDropIndicator.classList.remove('active');
         const files = e.dataTransfer.files;
         if (files.length > 0) {
             handleFiles(files);
         }
     });
 
-    // Handle files (same logic as fileInput change)
+    // Handle files for preview (without immediate upload)
+    let selectedFile = null; // Store the file for later upload
     function handleFiles(files) {
         const file = files[0];
         if (file && file.type.startsWith('image/')) {
+            selectedFile = file; // Store the file for later upload
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (previewImage) {
                     previewImage.src = e.target.result;
-                    previewContainer.style.display = 'flex';
+                    previewContainer.style.display = 'flex'; // Show preview
                 }
                 if (userInput) {
-                    userInput.style.paddingLeft = '110px';
+                    userInput.style.paddingLeft = '110px'; // Adjust input padding
                 }
+            };
+            reader.onerror = () => {
+                displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
 
-                // Set selectedFile for further processing
-                if (typeof window.selectedFile !== 'undefined') {
-                    window.selectedFile = file;
-                }
-
+    // Handle upload confirmation
+    if (uploadConfirmBtn) {
+        uploadConfirmBtn.addEventListener('click', () => {
+            if (selectedFile) {
                 // Display image in chat as user message
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('user-message', 'slide-in');
                 const img = document.createElement('img');
-                img.src = e.target.result;
+                img.src = previewImage.src;
                 img.classList.add('image-preview');
-                img.addEventListener('click', () => openImageModal(e.target.result));
+                img.addEventListener('click', () => openImageModal(previewImage.src));
                 messageDiv.appendChild(img);
                 if (messagesDiv) {
                     messagesDiv.appendChild(messageDiv);
@@ -79,9 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 300);
                 }
 
-                // Upload to server (mimicking fileInput behavior)
+                // Upload to server
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('image', selectedFile);
                 fetch('http://localhost:5000/upload-image', {
                     method: 'POST',
                     body: formData
@@ -93,26 +106,57 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else if (data.error) {
                             console.error('Image Upload Error:', data.error);
                         }
+                        // Reset preview after upload
+                        previewContainer.style.display = 'none';
+                        userInput.style.paddingLeft = '12px';
+                        selectedFile = null;
                     })
                     .catch(error => {
                         console.error('Image Upload Error:', error);
                     });
-            };
-            reader.onerror = () => {
-                displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
-            };
-            reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Open Image Modal
+    function openImageModal(imageSrc) {
+        if (reviewImage) {
+            reviewImage.src = imageSrc;
+        }
+        if (imageReviewModal) {
+            imageReviewModal.style.display = 'flex';
         }
     }
 
-    // Reuse openImageModal function from scripts.js
-    function openImageModal(imageSrc) {
-        if (window.reviewImage) {
-            window.reviewImage.src = imageSrc;
+    // Close Image Modal
+    function closeImageModal() {
+        if (imageReviewModal) {
+            imageReviewModal.style.display = 'none';
         }
-        if (window.imageReviewModal) {
-            window.imageReviewModal.style.display = 'flex';
-        }
+    }
+
+    // Add click event to close modal when clicking outside
+    if (imageReviewModal) {
+        imageReviewModal.addEventListener('click', (e) => {
+            if (e.target === imageReviewModal) {
+                closeImageModal();
+            }
+        });
+    }
+
+    // Add click event to delete image button
+    if (deleteImageBtn) {
+        deleteImageBtn.addEventListener('click', () => {
+            if (imageReviewModal) {
+                imageReviewModal.style.display = 'none';
+            }
+            // Optionally reset preview if needed
+            if (previewContainer) {
+                previewContainer.style.display = 'none';
+                userInput.style.paddingLeft = '12px';
+                selectedFile = null;
+            }
+        });
     }
 
     // Reuse displayMessage function from scripts.js
