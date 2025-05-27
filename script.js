@@ -1,1147 +1,1227 @@
-const genres = [
-    { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
-    { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
-    { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
-    { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
-    { name: 'টিআইএন (TIN) সার্টিফিকেট আবেদন', icon: 'fas fa-file-invoice', message: 'আমি টিআইএন সার্টিফিকেট আবেদন করতে চাই' },
-    { name: 'ভূমি নামজারি (Mutation) আবেদনপত্র', icon: 'fas fa-map-marked-alt', message: 'আমি ভূমি নামজারি আবেদন করতে চাই' },
-    { name: 'উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন', icon: 'fas fa-graduation-cap', message: 'আমি উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন করতে চাই' },
-    { name: 'জন্ম ও মৃত্যু নিবন্ধন', icon: 'fas fa-certificate', message: 'আমি জন্ম ও মৃত্যু নিবন্ধন করতে চাই' },
-    { name: 'ড্রাইভিং লাইসেন্স আবেদন', icon: 'fas fa-car', message: 'আমি ড্রাইভিং লাইসেন্স আবেদন করতে চাই' },
-    { name: 'নাগরিক সনদ (Citizen Certificate) আবেদন', icon: 'fas fa-user-check', message: 'আমি নাগরিক সনদ আবেদন করতে চাই' },
-    { name: 'চারিত্রিক সনদপত্র (Character Certificate) আবেদন', icon: 'fas fa-award', message: 'আমি চারিত্রিক সনদপত্র আবেদন করতে চাই' },
-    { name: 'ট্রেড লাইসেন্স', icon: 'fas fa-store', message: 'আমি ট্রেড লাইসেন্স আবেদন করতে চাই' },
-    { name: 'ভ্যাট রেজিস্ট্রেশন', icon: 'fas fa-calculator', message: 'আমি ভ্যাট রেজিস্ট্রেশন করতে চাই' },
-    { name: 'প্রপার্টি রেজিস্ট্রেশন', icon: 'fas fa-home', message: 'আমি প্রপার্টি রেজিস্ট্রেশন করতে চাই' },
-    { name: 'ব্যাংক অ্যাকাউন্ট খোলা', icon: 'fas fa-university', message: 'আমি ব্যাংক অ্যাকাউন্ট খুলতে চাই' },
-    { name: 'ঢাকা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি ঢাকা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'খুলনা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি খুলনা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'রাজশাহী বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি রাজশাহী বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'চট্টগ্রাম বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি চট্টগ্রাম বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'জাহাঙ্গীরনগর বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি জাহাঙ্গীরনগর বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'বাংলাদেশ কৃষি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি বাংলাদেশ কৃষি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি শাহজালাল বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'জগন্নাথ বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি জগন্নাথ বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'কুমিল্লা বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি কুমিল্লা বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'বরিশাল বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি বরিশাল বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি নোয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি হাজী মোহাম্মদ দানেশ বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি মাওলানা ভাসানী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি পটুয়াখালী বিজ্ঞান ও প্রযুক্তি বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'ইসলামী বিশ্ববিদ্যালয় ভর্তি আবেদন', icon: 'fas fa-university', message: 'আমি ইসলামী বিশ্ববিদ্যালয় ভর্তি আবেদন করতে চাই' },
-    { name: 'গ্যাস সংযোগ আবেদন', icon: 'fas fa-fire', message: 'আমি গ্যাস সংযোগ আবেদন করতে চাই' },
-    { name: 'বিদ্যুৎ সংযোগ আবেদন', icon: 'fas fa-bolt', message: 'আমি বিদ্যুৎ সংযোগ আবেদন করতে চাই' },
-    { name: 'পানি সংযোগ আবেদন', icon: 'fas fa-faucet', message: 'আমি পানি সংযোগ আবেদন করতে চাই' },
-    { name: 'জমির খতিয়ান সংশোধন', icon: 'fas fa-file-alt', message: 'আমি জমির খতিয়ান সংশোধন করতে চাই' },
-    { name: 'ভূমি উন্নয়ন কর পরিশোধ', icon: 'fas fa-money-bill', message: 'আমি ভূমি উন্নয়ন কর পরিশোধ করতে চাই' },
-    { name: 'ইমিগ্রেশন ক্লিয়ারেন্স', icon: 'fas fa-plane-departure', message: 'আমি ইমিগ্রেশন ক্লিয়ারেন্সের জন্য আবেদন করতে চাই' },
-    { name: 'ওয়ারিশ সনদ আবেদন', icon: 'fas fa-users', message: 'আমি ওয়ারিশ সনদ আবেদন করতে চাই' },
-    { name: 'পৌরসভা সেবা আবেদন', icon: 'fas fa-city', message: 'আমি পৌরসভা সেবা আবেদন করতে চাই' },
-    { name: 'বন্ধকী জমি রেজিস্ট্রেশন', icon: 'fas fa-handshake', message: 'আমি বন্ধকী জমি রেজিস্ট্রেশন করতে চাই' },
-    { name: 'বিবাহ নিবন্ধন আবেদন', icon: 'fas fa-ring', message: 'আমি বিবাহ নিবন্ধন করতে চাই' },
-    { name: 'তালাক নিবন্ধন আবেদন', icon: 'fas fa-heart-broken', message: 'আমি তালাক নিবন্ধন করতে চাই' },
-    { name: 'জাতীয় পেনশন স্কিমে যোগদান', icon: 'fas fa-piggy-bank', message: 'আমি জাতীয় পেনশন স্কিমে যোগ দিতে চাই' },
-    { name: 'পরিবেশ ছাড়পত্র আবেদন', icon: 'fas fa-leaf', message: 'আমি পরিবেশ ছাড়পত্র আবেদন করতে চাই' },
-    { name: 'ফায়ার সেফটি সার্টিফিকেট', icon: 'fas fa-fire-extinguisher', message: 'আমি ফায়ার সেফটি সার্টিফিকেট আবেদন করতে চাই' },
-    { name: 'বিল্ডিং প্ল্যান অনুমোদন', icon: 'fas fa-drafting-compass', message: 'আমি বিল্ডিং প্ল্যান অনুমোদনের জন্য আবেদন করতে চাই' },
-    { name: 'সরকারি চাকরি আবেদন', icon: 'fas fa-briefcase', message: 'আমি সরকারি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'প্রবাসী কল্যাণ সেবা আবেদন', icon: 'fas fa-globe', message: 'আমি প্রবাসী কল্যাণ সেবা আবেদন করতে চাই' },
-    { name: 'হজ ভিসা আবেদন', icon: 'fas fa-kaaba', message: 'আমি হজ ভিসা আবেদন করতে চাই' },
-    { name: 'পেশাদার লাইসেন্স (ডাক্তার/ইঞ্জিনিয়ার)', icon: 'fas fa-stethoscope', message: 'আমি পেশাদার লাইসেন্স (ডাক্তার/ইঞ্জিনিয়ার) আবেদন করতে চাই' },
-    { name: 'সরকারি অনুদান আবেদন', icon: 'fas fa-hand-holding-usd', message: 'আমি সরকারি অনুদান আবেদন করতে চাই' },
-    { name: 'সেনাবাহিনী চাকরি', icon: 'fas fa-shield-alt', message: 'আমি সেনাবাহিনী চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'পুলিশ চাকরি', icon: 'fas fa-user-shield', message: 'আমি পুলিশ চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'আনসার-ভিডিপি চাকরি', icon: 'fas fa-users-cog', message: 'আমি আনসার-ভিডিপি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'রেলওয়ে চাকরি', icon: 'fas fa-train', message: 'আমি রেলওয়ে চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'পোস্ট অফিস চাকরি', icon: 'fas fa-envelope', message: 'আমি পোস্ট অফিস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'শিক্ষক নিয়োগ (সরকারি)', icon: 'fas fa-chalkboard-teacher', message: 'আমি শিক্ষক নিয়োগ (সরকারি) চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'স্বাস্থ্যকর্মী চাকরি', icon: 'fas fa-user-md', message: 'আমি স্বাস্থ্যকর্মী চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'বাংলা একাডেমি চাকরি', icon: 'fas fa-book', message: 'আমি বাংলা একাডেমি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'বিআরটিসি চাকরি', icon: 'fas fa-bus', message: 'আমি বিআরটিসি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'কাস্টমস চাকরি', icon: 'fas fa-boxes', message: 'আমি কাস্টমস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ট্যাক্স চাকরি', icon: 'fas fa-file-invoice-dollar', message: 'আমি ট্যাক্স চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ফায়ার সার্ভিস চাকরি', icon: 'fas fa-fire', message: 'আমি ফায়ার সার্ভিস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'জেলা প্রশাসন চাকরি', icon: 'fas fa-landmark', message: 'আমি জেলা প্রশাসন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'বিমান বন্দর চাকরি', icon: 'fas fa-plane', message: 'আমি বিমান বন্দর চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'বিসিসি (BCS) চাকরি', icon: 'fas fa-graduation-cap', message: 'আমি বিসিসি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ব্যাংক চাকরি (বেসরকারি)', icon: 'fas fa-university', message: 'আমি ব্যাংক চাকরি (বেসরকারি) আবেদন করতে চাই' },
-    { name: 'এনজিও চাকরি', icon: 'fas fa-hands-helping', message: 'আমি এনজিও চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'আইটি চাকরি (সফটওয়্যার)', icon: 'fas fa-laptop-code', message: 'আমি আইটি চাকরি (সফটওয়্যার) আবেদন করতে চাই' },
-    { name: 'টেলিকম চাকরি', icon: 'fas fa-phone', message: 'আমি টেলিকম চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'গ্যার্মেন্ট চাকরি', icon: 'fas fa-tshirt', message: 'আমি গ্যার্মেন্ট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ফার্মাসি চাকরি', icon: 'fas fa-prescription-bottle', message: 'আমি ফার্মাসি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'হোটেল চাকরি', icon: 'fas fa-hotel', message: 'আমি হোটেল চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'রেস্টুরেন্ট চাকরি', icon: 'fas fa-utensils', message: 'আমি রেস্টুরেন্ট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'কনস্ট্রাকশন চাকরি', icon: 'fas fa-tools', message: 'আমি কনস্ট্রাকশন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'অটোমোবাইল চাকরি', icon: 'fas fa-car-side', message: 'আমি অটোমোবাইল চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'মার্কেটিং চাকরি', icon: 'fas fa-bullhorn', message: 'আমি মার্কেটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'একাউন্টস চাকরি', icon: 'fas fa-calculator', message: 'আমি একাউন্টস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এইচআর চাকরি', icon: 'fas fa-users', message: 'আমি এইচআর চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'গ্রাফিক ডিজাইন চাকরি', icon: 'fas fa-paint-brush', message: 'আমি গ্রাফিক ডিজাইন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ফটোগ্রাফি চাকরি', icon: 'fas fa-camera', message: 'আমি ফটোগ্রাফি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'জার্নালিজম চাকরি', icon: 'fas fa-newspaper', message: 'আমি জার্নালিজম চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'রিয়েল এস্টেট চাকরি', icon: 'fas fa-home', message: 'আমি রিয়েল এস্টেট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'লজিস্টিক্স চাকরি', icon: 'fas fa-truck', message: 'আমি লজিস্টিক্স চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'রিটেইল চাকরি', icon: 'fas fa-shopping-cart', message: 'আমি রিটেইল চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ইন্টারনেট মার্কেটিং চাকরি', icon: 'fas fa-globe', message: 'আমি ইন্টারনেট মার্কেটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'কনটেন্ট রাইটিং চাকরি', icon: 'fas fa-pen', message: 'আমি কনটেন্ট রাইটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ডিজিটাল মার্কেটিং চাকরি', icon: 'fas fa-chart-line', message: 'আমি ডিজিটাল মার্কেটিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'সেলস চাকরি', icon: 'fas fa-hand-holding-usd', message: 'আমি সেলস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'কাস্টমার সার্ভিস চাকরি', icon: 'fas fa-headset', message: 'আমি কাস্টমার সার্ভিস চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'প্রোডাকশন চাকরি', icon: 'fas fa-industry', message: 'আমি প্রোডাকশন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এডভোকেসি চাকরি', icon: 'fas fa-balance-scale', message: 'আমি এডভোকেসি চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এডুকেশনাল কনসালটেন্ট চাকরি', icon: 'fas fa-chalkboard', message: 'আমি এডুকেশনাল কনসালটেন্ট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ট্রেনিং চাকরি', icon: 'fas fa-user-graduate', message: 'আমি ট্রেনিং চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'রিসার্চ চাকরি', icon: 'fas fa-flask', message: 'আমি রিসার্চ চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ফ্রিল্যান্স চাকরি', icon: 'fas fa-user-tie', message: 'আমি ফ্রিল্যান্স চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'ইনশিওরেন্স চাকরি', icon: 'fas fa-shield-alt', message: 'আমি ইনশিওরেন্স চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এভিয়েশন চাকরি', icon: 'fas fa-plane-departure', message: 'আমি এভিয়েশন চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'এন্টারটেইনমেন্ট চাকরি', icon: 'fas fa-film', message: 'আমি এন্টারটেইনমেন্ট চাকরির জন্য আবেদন করতে চাই' },
-    { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
-];
- 
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const sendBtn = document.getElementById('sendBtn');
-    const userInput = document.getElementById('userInput');
-    const messagesDiv = document.getElementById('messages');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileInput = document.getElementById('fileInput');
-    const welcomeMessage = document.getElementById('welcomeMessage');
-    const sidebar = document.getElementById('sidebar');
-    const historyList = document.getElementById('historyList');
-    const chatContainer = document.querySelector('.chat-container');
-    const historyIcon = document.getElementById('historyIcon');
-    const newChatIcon = document.getElementById('newChatIcon');
-    const closeSidebar = document.getElementById('closeSidebar');
-    const searchInput = document.getElementById('searchInput');
-    const chatBox = document.getElementById('chatBox');
-    const sidebarIcon = document.getElementById('sidebarIcon');
-    const deleteModal = document.getElementById('deleteModal');
-    const renameModal = document.getElementById('renameModal');
-    const renameInput = document.getElementById('renameInput');
-    const renameCancelBtn = document.getElementById('cancelRename');
-    const renameSaveBtn = document.getElementById('saveRename');
-    const deleteCancelBtn = document.getElementById('cancelDelete');
-    const deleteConfirmBtn = document.getElementById('confirmDelete');
-    const homeIcon = document.querySelector('.home-icon');
-    const settingsIcon = document.getElementById('settingsIcon');
-    const accountIcon = document.getElementById('accountIcon');
-    const previewContainer = document.getElementById('previewContainer');
-    const previewImage = document.getElementById('previewImage');
-    const editBtn = document.getElementById('editBtn');
-    const imageReviewModal = document.getElementById('imageReviewModal');
-    const reviewImage = document.getElementById('reviewImage');
-    const deleteImageBtn = document.getElementById('deleteImageBtn');
-    const editModal = document.getElementById('editModal');
-    const editCanvas = document.getElementById('editCanvas');
-    const cropX = document.getElementById('cropX');
-    const cropY = document.getElementById('cropY');
-    const cropWidth = document.getElementById('cropWidth');
-    const cropHeight = document.getElementById('cropHeight');
-    const brightness = document.getElementById('brightness');
-    const contrast = document.getElementById('contrast');
-    const backgroundColor = document.getElementById('bgColor');
-    const editCancelBtn = document.getElementById('cancelEdit');
-    const editApplyBtn = document.getElementById('editApplyBtn');
-    const moreOptionsBtn = document.getElementById('moreOptionsBtn');
-    const genresModal = document.getElementById('genresModal');
-    const closeGenresModal = document.getElementById('closeGenresModal');
-    const genresList = document.getElementById('genresList');
-
-    // State Variables
-    let selectedFile = null;
-    let editedImage = null;
-    const ctx = editCanvas?.getContext('2d');
-    let image = new Image();
-    let cropRect = { x: 0, y: 0, width: 200, height: 200 };
-    let brightnessValue = 0;
-    let contrastValue = 0;
-    let bgColor = 'white';
-    let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
-    sessionStorage.setItem('chatId', currentChatId);
-
-    // Initialize jsPDF
-    const { jsPDF } = window.jspdf;
-
-    // Firebase Initialization
-    const firebaseConfig = {
-        apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
-        authDomain: "admissionformdb.firebaseapp.com",
-        projectId: "admissionformdb",
-        storageBucket: "admissionformdb.firebasestorage.app",
-        messagingSenderId: "398052082157",
-        appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Navigation Events
-    if (homeIcon) {
-        homeIcon.addEventListener('click', () => window.location.href = 'index.html');
+/* Existing CSS remains unchanged until welcome-message and welcome-buttons */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Tiro Bangla', 'Segoe UI', sans-serif;
+    background: #E5E7EB;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+.chat-container {
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+.chat-container:not(.sidebar-open) {
+    margin-left: 0;
+    width: 100vw;
+}
+.chat-container.sidebar-open {
+    margin-left: 300px;
+    width: calc(100vw - 300px);
+}
+.header {
+    background: #1E3A8A;
+    color: #fff;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: gap 0.3s ease;
+}
+.header-brand.active .brand-logo {
+    transform: translateX(-10px);
+}
+.brand-logo {
+    font-size: 24px;
+    font-weight: 700;
+    transition: transform 0.3s ease;
+}
+.dynamic-text {
+    font-size: 16px;
+    opacity: 0;
+    background: #FFFFFF;
+    color: #1E3A8A;
+    border: none;
+    border-radius: 12px;
+    padding: 5px 10px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dynamic-text.active {
+    opacity: 1;
+    transform: translateY(0);
+    animation: floatIn 0.5s ease-out;
+}
+@keyframes floatIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.header-icons {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 15px;
+}
+.header-right-icons {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 15px;
+}
+.history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon {
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+.history-icon:hover, .new-chat-icon:hover, .home-icon:hover, .settings-icon:hover, .account-icon:hover {
+    color: #3B82F6;
+    transform: scale(1.1);
+}
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background: linear-gradient(135deg, #1E3A8A, #3B82F6);
+    color: #fff;
+    padding: 20px;
+    transition: left 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+.sidebar.open {
+    left: 0;
+    opacity: 1;
+}
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.sidebar-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+.close-sidebar {
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+.close-sidebar:hover {
+    color: #3B82F6;
+    transform: scale(1.1);
+}
+.search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: background 0.3s ease;
+}
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+.search-input:focus {
+    background: rgba(255, 255, 255, 0.2);
+}
+.history-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 10px 0 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+.history-list::-webkit-scrollbar {
+    width: 8px;
+}
+.history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+.history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+.history-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+.history-item-content {
+    flex-grow: 1;
+    overflow: hidden;
+}
+.history-item p {
+    font-size: 16px;
+    color: #fff;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.history-item .timestamp {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 5px;
+}
+.history-item .options {
+    opacity: 0;
+    position: absolute;
+    right: 15px;
+    transition: opacity 0.3s ease;
+}
+.history-item:hover .options {
+    opacity: 1;
+}
+.options i {
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+.options i:hover {
+    color: #3B82F6;
+    transform: scale(1.2);
+}
+.dropdown {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    background: #1E3A8A;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+}
+.dropdown.active {
+    display: block;
+}
+.dropdown-item {
+    padding: 8px 15px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.dropdown-item:hover {
+    background: #3B82F6;
+}
+.chat-box {
+    flex-grow: 1;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    height: 100%;
+    background: #fff;
+    position: relative;
+    transition: opacity 0.3s ease;
+}
+.chat-box.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+.welcome-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1; /* Reduced from 2 to avoid overlap */
+    width: 100%;
+    padding: 20px;
+    animation: slideUp 0.5s ease-in-out;
+}
+@keyframes slideUp {
+    from { transform: translate(-50%, -30%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
+}
+.welcome-message.fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.welcome-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    z-index: 2; /* Ensure buttons are clickable */
+}
+.welcome-buttons button {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    min-width: 150px; /* Ensure minimum clickable area */
+    min-height: 50px; /* Ensure minimum clickable area */
+    touch-action: manipulation; /* Improve touch responsiveness */
+}
+.welcome-buttons button:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+.welcome-buttons button:active {
+    transform: scale(0.95); /* Visual feedback on tap */
+}
+.welcome-buttons button i {
+    margin-right: 5px;
+}
+.welcome-buttons button:nth-child(1) {
+    color: #FF6F61;
+}
+.welcome-buttons button:nth-child(2) {
+    color: #6B7280;
+}
+.welcome-buttons button:nth-child(3) {
+    color: #F59E0B;
+}
+.welcome-buttons button#moreOptionsBtn {
+    color: #6B7280;
+}
+.messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px 60px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+.messages::-webkit-scrollbar {
+    width: 8px;
+}
+.messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.messages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+.messages::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    background: #f3f4f6;
+    border-radius: 15px;
+    width: fit-content;
+    margin: 10px;
+    animation: fadeIn 0.3s ease-out;
+}
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    background: #1E3A8A;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+}
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+.loading {
+    align-self: flex-start;
+    margin: 5px 0 10px 10px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #1E3A8A;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #1E3A8A;
+    border-radius: 50%;
+    animation: glow 1.5s infinite ease-in-out;
+}
+.dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+.dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+@keyframes glow {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px rgba(30, 58, 138, 0.6); }
+}
+.user-message, .bot-message {
+    padding: 15px 20px;
+    border-radius: 12px;
+    max-width: 60%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    margin: 10px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+.user-message {
+    background: #1e3a8a;
+    color: #fff;
+    text-align: right;
+    margin-left: auto;
+}
+.bot-message {
+    background: #fff;
+    color: #111827;
+    text-align: left;
+    margin-right: auto;
+    animation: fadeIn 0.3s ease-out;
+    text-shadow: none;
+    border: none;
+}
+@keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.slide-out {
+    animation: slideOut 0.3s ease-in;
+}
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(20px); opacity: 0; }
+}
+.review-card {
+    background: #fff;
+    border-radius: 0;
+    padding: 20px;
+    max-width: 60%;
+    margin: 10px;
+    box-shadow: none;
+    animation: slideIn 0.3s ease-out;
+}
+.review-card h3 {
+    font-size: 20px;
+    color: #1E3A8A;
+    margin-bottom: 15px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+.review-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    position: relative;
+}
+.review-item label {
+    font-size: 16px;
+    color: #333;
+    font-weight: 700;
+}
+.review-item p {
+    font-size: 16px;
+    color: #555;
+    margin: 0;
+}
+.review-item img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-top: 5px;
+}
+.replace-image-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    color: #3B82F6;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+.replace-image-icon:hover {
+    color: #2563EB;
+    transform: scale(1.2);
+}
+.replace-image-input {
+    display: none;
+}
+.review-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 10px;
+}
+.confirm-btn, .download-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+.confirm-btn {
+    background: linear-gradient(135deg, #10B981, #047857);
+    color: #fff;
+}
+.confirm-btn:hover {
+    background: linear-gradient(135deg, #059669, #065F46);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+.confirm-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+.confirm-btn:hover::before {
+    width: 200px;
+    height: 200px;
+}
+.download-btn {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: #fff;
+}
+.download-btn:hover {
+    background: linear-gradient(135deg, #D97706, #B45309);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+.download-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+.download-btn:hover::before {
+    width: 200px;
+    height: 200px;
+}
+.image-preview {
+    max-width: 200px;
+    height: auto;
+    border-radius: 10px;
+    margin-top: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+.input-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    margin-top: auto;
+    gap: 10px;
+}
+.input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 80%;
+    max-width: 800px;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 25px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    gap: 10px;
+    transition: height 0.3s ease;
+}
+#userInput {
+    flex-grow: 1;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    background: transparent;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    resize: none;
+    overflow-y: auto;
+    min-height: 60px;
+    max-height: 120px;
+    width: 100%;
+    box-sizing: border-box;
+    line-height: 1.6;
+    transition: height 0.3s ease;
+}
+#userInput:focus {
+    border: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    outline: none;
+}
+#sendBtn, #uploadBtn {
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+#sendBtn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #1E3A8A;
+    color: #fff;
+    font-size: 16px;
+}
+#sendBtn:hover {
+    background: #3B82F6;
+    transform: scale(1.1);
+}
+#uploadBtn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #1E3A8A;
+    color: #fff;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-left: 10px;
+}
+#uploadBtn i {
+    font-size: 16px;
+}
+#uploadBtn:hover {
+    background: #3B82F6;
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+.button-container {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+}
+.preview-container {
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    transform: none;
+    display: none;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: fadeInPreview 0.3s ease-out;
+}
+@keyframes fadeInPreview {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.preview-container.fade-in {
+    animation: fadeInPreview 0.3s ease-out;
+}
+.preview-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.image-review-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.image-review-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.review-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 10px;
+}
+.delete-image-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #EF4444;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.delete-image-btn:hover {
+    background: #DC2626;
+    transform: scale(1.1);
+}
+.delete-image-btn i {
+    font-size: 16px;
+}
+.edit-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.edit-modal-content {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+.edit-modal-content h3 {
+    font-size: 20px;
+    color: #1E3A8A;
+    margin-bottom: 15px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+#editCanvas {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+.edit-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.edit-controls label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 700;
+}
+.edit-controls input[type="range"],
+.edit-controls input[type="color"] {
+    width: 100%;
+    margin-top: 5px;
+}
+.edit-controls input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+.edit-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+#cancelEdit, #editApplyBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#cancelEdit {
+    background: #EF4444;
+    color: #fff;
+}
+#cancelEdit:hover {
+    background: #DC2626;
+    transform: translateY(-2px);
+}
+#editApplyBtn {
+    background: #10B981;
+    color: #fff;
+}
+#editApplyBtn:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+}
+.modal-content p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.cancel {
+    background: #EF4444;
+    color: #fff;
+}
+.cancel:hover {
+    background: #DC2626;
+    transform: translateY(-2px);
+}
+.confirm {
+    background: #10B981;
+    color: #fff;
+}
+.confirm:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+.rename-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.rename-modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+}
+.rename-modal-content h3 {
+    font-size: 20px;
+    color: #1E3A8A;
+    margin-bottom: 15px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+#renameInput {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+.rename-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.rename-modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.genres-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.genres-modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.genres-modal-content h3 {
+    font-size: 20px;
+    color: #1E3A8A;
+    margin-bottom: 15px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.genres-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.genre-item {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.genre-item:hover {
+    background: #f0f0f0;
+    transform: translateX(5px);
+}
+.genre-item i {
+    font-size: 18px;
+    color: #3B82F6;
+}
+.genre-item span {
+    font-size: 16px;
+    color: #333;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+.genres-modal-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+.genres-modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.ripple-btn {
+    position: relative;
+    overflow: hidden;
+}
+.ripple-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+.ripple-btn:hover::before {
+    width: 200px;
+    height: 200px;
+}
+.edit-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #3B82F6, #1E3A8A);
+    color: #fff;
+}
+.edit-btn:hover {
+    background: linear-gradient(135deg, #2563EB, #1E40AF);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+.edit-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+.edit-btn:hover::before {
+    width: 200px;
+    height: 200px;
+}
+.edit-input {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    font-family: 'Tiro Bangla', serif;
+    font-weight: 700;
+}
+@media (max-width: 768px) {
+    .chat-container.sidebar-open {
+        margin-left: 0;
+        width: 100vw;
     }
-    if (settingsIcon) {
-        settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
+    .chat-container:not(.sidebar-open) {
+        margin-left: 0;
+        width: 100vw;
     }
-    if (accountIcon) {
-        accountIcon.addEventListener('click', () => window.location.href = 'account.html');
+    .sidebar {
+        width: 100%;
+        left: -100%;
     }
-
-    // Utility: Sanitize Message to Prevent XSS
-    function sanitizeMessage(message) {
-        if (typeof message !== 'string') return '';
-        const div = document.createElement('div');
-        div.textContent = message;
-        return div.innerHTML
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/&/g, '&amp;');
+    .sidebar.open {
+        left: 0;
     }
-
-    // Utility: Show Typing Indicator
-    function showTypingIndicator() {
-        const typingDiv = document.createElement('div');
-        typingDiv.classList.add('typing-indicator');
-        typingDiv.innerHTML = `
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-        `;
-        if (messagesDiv) {
-            messagesDiv.appendChild(typingDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        return typingDiv;
+    .chat-box {
+        padding: 15px;
     }
-
-    // Utility: Progressive Message Loading
-    function displayProgressiveMessage(message, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
-        if (messagesDiv) {
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        const words = message.split(' ');
-        let currentIndex = 0;
-
-        function addNextWord() {
-            if (currentIndex < words.length) {
-                messageDiv.innerHTML = sanitizeMessage(words.slice(0, currentIndex + 1).join(' '));
-                currentIndex++;
-                setTimeout(addNextWord, 100);
-            } else {
-                saveChatHistory(message, sender);
-            }
-        }
-
-        addNextWord();
-
-        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-            welcomeMessage.classList.add('fade-out');
-            setTimeout(() => {
-                welcomeMessage.style.display = 'none';
-                welcomeMessage.classList.remove('fade-out');
-            }, 300);
-        }
+    .welcome-buttons button {
+        padding: 8px 16px;
+        font-size: 12px;
+        min-width: 120px; /* Adjusted for smaller screens */
+        min-height: 40px; /* Adjusted for smaller screens */
     }
-
-    // Display Message
-    function displayMessage(message, sender) {
-        if (sender === 'bot') {
-            displayProgressiveMessage(sanitizeMessage(message), sender);
-        } else {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('user-message', 'slide-in');
-            messageDiv.innerHTML = sanitizeMessage(message);
-            if (messagesDiv) {
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-            }
-            saveChatHistory(message, sender);
-        }
+    .welcome-buttons button i {
+        margin-right: 3px;
     }
-
-    // Message Sending
-    if (sendBtn) {
-        sendBtn.addEventListener('click', sendMessage);
+    .user-message, .bot-message {
+        max-width: 80%;
+        font-size: 16px;
     }
-    if (userInput) {
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.repeat) sendMessage();
-        });
+    .review-card {
+        max-width: 80%;
     }
-
-    function sendMessage() {
-        const message = userInput?.value.trim();
-        if (message) {
-            displayMessage(message, 'user');
-            callRasaAPI(message);
-            userInput.value = '';
-        } else if (selectedFile) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('user-message', 'slide-in');
-            const img = document.createElement('img');
-            img.src = previewImage?.src || '';
-            img.classList.add('image-preview');
-            img.addEventListener('click', () => openImageModal(img.src));
-            messageDiv.appendChild(img);
-            if (messagesDiv) {
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-            }
-
-            const formData = new FormData();
-            formData.append('image', selectedFile);
-            fetch('http://localhost:5000/upload-image', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.image_url) {
-                        callRasaAPI(data.image_url);
-                        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
-                    } else if (data.error) {
-                        console.error('Image Upload Error:', data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Image Upload Error:', error);
-                });
-            clearPreview();
-        }
+    .input-wrapper {
+        width: 90%;
     }
-
-    // Image Upload and Preview
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', () => fileInput?.click());
+}
+@media (max-width: 480px) {
+    .header {
+        padding: 10px;
     }
-    if (fileInput) {
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (file) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    if (previewImage) {
-                        previewImage.src = e.target.result;
-                    }
-                    if (previewContainer) {
-                        previewContainer.style.display = 'flex';
-                    }
-                    if (userInput) {
-                        userInput.style.paddingLeft = '110px';
-                    }
-                };
-                reader.onerror = () => {
-                    displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
-                };
-                reader.readAsDataURL(file);
-            }
-            fileInput.value = '';
-        });
+    .header-icons, .header-right-icons {
+        gap: 10px;
     }
-
-    // Image Review Modal
-    if (previewImage) {
-        previewImage.addEventListener('click', () => {
-            if (reviewImage) {
-                reviewImage.src = previewImage.src;
-            }
-            if (imageReviewModal) {
-                imageReviewModal.style.display = 'flex';
-            }
-        });
+    .history-icon, .new-chat-icon, .home-icon, .settings-icon, .account-icon {
+        font-size: 20px;
     }
-
-    // Image Editing
-    if (editBtn) {
-        editBtn.addEventListener('click', () => {
-            image.src = previewImage?.src || '';
-            image.onload = () => {
-                if (editCanvas) {
-                    editCanvas.width = image.width;
-                    editCanvas.height = image.height;
-                    cropRect.width = Math.min(200, image.width);
-                    cropRect.height = Math.min(200, image.height);
-                    drawImage();
-                    if (editModal) {
-                        editModal.style.display = 'flex';
-                    }
-                }
-            };
-        });
+    .brand-logo {
+        font-size: 20px;
     }
-
-    // Canvas Editing Controls
-    if (cropX) {
-        cropX.addEventListener('input', () => {
-            cropRect.x = parseInt(cropX.value);
-            drawImage();
-        });
+    .dynamic-text {
+        font-size: 14px;
+        max-width: 120px;
     }
-
-    if (cropY) {
-        cropY.addEventListener('input', () => {
-            cropRect.y = parseInt(cropY.value);
-            drawImage();
-        });
+    .chat-box {
+        padding: 10px;
     }
-
-    if (cropWidth) {
-        cropWidth.addEventListener('input', () => {
-            cropRect.width = parseInt(cropWidth.value);
-            drawImage();
-        });
+    .welcome-buttons {
+        gap: 8px;
     }
-
-    if (cropHeight) {
-        cropHeight.addEventListener('input', () => {
-            cropRect.height = parseInt(cropHeight.value);
-            drawImage();
-        });
+    .welcome-buttons button {
+        padding: 6px 12px;
+        font-size: 10px;
+        min-width: 100px; /* Further adjusted for very small screens */
+        min-height: 36px; /* Further adjusted for very small screens */
     }
-
-    if (brightness) {
-        brightness.addEventListener('input', () => {
-            brightnessValue = parseInt(brightness.value);
-            drawImage();
-        });
+    .user-message, .bot-message {
+        max-width: 90%;
+        font-size: 14px;
     }
-
-    if (contrast) {
-        contrast.addEventListener('input', () => {
-            contrastValue = parseInt(contrast.value);
-            drawImage();
-        });
+    .review-card {
+        max-width: 90%;
     }
-
-    if (backgroundColor) {
-        backgroundColor.addEventListener('change', () => {
-            bgColor = backgroundColor.value;
-            drawImage();
-        });
+    .review-card h3 {
+        font-size: 18px;
     }
-
-    function drawImage() {
-        if (ctx) {
-            ctx.clearRect(0, 0, editCanvas.width, editCanvas.height);
-            ctx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
-            ctx.fillRect(0, 0, editCanvas.width, editCanvas.height);
-
-            ctx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
-            ctx.drawImage(image, 0, 0);
-
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
-            ctx.filter = 'none';
-        }
+    .review-item label, .review-item p {
+        font-size: 14px;
     }
-
-    // Apply Edited Image
-    if (editApplyBtn) {
-        editApplyBtn.addEventListener('click', () => {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = cropRect.width;
-            tempCanvas.height = cropRect.height;
-            const tempCtx = tempCanvas.getContext('2d');
-            if (tempCtx) {
-                tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
-                tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
-                tempCtx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
-                tempCtx.drawImage(image, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, cropRect.width, cropRect.height);
-
-                editedImage = tempCanvas.toDataURL('image/jpeg');
-                if (previewImage) {
-                    previewImage.src = editedImage;
-                }
-
-                callRasaAPI("show_review");
-                if (editModal) {
-                    editModal.style.display = 'none';
-                }
-            }
-        });
+    .input-wrapper {
+        width: 95%;
+        padding: 8px;
     }
-
-    if (editCancelBtn) {
-        editCancelBtn.addEventListener('click', () => {
-            if (editModal) {
-                editModal.style.display = 'none';
-            }
-        });
+    #userInput {
+        font-size: 14px;
+        min-height: 50px;
     }
-
-    function openImageModal(imageSrc) {
-        if (reviewImage) {
-            reviewImage.src = imageSrc;
-        }
-        if (imageReviewModal) {
-            imageReviewModal.style.display = 'flex';
-        }
+    #sendBtn, #uploadBtn {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
     }
-
-    if (imageReviewModal) {
-        imageReviewModal.addEventListener('click', (e) => {
-            if (e.target === imageReviewModal || e.target === deleteImageBtn) {
-                imageReviewModal.style.display = 'none';
-            }
-        });
-    }
-
-    if (deleteImageBtn) {
-        deleteImageBtn.addEventListener('click', () => {
-            clearPreview();
-            if (imageReviewModal) {
-                imageReviewModal.style.display = 'none';
-            }
-        });
-    }
-
-    function clearPreview() {
-        selectedFile = null;
-        editedImage = null;
-        if (previewImage) {
-            previewImage.src = '';
-        }
-        if (previewContainer) {
-            previewContainer.style.display = 'none';
-        }
-        if (userInput) {
-            userInput.style.paddingLeft = '15px';
-        }
-    }
-
-    // Sidebar and Chat History
-    if (historyIcon) {
-        historyIcon.addEventListener('click', toggleSidebar);
-    }
-    if (newChatIcon) {
-        newChatIcon.addEventListener('click', startNewChat);
-    }
-    if (closeSidebar) {
-        closeSidebar.addEventListener('click', hideSidebar);
-    }
-    if (sidebarIcon) {
-        sidebarIcon.addEventListener('click', toggleSidebar);
-    }
-
-    function toggleSidebar() {
-        if (sidebar && chatContainer) {
-            sidebar.classList.toggle('open');
-            chatContainer.classList.toggle('sidebar-open');
-            loadChatHistory();
-        }
-    }
-
-    function hideSidebar() {
-        if (sidebar && chatContainer) {
-            sidebar.classList.remove('open');
-            chatContainer.classList.remove('sidebar-open');
-        }
-    }
-
-    function startNewChat() {
-        currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem('chatId', currentChatId);
-        if (messagesDiv) {
-            messagesDiv.innerHTML = '';
-        }
-        if (welcomeMessage) {
-            welcomeMessage.style.display = 'block';
-        }
-        if (chatBox) {
-            chatBox.classList.add('fade-in');
-            setTimeout(() => chatBox.classList.remove('fade-in'), 500);
-        }
-        saveChatHistory('New Chat Started', 'system');
-        loadChatHistory();
-    }
-
-    function displayReview(reviewData) {
-        const reviewCard = document.createElement('div');
-        reviewCard.classList.add('review-card', 'slide-in');
-        reviewCard.setAttribute('data-editable', 'true');
-        reviewCard.setAttribute('data-id', Date.now());
-        reviewCard.setAttribute('data-confirmed', 'false');
-        reviewCard.innerHTML = '<h3>আপনার তথ্য রিভিউ</h3>';
-
-        const reviewContent = document.createElement('div');
-        reviewContent.classList.add('review-content');
-
-        for (const [key, value] of Object.entries(reviewData)) {
-            const reviewItem = document.createElement('div');
-            reviewItem.classList.add('review-item');
-            reviewItem.setAttribute('data-key', key);
-
-            const label = document.createElement('label');
-            label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
-            reviewItem.appendChild(label);
-
-            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                const img = document.createElement('img');
-                img.src = value;
-                reviewItem.appendChild(img);
-            } else {
-                const p = document.createElement('p');
-                p.innerText = value;
-                reviewItem.appendChild(p);
-            }
-
-            reviewContent.appendChild(reviewItem);
-        }
-
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'review-buttons';
-
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn ripple-btn';
-        editBtn.innerText = 'Edit';
-        editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
-
-        const confirmBtn = document.createElement('button');
-        confirmBtn.className = 'confirm-btn ripple-btn';
-        confirmBtn.innerText = 'Confirm';
-        confirmBtn.style.display = 'inline-block';
-        let isProcessing = false;
-
-        confirmBtn.addEventListener('click', async () => {
-            if (isProcessing) return;
-            isProcessing = true;
-            confirmBtn.disabled = true;
-
-            try {
-                const updatedData = {};
-                reviewContent.querySelectorAll('.review-item').forEach(item => {
-                    const key = item.getAttribute('data-key');
-                    const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                    if (!value) {
-                        console.warn(`কোনো মান পাওয়া যায়নি: ${key}`);
-                    }
-                    updatedData[key] = value;
-                });
-
-                // ফায়ারবেজে ডেটা সেভ করা
-                await db.collection('submissions').add({
-                    review_data: updatedData,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    chat_id: currentChatId
-                });
-
-                displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-                await generatePDF(updatedData, reviewCard); // await যোগ করা
-                reviewCard.setAttribute('data-confirmed', 'true');
-                reviewCard.setAttribute('data-editable', 'false');
-                editBtn.disabled = true;
-                editBtn.style.display = 'none';
-                confirmBtn.style.display = 'none';
-
-                // ডাউনলোড বাটন তৈরি
-                buttonContainer.innerHTML = '';
-                const downloadBtn = document.createElement('button');
-                downloadBtn.className = 'download-btn ripple-btn';
-                downloadBtn.innerText = 'Download PDF';
-                downloadBtn.addEventListener('click', () => {
-                    const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                    if (pdfUrl) {
-                        const link = document.createElement('a');
-                        link.href = pdfUrl;
-                        link.download = 'formbondhu_submission.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    } else {
-                        displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                    }
-                });
-                buttonContainer.appendChild(downloadBtn);
-            } catch (error) {
-                let errorMessage = 'অজানা ত্রুটি ঘটেছে।';
-                if (error.code && error.message) {
-                    errorMessage = `ফায়ারবেজে তথ্য পাঠাতে সমস্যা: ${error.message}`;
-                }
-                displayMessage(errorMessage, 'bot');
-                console.error('Error in confirm button:', error);
-                confirmBtn.disabled = false;
-            } finally {
-                isProcessing = false;
-            }
-        });
-
-        buttonContainer.appendChild(editBtn);
-        buttonContainer.appendChild(confirmBtn);
-
-        reviewCard.appendChild(reviewContent);
-        reviewCard.appendChild(buttonContainer);
-        if (messagesDiv) {
-            messagesDiv.appendChild(reviewCard);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-            welcomeMessage.classList.add('fade-out');
-            setTimeout(() => {
-                welcomeMessage.style.display = 'none';
-                welcomeMessage.classList.remove('fade-out');
-            }, 300);
-        }
-    }
-
-    function toggleEditMode(card, reviewData) {
-        if (card.getAttribute('data-confirmed') === 'true') {
-            displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
-            return;
-        }
-
-        const isEditable = card.getAttribute('data-editable') === 'true';
-        const reviewContent = card.querySelector('.review-content');
-        const editBtn = card.querySelector('.edit-btn');
-        const confirmBtn = card.querySelector('.confirm-btn');
-
-        if (!isEditable) {
-            card.setAttribute('data-editable', 'true');
-            editBtn.innerText = 'Save';
-            confirmBtn.style.display = 'none';
-
-            reviewContent.querySelectorAll('.review-item').forEach(item => {
-                const key = item.getAttribute('data-key');
-                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label>`;
-
-                if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                    const img = document.createElement('img');
-                    img.src = value;
-                    item.appendChild(img);
-
-                    const replaceIcon = document.createElement('i');
-                    replaceIcon.className = 'fas fa-camera replace-image-icon';
-                    item.appendChild(replaceIcon);
-
-                    const replaceInput = document.createElement('input');
-                    replaceInput.type = 'file';
-                    replaceInput.className = 'replace-image-input';
-                    replaceInput.accept = 'image/png, image/jpeg';
-                    replaceInput.style.display = 'none';
-                    item.appendChild(replaceInput);
-
-                    replaceIcon.addEventListener('click', () => replaceInput.click());
-
-                    replaceInput.addEventListener('change', () => {
-                        const file = replaceInput.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                img.src = e.target.result;
-                            };
-                            reader.onerror = () => {
-                                displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            displayMessage('কোনো ইমেজ সিলেক্ট করা হয়নি।', 'bot');
-                        }
-                    });
-                } else {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = value || '';
-                    input.className = 'edit-input';
-                    item.appendChild(input);
-                }
-            });
-        } else {
-            const updatedData = { ...reviewData };
-            reviewContent.querySelectorAll('.review-item').forEach(item => {
-                const key = item.getAttribute('data-key');
-                const input = item.querySelector('input.edit-input');
-                const img = item.querySelector('img');
-                if (input) {
-                    const newValue = input.value.trim();
-                    updatedData[key] = newValue;
-                    item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><p>${sanitizeMessage(newValue)}</p>`;
-                } else if (img) {
-                    updatedData[key] = img.src;
-                    item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}">`;
-                }
-            });
-
-            card.setAttribute('data-editable', 'false');
-            editBtn.innerText = 'Edit';
-            confirmBtn.style.display = 'inline-block';
-        }
-    }
-
-    function displayLoading() {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.classList.add('loading', 'slide-in');
-        loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        if (messagesDiv) {
-            messagesDiv.appendChild(loadingDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        return loadingDiv;
-    }
-
-    function removeLoading(loadingDiv) {
-        if (loadingDiv) {
-            loadingDiv.classList.add('slide-out');
-            setTimeout(() => loadingDiv.remove(), 300);
-        }
-    }
-
-    function callRasaAPI(message, metadata = {}) {
-        const typingDiv = showTypingIndicator();
-        const payload = { sender: currentChatId, message: message };
-        if (Object.keys(metadata).length > 0) {
-            payload.metadata = metadata;
-        }
-        setTimeout(() => {
-            if (typeof $ !== 'undefined') {
-                $.ajax({
-                    url: 'http://localhost:5005/webhooks/rest/webhook',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(payload),
-                    success: (data) => {
-                        typingDiv.remove();
-                        if (!data || data.length === 0) {
-                            displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
-                            return;
-                        }
-                        data.forEach(response => {
-                            if (response.text && !response.text.toLowerCase().includes('hi')) {
-                                displayMessage(sanitizeMessage(response.text), 'bot');
-                            }
-                            if (response.custom && response.custom.review_data) {
-                                displayReview(response.custom.review_data);
-                            }
-                            if (response.buttons) {
-                                const buttonDiv = document.createElement('div');
-                                buttonDiv.classList.add('welcome-buttons');
-                                response.buttons.forEach(btn => {
-                                    const button = document.createElement('button');
-                                    button.innerText = sanitizeMessage(btn.title);
-                                    button.classList.add('ripple-btn');
-                                    button.addEventListener('click', () => sendMessage(btn.payload));
-                                    buttonDiv.appendChild(button);
-                                });
-                                if (messagesDiv) {
-                                    messagesDiv.appendChild(buttonDiv);
-                                }
-                            }
-                        });
-                    },
-                    error: (error) => {
-                        typingDiv.remove();
-                        displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
-                        console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
-                    }
-                });
-            } else {
-                typingDiv.remove();
-                displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
-            }
-        }, 500);
-    }
-
-    async function generatePDF(reviewData, reviewCard) {
-        const doc = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-        });
-
-        doc.setFont("helvetica");
-        doc.setFontSize(16);
-        doc.setFillColor(30, 58, 138);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.text("Formbondhu Submission", 20, 20);
-        doc.setFontSize(12);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 30);
-        doc.setDrawColor(30, 58, 138);
-        doc.setLineWidth(0.5);
-        doc.rect(10, 10, 190, 277);
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-
-        let y = 50;
-        for (const [key, value] of Object.entries(reviewData)) {
-            const label = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ');
-            doc.setFont("helvetica", "bold");
-            doc.text(`${label}:`, 20, y);
-            doc.setFont("helvetica", "normal");
-
-            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                try {
-                    const imgData = value;
-                    doc.addImage(imgData, 'JPEG', 20, y + 5, 80, 60, undefined, 'FAST');
-                    y += 70;
-                } catch (error) {
-                    doc.text("Image could not be loaded", 20, y + 5);
-                    y += 10;
-                    console.error('PDF Image Error:', error);
-                }
-            } else {
-                const lines = doc.splitTextToSize(value, 170);
-                doc.text(lines, 20, y + 5);
-                y += lines.length * 5 + 5;
-            }
-            y += 5;
-        }
-
-        doc.setFillColor(229, 231, 235);
-        doc.rect(0, 277, 210, 20, 'F');
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        doc.text("Generated by Formbondhu - www.formbondhu.com", 20, 287);
-        doc.text("Page 1 of 1", 180, 287);
-
-        const pdfBlob = doc.output('blob');
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        reviewCard.setAttribute('data-pdf-url', pdfUrl);
-    }
-
-    function saveChatHistory(message, sender) {
-        let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        if (!chats[currentChatId]) {
-            chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
-        }
-        chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
-        localStorage.setItem('chatHistory', JSON.stringify(chats));
-    }
-
-    function loadChatHistory() {
-        if (historyList) {
-            historyList.innerHTML = '';
-        }
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        Object.keys(chats).forEach(chatId => {
-            const chat = chats[chatId];
-            if (chat && chat.title) {
-                const item = document.createElement('div');
-                item.classList.add('history-item');
-                item.setAttribute('data-chat-id', chatId);
-                item.innerHTML = `
-                    <div class="history-item-content">
-                        <p>${sanitizeMessage(chat.title)}</p>
-                        <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
-                    </div>
-                    <div class="options">
-                        <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
-                    </div>
-                    <div class="dropdown" id="dropdown-${chatId}">
-                        <div class="dropdown-item rename-item-${chatId}">Rename</div>
-                        <div class="dropdown-item delete-item-${chatId}">Delete</div>
-                    </div>
-                `;
-                historyList.appendChild(item);
-
-                item.addEventListener('click', () => loadChat(chatId));
-                const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
-                const dropdown = item.querySelector(`#dropdown-${chatId}`);
-                const renameItem = item.querySelector(`.rename-item-${chatId}`);
-                const deleteItem = item.querySelector(`.delete-item-${chatId}`);
-
-                optionIcon.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    dropdown.classList.toggle('active');
-                });
-
-                renameItem.addEventListener('click', () => {
-                    if (renameModal) {
-                        renameModal.style.display = 'flex';
-                    }
-                    if (renameInput) {
-                        renameInput.value = chat.title;
-                    }
-                    currentChatId = chatId;
-                });
-
-                deleteItem.addEventListener('click', () => {
-                    if (deleteModal) {
-                        deleteModal.style.display = 'flex';
-                    }
-                    currentChatId = chatId;
-                });
-            } else {
-                console.warn(`Chat with ID ${chatId} is missing or invalid. Skipping...`);
-            }
-        });
-
-        if (historyList && historyList.children.length > 0) {
-            sidebar.classList.add('open');
-            chatContainer.classList.add('sidebar-open');
-        }
-    }
-
-    function loadChat(chatId) {
-        currentChatId = chatId;
-        sessionStorage.setItem('chatId', currentChatId);
-        const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-        const chat = chats[chatId];
-        if (chat) {
-            messagesDiv.innerHTML = '';
-            chat.messages.forEach(msg => {
-                displayMessage(msg.text, msg.sender);
-            });
-            if (welcomeMessage) {
-                welcomeMessage.style.display = 'none';
-            }
-            sidebar.classList.remove('open');
-            chatContainer.classList.remove('sidebar-open');
-            loadChatHistory();
-        }
-    }
-
-    if (renameCancelBtn) {
-        renameCancelBtn.addEventListener('click', () => {
-            if (renameModal) {
-                renameModal.style.display = 'none';
-            }
-        });
-    }
-
-    if (renameSaveBtn) {
-        renameSaveBtn.addEventListener('click', () => {
-            const newTitle = renameInput?.value.trim() || '';
-            if (newTitle) {
-                let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-                if (chats[currentChatId]) {
-                    chats[currentChatId].title = sanitizeMessage(newTitle);
-                    localStorage.setItem('chatHistory', JSON.stringify(chats));
-                    loadChatHistory();
-                }
-            }
-            if (renameModal) {
-                renameModal.style.display = 'none';
-            }
-        });
-    }
-
-    if (deleteCancelBtn) {
-        deleteCancelBtn.addEventListener('click', () => {
-            if (deleteModal) {
-                deleteModal.style.display = 'none';
-            }
-        });
-    }
-
-    if (deleteConfirmBtn) {
-        deleteConfirmBtn.addEventListener('click', () => {
-            let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            if (chats[currentChatId]) {
-                delete chats[currentChatId];
-                localStorage.setItem('chatHistory', JSON.stringify(chats));
-                loadChatHistory();
-                if (Object.keys(chats).length === 0) {
-                    startNewChat();
-                } else {
-                    messagesDiv.innerHTML = '';
-                    if (welcomeMessage) {
-                        welcomeMessage.style.display = 'block';
-                    }
-                }
-            }
-            if (deleteModal) {
-                deleteModal.style.display = 'none';
-            }
-        });
-    }
-
-    function renderGenresList() {
-        if (genresList) {
-            genresList.innerHTML = '';
-            genres.forEach(genre => {
-                const genreItem = document.createElement('div');
-                genreItem.className = 'genre-item ripple-btn';
-                genreItem.innerHTML = `<i class="${genre.icon}"></i><span>${sanitizeMessage(genre.name)}</span>`;
-                genreItem.addEventListener('click', () => {
-                    if (genre.message) {
-                        genresModal.classList.add('slide-out');
-                        setTimeout(() => {
-                            genresModal.style.display = 'none';
-                            genresModal.classList.remove('slide-out');
-                        }, 300);
-                        welcomeMessage.classList.add('fade-out');
-                        setTimeout(() => {
-                            welcomeMessage.style.display = 'none';
-                            welcomeMessage.classList.remove('fade-out');
-                        }, 300);
-                        displayMessage(sanitizeMessage(genre.message), 'user');
-                        saveChatHistory(sanitizeMessage(genre.message), 'user');
-                        callRasaAPI(sanitizeMessage(genre.message));
-                    } else {
-                        console.error(`Message undefined for genre: ${genre.name}`);
-                        displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
-                    }
-                });
-                genresList.appendChild(genreItem);
-            });
-        }
-    }
-
-    function openGenresModal() {
-        renderGenresList();
-        genresModal.classList.add('slide-in');
-        genresModal.style.display = 'flex';
-        setTimeout(() => genresModal.classList.remove('slide-in'), 300);
-    }
-
-    function closeGenresModalFunc() {
-        genresModal.classList.add('slide-out');
-        setTimeout(() => {
-            genresModal.style.display = 'none';
-            genresModal.classList.remove('slide-out');
-        }, 300);
-    }
-
-    if (moreOptionsBtn) {
-        moreOptionsBtn.addEventListener('click', openGenresModal);
-    }
-    if (closeGenresModal) {
-        closeGenresModal.addEventListener('click', closeGenresModalFunc);
-    }
-
-    document.querySelectorAll('.welcome-buttons button[data-genre]').forEach(button => {
-        button.classList.add('ripple-btn');
-        button.addEventListener('click', () => {
-            const genreName = button.getAttribute('data-genre');
-            const genre = genres.find(g => g.name === genreName);
-            if (genre && genre.message) {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-                displayMessage(sanitizeMessage(genre.message), 'user');
-                saveChatHistory(sanitizeMessage(genre.message), 'user');
-                callRasaAPI(sanitizeMessage(genre.message));
-            } else {
-                console.error(`Genre not found or message undefined for: ${genreName}`);
-                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
-            }
-        });
-    });
-
-    // Initialize
-    loadChatHistory();
-});
+}
