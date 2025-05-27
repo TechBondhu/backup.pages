@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('fileInput');
     const messagesDiv = document.getElementById('messages');
     const welcomeMessage = document.getElementById('welcomeMessage');
-    const uploadConfirmBtn = document.getElementById('uploadConfirmBtn');
+    const sendBtn = document.getElementById('sendBtn');
     const imageReviewModal = document.getElementById('imageReviewModal');
     const reviewImage = document.getElementById('reviewImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
@@ -68,22 +68,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Handle upload confirmation
-    if (uploadConfirmBtn) {
-        uploadConfirmBtn.addEventListener('click', () => {
-            if (selectedFile) {
-                // Display image in chat as user message
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('user-message', 'slide-in');
-                const img = document.createElement('img');
-                img.src = previewImage.src;
-                img.classList.add('image-preview');
-                img.addEventListener('click', () => openImageModal(previewImage.src));
-                messageDiv.appendChild(img);
-                if (messagesDiv) {
-                    messagesDiv.appendChild(messageDiv);
-                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // Handle upload and send via sendBtn
+    if (sendBtn) {
+        sendBtn.addEventListener('click', () => {
+            const message = userInput.value.trim();
+            if (selectedFile || message) {
+                // Handle image upload if exists
+                if (selectedFile) {
+                    const formData = new FormData();
+                    formData.append('image', selectedFile);
+
+                    fetch('http://localhost:5000/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.image_url) {
+                                const messageDiv = document.createElement('div');
+                                messageDiv.classList.add('user-message', 'slide-in');
+                                const img = document.createElement('img');
+                                img.src = previewImage.src;
+                                img.classList.add('image-preview');
+                                img.addEventListener('click', () => openImageModal(previewImage.src));
+                                messageDiv.appendChild(img);
+                                if (messagesDiv) {
+                                    messagesDiv.appendChild(messageDiv);
+                                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                                }
+                                callRasaAPI(data.image_url);
+                            } else if (data.error) {
+                                console.error('Image Upload Error:', data.error);
+                            }
+                            // Reset preview
+                            previewContainer.style.display = 'none';
+                            userInput.style.paddingLeft = '12px';
+                            selectedFile = null;
+                        })
+                        .catch(error => {
+                            console.error('Image Upload Error:', error);
+                        });
                 }
+
+                // Handle text message
+                if (message) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('user-message', 'slide-in');
+                    messageDiv.textContent = message;
+                    if (messagesDiv) {
+                        messagesDiv.appendChild(messageDiv);
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                    }
+                    callRasaAPI(message);
+                    saveChatHistory(message, 'user');
+                }
+
+                // Reset input
+                userInput.value = '';
                 if (welcomeMessage && welcomeMessage.style.display !== 'none') {
                     welcomeMessage.classList.add('fade-out');
                     setTimeout(() => {
@@ -91,29 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         welcomeMessage.classList.remove('fade-out');
                     }, 300);
                 }
-
-                // Upload to server
-                const formData = new FormData();
-                formData.append('image', selectedFile);
-                fetch('http://localhost:5000/upload-image', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.image_url) {
-                            callRasaAPI(data.image_url);
-                        } else if (data.error) {
-                            console.error('Image Upload Error:', data.error);
-                        }
-                        // Reset preview after upload
-                        previewContainer.style.display = 'none';
-                        userInput.style.paddingLeft = '12px';
-                        selectedFile = null;
-                    })
-                    .catch(error => {
-                        console.error('Image Upload Error:', error);
-                    });
             }
         });
     }
@@ -150,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imageReviewModal) {
                 imageReviewModal.style.display = 'none';
             }
-            // Optionally reset preview if needed
+            // Reset preview if needed
             if (previewContainer) {
                 previewContainer.style.display = 'none';
                 userInput.style.paddingLeft = '12px';
