@@ -9,11 +9,11 @@ function sanitizeMessage(message) {
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, ''')
-        .replace(/&/g, '&');
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/&/g, '&amp;');
 }
 
 // Save Chat History to localStorage
@@ -81,7 +81,7 @@ function loadChatHistory() {
                 const deleteModal = document.getElementById('deleteModal');
                 if (deleteModal) {
                     deleteModal.style.display = 'flex';
-                    currentChatId = chap;
+                    currentChatId = chatId;
                 }
             });
         } else {
