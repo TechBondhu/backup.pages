@@ -90,18 +90,18 @@ function setupChatHistoryEventHandlers() {
 
 function toggleSidebar() {
     console.log("toggleSidebar কল হয়েছে। sidebar এর current state:", sidebar.classList);
-    if (sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
         console.log("Sidebar বন্ধ করা হয়েছে।");
     } else {
-        sidebar.classList.add('active');
+        sidebar.classList.add('open');
         console.log("Sidebar খোলা হয়েছে। loadChatHistory কল করা হচ্ছে...");
         loadChatHistory();
     }
 }
 
 function closeSidebarHandler() {
-    sidebar.classList.remove('active');
+    sidebar.classList.remove('open');
     console.log("Sidebar বন্ধ করা হয়েছে।");
 }
 
@@ -213,7 +213,7 @@ async function loadChatHistory(searchQuery = '') {
                 currentChatId = doc.id;
                 localStorage.setItem('currentChatId', currentChatId);
                 await loadChatMessages(currentChatId);
-                sidebar.classList.remove('active');
+                sidebar.classList.remove('open');
             });
 
             historyItem.querySelector('.rename-chat').addEventListener('click', () => {
