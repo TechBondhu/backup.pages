@@ -1,4 +1,3 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,6 +103,42 @@
             </div>
         </div>
     </div>
+
+    <!-- Edit Modal (নতুন যোগ করা হচ্ছে) -->
+    <div class="modal" id="editModal" style="display: none;">
+        <canvas id="editCanvas"></canvas>
+        <div class="edit-controls">
+            <label>Crop X: <input type="range" id="cropX" min="0" max="500" value="0"></label>
+            <label>Crop Y: <input type="range" id="cropY" min="0" max="500" value="0"></label>
+            <label>Crop Width: <input type="range" id="cropWidth" min="0" max="500" value="200"></label>
+            <label>Crop Height: <input type="range" id="cropHeight" min="0" max="500" value="200"></label>
+            <label>Brightness: <input type="range" id="brightness" min="-100" max="100" value="0"></label>
+            <label>Contrast: <input type="range" id="contrast" min="-100" max="100" value="0"></label>
+            <label>Background Color: <input type="color" id="bgColor" value="#ffffff"></label>
+            <button id="cancelEdit">বাতিল</button>
+            <button id="editApplyBtn">পরিবর্তন প্রয়োগ করুন</button>
+        </div>
+    </div>
+
+    <!-- স্ক্রিপ্টগুলো (সঠিক ক্রমে) -->
+    <script>
+        // Firebase কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
+            authDomain: "admissionformdb.firebaseapp.com",
+            projectId: "admissionformdb",
+            storageBucket: "admissionformdb.firebasestorage.app",
+            messagingSenderId: "398052082157",
+            appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4"
+        };
+
+        // Firebase ইনিশিয়ালাইজ
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        window.db = firebase.firestore();
+        console.log("Firebase initialized:", window.db);
+    </script>
     <script src="script.js"></script>
     <script src="drag-drop.js"></script>
     <script src="dyna_script.js"></script>
