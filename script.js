@@ -1,3 +1,51 @@
+
+// script.js
+
+// Firebase SDK চেক
+if (typeof firebase === 'undefined') {
+    console.error("Firebase SDK লোড হয়নি। index.html-এ Firebase CDN যোগ করুন।");
+}
+
+// Firebase কনফিগারেশন
+const firebaseConfig = {
+    apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
+    authDomain: "admissionformdb.firebaseapp.com",
+    projectId: "admissionformdb",
+    storageBucket: "admissionformdb.firebasestorage.app",
+    messagingSenderId: "398052082157",
+    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4"
+};
+
+// Firebase ইনিশিয়ালাইজ করা (গ্লোবাল স্কোপে)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+window.db = firebase.firestore();
+console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
+
+// displayMessage ফাংশন (গ্লোবাল স্কোপে)
+function displayMessage(message, sender) {
+    const messagesDiv = document.getElementById('messages');
+    if (!messagesDiv) {
+        console.error("messagesDiv not found");
+        return;
+    }
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+    messageDiv.innerHTML = sanitizeMessage(message);
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// sanitizeMessage ফাংশন (গ্লোবাল স্কোপে)
+function sanitizeMessage(message) {
+    const div = document.createElement('div');
+    div.textContent = message;
+    return div.innerHTML;
+}
+
+
+
 const genres = [
     { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
     { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
@@ -100,50 +148,7 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-// script.js
 
-// Firebase SDK চেক
-if (typeof firebase === 'undefined') {
-    console.error("Firebase SDK লোড হয়নি। index.html-এ Firebase CDN যোগ করুন।");
-}
-
-// Firebase কনফিগারেশন
-const firebaseConfig = {
-    apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
-    authDomain: "admissionformdb.firebaseapp.com",
-    projectId: "admissionformdb",
-    storageBucket: "admissionformdb.firebasestorage.app",
-    messagingSenderId: "398052082157",
-    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4"
-};
-
-// Firebase ইনিশিয়ালাইজ করা (গ্লোবাল স্কোপে)
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-window.db = firebase.firestore();
-console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
-
-// displayMessage ফাংশন (গ্লোবাল স্কোপে)
-function displayMessage(message, sender) {
-    const messagesDiv = document.getElementById('messages');
-    if (!messagesDiv) {
-        console.error("messagesDiv not found");
-        return;
-    }
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
-    messageDiv.innerHTML = sanitizeMessage(message);
-    messagesDiv.appendChild(messageDiv);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// sanitizeMessage ফাংশন (গ্লোবাল স্কোপে)
-function sanitizeMessage(message) {
-    const div = document.createElement('div');
-    div.textContent = message;
-    return div.innerHTML;
-}
 
 // DOMContentLoaded ইভেন্ট
 document.addEventListener('DOMContentLoaded', () => {
