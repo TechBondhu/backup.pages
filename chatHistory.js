@@ -2,11 +2,9 @@
 let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString() + Math.random().toString(36).substr(2, 9);
 sessionStorage.setItem('chatId', currentChatId);
 
-// Sanitize Message to Prevent XSS
+// Sanitize Message
 function sanitizeMessage(message) {
-    if (typeof message !== 'string') {
-        return '';
-    }
+    if (typeof message !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
@@ -17,39 +15,25 @@ function sanitizeMessage(message) {
         .replace(/&/g, '&amp;');
 }
 
-// Save Chat History to localStorage
+// Save Chat History
 function saveChatHistory(message, sender) {
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     if (!chats[currentChatId]) {
-        chats[currentChatId] = {
-            title: `Chat ${Object.keys(chats).length + 1}`,
-            messages: [],
-            timestamp: new Date().toISOString()
-        };
+        chats[currentChatId] = { title: `Chat ${Object.keys(chats).length + 1}`, messages: [], timestamp: new Date().toISOString() };
     }
-    chats[currentChatId].messages.push({
-        text: message,
-        sender: sender,
-        time: new Date().toISOString()
-    });
+    chats[currentChatId].messages.push({ text: message, sender: sender, time: new Date().toISOString() });
     localStorage.setItem('chatHistory', JSON.stringify(chats));
 }
 
-// Load and Display Chat History in Sidebar
+// Load Chat History
 function loadChatHistory() {
     const historyList = document.getElementById('historyList');
     const sidebar = document.getElementById('sidebar');
     const chatContainer = document.querySelector('.chat-container');
-    if (!historyList || !sidebar || !chatContainer) {
-        console.error('Required elements not found:', { historyList, sidebar, chatContainer });
-        return;
-    }
+    if (!historyList || !sidebar || !chatContainer) return;
     historyList.innerHTML = '';
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-    const validChats = Object.keys(chats).filter(chatId => {
-        const chat = chats[chatId];
-        return chat && chat.title && Array.isArray(chat.messages) && chat.timestamp;
-    });
+    const validChats = Object.keys(chats).filter(chatId => chats[chatId] && chats[chatId].title && Array.isArray(chats[chatId].messages) && chats[chatId].timestamp);
 
     if (validChats.length > 0) {
         validChats.forEach(chatId => {
@@ -57,26 +41,14 @@ function loadChatHistory() {
             const item = document.createElement('div');
             item.classList.add('history-item');
             item.setAttribute('data-chat-id', chatId);
-            item.innerHTML = `
-                <div class="history-item-content">
-                    <p>${sanitizeMessage(chat.title)}</p>
-                    <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
-                </div>
-                <div class="options">
-                    <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
-                </div>
-                <div class="dropdown" id="dropdown-${chatId}" style="display:none;">
-                    <div class="dropdown-item rename-item-${chatId}">Rename</div>
-                    <div class="dropdown-item delete-item-${chatId}">Delete</div>
-                </div>
-            `;
+            item.innerHTML = `<div class="history-item-content"><p>${sanitizeMessage(chat.title)}</p><div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div></div><div class="options"><i class="fas fa-ellipsis-v"></i></div><div class="dropdown" style="display:none;"><div class="rename-item">Rename</div><div class="delete-item">Delete</div></div>`;
             historyList.appendChild(item);
 
             item.addEventListener('click', () => loadChat(chatId));
-            const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
-            const dropdown = item.querySelector(`#dropdown-${chatId}`);
-            const renameItem = item.querySelector(`.rename-item-${chatId}`);
-            const deleteItem = item.querySelector(`.delete-item-${chatId}`);
+            const optionIcon = item.querySelector('.options i');
+            const dropdown = item.querySelector('.dropdown');
+            const renameItem = item.querySelector('.rename-item');
+            const deleteItem = item.querySelector('.delete-item');
 
             if (optionIcon && dropdown) {
                 optionIcon.addEventListener('click', (e) => {
@@ -129,14 +101,12 @@ function loadChat(chatId) {
         messagesDiv.innerHTML = '';
         chat.messages.forEach(msg => {
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add(msg.sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+            messageDiv.classList.add(msg.sender === 'user' ? 'user-message' : 'bot-message');
             messageDiv.innerHTML = sanitizeMessage(msg.text);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         });
-        if (welcomeMessage) {
-            welcomeMessage.style.display = 'none';
-        }
+        if (welcomeMessage) welcomeMessage.style.display = 'none';
         if (sidebar && chatContainer) {
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
@@ -152,12 +122,8 @@ function startNewChat() {
     const chatBox = document.getElementById('chatBox');
     currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
     sessionStorage.setItem('chatId', currentChatId);
-    if (messagesDiv) {
-        messagesDiv.innerHTML = '';
-    }
-    if (welcomeMessage) {
-        welcomeMessage.style.display = 'block';
-    }
+    if (messagesDiv) messagesDiv.innerHTML = '';
+    if (welcomeMessage) welcomeMessage.style.display = 'block';
     if (chatBox) {
         chatBox.classList.add('fade-in');
         setTimeout(() => chatBox.classList.remove('fade-in'), 500);
@@ -166,12 +132,11 @@ function startNewChat() {
     loadChatHistory();
 }
 
-// Chat History Event Handlers
+// Event Handlers
 function setupChatHistoryEventHandlers() {
     const historyIcon = document.getElementById('historyIcon');
-    const newChatIcon = document.getElementById('newChatIcon');
-    const closeSidebar = document.getElementById('closeSidebar');
     const sidebarIcon = document.getElementById('sidebarIcon');
+    const closeSidebar = document.getElementById('closeSidebar');
     const renameCancelBtn = document.getElementById('cancelRename');
     const renameSaveBtn = document.getElementById('saveRename');
     const deleteCancelBtn = document.getElementById('cancelDelete');
@@ -182,85 +147,65 @@ function setupChatHistoryEventHandlers() {
     const deleteModal = document.getElementById('deleteModal');
     const renameInput = document.getElementById('renameInput');
 
-    if (historyIcon) {
+    if (historyIcon && sidebar && chatContainer) {
         historyIcon.addEventListener('click', () => {
-            if (sidebar && chatContainer) {
-                sidebar.classList.toggle('open');
-                chatContainer.classList.toggle('sidebar-open');
-                loadChatHistory();
-            }
+            sidebar.classList.toggle('open');
+            chatContainer.classList.toggle('sidebar-open');
+            loadChatHistory();
         });
     }
-    if (newChatIcon) {
-        newChatIcon.addEventListener('click', startNewChat);
-    }
-    if (closeSidebar) {
-        closeSidebar.addEventListener('click', () => {
-            if (sidebar && chatContainer) {
-                sidebar.classList.remove('open');
-                chatContainer.classList.remove('sidebar-open');
-            }
-        });
-    }
-    if (sidebarIcon) {
+    if (sidebarIcon && sidebar && chatContainer) {
         sidebarIcon.addEventListener('click', () => {
-            if (sidebar && chatContainer) {
-                sidebar.classList.toggle('open');
-                chatContainer.classList.toggle('sidebar-open');
-                loadChatHistory();
-            }
+            sidebar.classList.toggle('open');
+            chatContainer.classList.toggle('sidebar-open');
+            loadChatHistory();
         });
     }
-    if (renameCancelBtn) {
-        renameCancelBtn.addEventListener('click', () => {
-            if (renameModal) {
-                renameModal.style.display = 'none';
-            }
+    if (closeSidebar && sidebar && chatContainer) {
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            chatContainer.classList.remove('sidebar-open');
         });
     }
-    if (renameSaveBtn) {
+    if (renameCancelBtn && renameModal) {
+        renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
+    }
+    if (renameSaveBtn && renameInput && renameModal) {
         renameSaveBtn.addEventListener('click', () => {
-            const newTitle = renameInput?.value.trim() || '';
-            if (newTitle && renameModal) {
+            const newTitle = renameInput.value.trim();
+            if (newTitle) {
                 let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
                 if (chats[currentChatId]) {
                     chats[currentChatId].title = sanitizeMessage(newTitle);
                     localStorage.setItem('chatHistory', JSON.stringify(chats));
                     loadChatHistory();
                 }
-                renameModal.style.display = 'none';
             }
+            renameModal.style.display = 'none';
         });
     }
-    if (deleteCancelBtn) {
-        deleteCancelBtn.addEventListener('click', () => {
-            if (deleteModal) {
-                deleteModal.style.display = 'none';
-            }
-        });
+    if (deleteCancelBtn && deleteModal) {
+        deleteCancelBtn.addEventListener('click', () => deleteModal.style.display = 'none');
     }
-    if (deleteConfirmBtn) {
+    if (deleteConfirmBtn && deleteModal) {
         deleteConfirmBtn.addEventListener('click', () => {
             let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-            if (chats[currentChatId] && deleteModal) {
+            if (chats[currentChatId]) {
                 delete chats[currentChatId];
                 localStorage.setItem('chatHistory', JSON.stringify(chats));
                 loadChatHistory();
-                if (Object.keys(chats).length === 0) {
-                    startNewChat();
-                } else {
+                if (Object.keys(chats).length === 0) startNewChat();
+                else {
                     const messagesDiv = document.getElementById('messages');
                     const welcomeMessage = document.getElementById('welcomeMessage');
                     if (messagesDiv) messagesDiv.innerHTML = '';
                     if (welcomeMessage) welcomeMessage.style.display = 'block';
                 }
-                deleteModal.style.display = 'none';
             }
+            deleteModal.style.display = 'none';
         });
     }
 }
 
-// DOM লোড হওয়ার পর ইভেন্ট হ্যান্ডলার সেট করা
-document.addEventListener('DOMContentLoaded', () => {
-    setupChatHistoryEventHandlers();
-});
+// DOM Load Handler
+document.addEventListener('DOMContentLoaded', setupChatHistoryEventHandlers);
