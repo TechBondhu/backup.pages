@@ -160,18 +160,31 @@ async function saveChatHistory(message, sender) {
         await startNewChat();
     }
     try {
+        // মেসেজ সেভ করা
         await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        const chatName = await db.collection('chats').doc(currentChatId).get().then(doc => doc.data()?.name || 'নতুন চ্যাট');
-        await db.collection('chats').doc(currentChatId).set({
-            name: chatName,
-            last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
-            updated_at: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
+        // শুধুমাত্র ইউজারের মেসেজ থেকে টাইটেল জেনারেট করা
+        if (sender === 'user') {
+            const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+            await db.collection('chats').doc(currentChatId).set({
+                name: title,
+                last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
+                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        } else {
+            // বটের মেসেজের ক্ষেত্রে শুধু last_message আপডেট করা
+            const existingChat = await db.collection('chats').doc(currentChatId).get();
+            const chatName = existingChat.data()?.name || 'চ্যাট';
+            await db.collection('chats').doc(currentChatId).set({
+                name: chatName,
+                last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
+                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি সেভ করতে সমস্যা:', error);
         showErrorMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।');
