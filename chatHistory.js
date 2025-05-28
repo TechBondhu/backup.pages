@@ -1,3 +1,5 @@
+// chatHistory.js
+
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
 const historyList = document.getElementById('historyList');
@@ -197,6 +199,10 @@ async function loadChatHistory(searchQuery = '') {
 // Load Messages for a Specific Chat
 async function loadChatMessages(chatId) {
     try {
+        if (!messagesDiv) {
+            console.error('messagesDiv not found');
+            return;
+        }
         messagesDiv.innerHTML = '';
         welcomeMessage.style.display = 'none';
 
@@ -234,8 +240,12 @@ async function startNewChat() {
     try {
         currentChatId = db.collection('chats').doc().id;
         localStorage.setItem('currentChatId', currentChatId);
-        messagesDiv.innerHTML = '';
-        welcomeMessage.style.display = 'block';
+        if (messagesDiv) {
+            messagesDiv.innerHTML = '';
+        }
+        if (welcomeMessage) {
+            welcomeMessage.style.display = 'block';
+        }
         await loadChatHistory();
     } catch (error) {
         console.error('নতুন চ্যাট শুরু করতে সমস্যা:', error);
@@ -255,17 +265,21 @@ function showErrorMessage(message) {
     if (typeof displayMessage === 'function') {
         displayMessage(message, 'bot');
     } else {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('bot-message', 'slide-in');
-        messageDiv.innerHTML = sanitizeMessage(message);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        if (messagesDiv) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('bot-message', 'slide-in');
+            messageDiv.innerHTML = sanitizeMessage(message);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } else {
+            console.error('messagesDiv not found for error message display');
+        }
     }
 }
 
 // Initialize Chat History on Page Load
 document.addEventListener('DOMContentLoaded', () => {
-    if (currentChatId) {
+    if (currentChatId && messagesDiv) {
         loadChatMessages(currentChatId);
     } else {
         startNewChat();
