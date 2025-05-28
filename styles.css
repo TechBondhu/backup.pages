@@ -1024,18 +1024,17 @@ body {
     background: #2563EB;
     transform: translateY(-2px);
 }
-.genresModal {
+.genres-modal {
+    display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%; /* আপনার পছন্দ অনুযায়ী */
-    max-height: 80vh; /* ভিউপোর্টের ৮০% উচ্চতা */
-    overflow-y: auto; /* স্ক্রল করার জন্য */
-    background: white; /* ব্যাকগ্রাউন্ড কালার */
-    border-radius: 10px; /* কোণগুলো বাঁকানো */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ছায়া */
-    z-index: 1000; /* সবচেয়ে উপরে থাকবে */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 .genres-modal-content {
     background: rgba(255, 255, 255, 0.95);
