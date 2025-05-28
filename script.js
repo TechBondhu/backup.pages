@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
             imageReviewModal.style.display = 'block';
         }
     }
-    }
+    
 
     if (imageReviewModal) {
         imageReviewModal.addEventListener('click', (e) => {
