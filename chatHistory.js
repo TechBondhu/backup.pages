@@ -1,5 +1,4 @@
 // chatHistory.js
-// Firebase Firestore is already initialized in script.js
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -21,7 +20,20 @@ const welcomeMessage = document.getElementById('welcomeMessage');
 // Global Variables
 let currentChatId = localStorage.getItem('currentChatId') || null;
 
-// Initialize Firebase Firestore
+// Firebase Initialization (সরাসরি এখানে ইনিশিয়ালাইজ করছি)
+const firebaseConfig = {
+    apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
+    authDomain: "admissionformdb.firebaseapp.com",
+    projectId: "admissionformdb",
+    storageBucket: "admissionformdb.firebasestorage.app",
+    messagingSenderId: "398052082157",
+    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
+};
+
+// Firebase ইনিশিয়ালাইজেশন নিশ্চিত করা
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
 // Setup Event Handlers for Chat History
@@ -73,7 +85,7 @@ function setupChatHistoryEventHandlers() {
                 }
             } catch (error) {
                 console.error('চ্যাট ডিলিট করতে সমস্যা:', error);
-                displayMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।', 'bot');
+                showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।');
             }
         });
     }
@@ -99,10 +111,10 @@ function setupChatHistoryEventHandlers() {
                     loadChatHistory();
                 } catch (error) {
                     console.error('চ্যাটের নাম পরিবর্তন করতে সমস্যা:', error);
-                    displayMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।', 'bot');
+                    showErrorMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।');
                 }
             } else {
-                displayMessage('দয়া করে একটি বৈধ নাম লিখুন।', 'bot');
+                showErrorMessage('দয়া করে একটি বৈধ নাম লিখুন।');
             }
         });
     }
@@ -129,7 +141,7 @@ async function saveChatHistory(message, sender) {
         }, { merge: true });
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি সেভ করতে সমস্যা:', error);
-        displayMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।', 'bot');
+        showErrorMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।');
     }
 }
 
@@ -188,7 +200,7 @@ async function loadChatHistory(searchQuery = '') {
         });
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি লোড করতে সমস্যা:', error);
-        displayMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে।', 'bot');
+        showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে।');
     }
 }
 
@@ -202,7 +214,12 @@ async function loadChatMessages(chatId) {
         snapshot.forEach(doc => {
             const msg = doc.data();
             if (msg.sender === 'user' || msg.sender === 'bot') {
-                displayMessage(sanitizeMessage(msg.message), msg.sender);
+                if (typeof displayMessage === 'function') {
+                    displayMessage(sanitizeMessage(msg.message), msg.sender);
+                } else {
+                    console.error('displayMessage ফাংশন পাওয়া যায়নি।');
+                    showErrorMessage('মেসেজ প্রদর্শনে সমস্যা হয়েছে।');
+                }
             }
         });
 
@@ -210,7 +227,7 @@ async function loadChatMessages(chatId) {
         const submissions = await db.collection('submissions').where('chat_id', '==', chatId).get();
         submissions.forEach(doc => {
             const submission = doc.data();
-            if (submission.review_data) {
+            if (submission.review_data && typeof displayReview === 'function') {
                 displayReview(submission.review_data);
             }
         });
@@ -218,7 +235,7 @@ async function loadChatMessages(chatId) {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     } catch (error) {
         console.error('চ্যাট মেসেজ লোড করতে সমস্যা:', error);
-        displayMessage('চ্যাট মেসেজ লোড করতে সমস্যা হয়েছে।', 'bot');
+        showErrorMessage('চ্যাট মেসেজ লোড করতে সমস্যা হয়েছে।');
     }
 }
 
@@ -232,15 +249,29 @@ async function startNewChat() {
         await loadChatHistory();
     } catch (error) {
         console.error('নতুন চ্যাট শুরু করতে সমস্যা:', error);
-        displayMessage('নতুন চ্যাট শুরু করতে সমস্যা হয়েছে।', 'bot');
+        showErrorMessage('নতুন চ্যাট শুরু করতে সমস্যা হয়েছে।');
     }
 }
 
-// Sanitize Message (Reuse from script.js)
+// Sanitize Message
 function sanitizeMessage(message) {
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML;
+}
+
+// Fallback Error Message Display (যদি displayMessage না থাকে)
+function showErrorMessage(message) {
+    if (typeof displayMessage === 'function') {
+        displayMessage(message, 'bot');
+    } else {
+        // Fallback: সরাসরি মেসেজ ডিভে এড করা
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('bot-message', 'slide-in');
+        messageDiv.innerHTML = sanitizeMessage(message);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 }
 
 // Initialize Chat History on Page Load
