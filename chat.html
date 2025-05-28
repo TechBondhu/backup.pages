@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="drag-drop.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -60,8 +62,11 @@
                     <button id="uploadBtn" title="Upload Image"><i class="fas fa-paperclip"></i></button>
                     <button id="sendBtn" title="Send Message"><i class="fas fa-arrow-up"></i></button>
                 </div>
-                <!-- Drag and Drop Indicator -->
-                <div class="drag-drop-indicator" id="dragDropIndicator"></div>
+                <!-- Drag and Drop Overlay -->
+                <div class="drag-drop-overlay" id="dragDropOverlay">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>এখানে ছবি ড্রপ করুন</p>
+                </div>
             </div>
         </div>
     </div>
@@ -88,10 +93,6 @@
         <div class="image-review-content">
             <img id="reviewImage" class="review-image" src="" alt="Review Image">
             <button class="delete-image-btn" id="deleteImageBtn"><i class="fas fa-trash"></i></button>
-        </div>
-    </div>
-
-            </div>
         </div>
     </div>
     <div class="genres-modal" id="genresModal">
