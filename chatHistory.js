@@ -23,92 +23,121 @@ let currentChatId = localStorage.getItem('currentChatId') || null;
 // db ব্যবহারের জন্য window.db থেকে নেওয়া
 const db = window.db;
 
+// db চেক করা
+if (!db) {
+    console.error("Firestore ডাটাবেস ইনিশিয়ালাইজ করা হয়নি। script.js ফাইলে Firebase সেটআপ চেক করুন।");
+    showErrorMessage("ডাটাবেস সংযোগে সমস্যা হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।");
+    throw new Error("Firestore db is not initialized");
+}
+
 // Setup Event Handlers for Chat History
 function setupChatHistoryEventHandlers() {
     // Open Sidebar
     if (historyIcon && sidebar) {
-        historyIcon.addEventListener('click', () => {
-            if (sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            } else {
-                sidebar.classList.add('active');
-                loadChatHistory(); // হিস্ট্রি লোড করা
-            }
-        });
+        historyIcon.removeEventListener('click', toggleSidebar); // পুরানো লিসেনার সরানো
+        historyIcon.addEventListener('click', toggleSidebar);
     }
 
     // Close Sidebar
     if (closeSidebar && sidebar) {
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-        });
+        closeSidebar.removeEventListener('click', closeSidebarHandler);
+        closeSidebar.addEventListener('click', closeSidebarHandler);
     }
 
     // Start New Chat
     if (newChatIcon) {
+        newChatIcon.removeEventListener('click', startNewChat);
         newChatIcon.addEventListener('click', startNewChat);
     }
 
     // Search Chat History
     if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const query = searchInput.value.toLowerCase();
-            loadChatHistory(query);
-        });
+        searchInput.removeEventListener('input', searchHandler);
+        searchInput.addEventListener('input', searchHandler);
     }
 
     // Delete Modal Handlers
     if (cancelDelete) {
-        cancelDelete.addEventListener('click', () => {
-            deleteModal.style.display = 'none';
-        });
+        cancelDelete.removeEventListener('click', cancelDeleteHandler);
+        cancelDelete.addEventListener('click', cancelDeleteHandler);
     }
 
     if (confirmDelete) {
-        confirmDelete.addEventListener('click', async () => {
-            const chatId = deleteModal.getAttribute('data-chat-id');
-            try {
-                await db.collection('chats').doc(chatId).delete();
-                deleteModal.style.display = 'none';
-                if (chatId === currentChatId) {
-                    startNewChat();
-                } else {
-                    loadChatHistory();
-                }
-            } catch (error) {
-                console.error('চ্যাট ডিলিট করতে সমস্যা:', error);
-                showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।');
-            }
-        });
+        confirmDelete.removeEventListener('click', confirmDeleteHandler);
+        confirmDelete.addEventListener('click', confirmDeleteHandler);
     }
 
     // Rename Modal Handlers
     if (cancelRename) {
-        cancelRename.addEventListener('click', () => {
-            renameModal.style.display = 'none';
-        });
+        cancelRename.removeEventListener('click', cancelRenameHandler);
+        cancelRename.addEventListener('click', cancelRenameHandler);
     }
 
     if (saveRename) {
-        saveRename.addEventListener('click', async () => {
-            const chatId = renameModal.getAttribute('data-chat-id');
-            const newName = renameInput.value.trim();
-            if (newName) {
-                try {
-                    await db.collection('chats').doc(chatId).update({
-                        name: newName,
-                        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    renameModal.style.display = 'none';
-                    loadChatHistory();
-                } catch (error) {
-                    console.error('চ্যাটের নাম পরিবর্তন করতে সমস্যা:', error);
-                    showErrorMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।');
-                }
-            } else {
-                showErrorMessage('দয়া করে একটি বৈধ নাম লিখুন।');
-            }
-        });
+        saveRename.removeEventListener('click', saveRenameHandler);
+        saveRename.addEventListener('click', saveRenameHandler);
+    }
+}
+
+function toggleSidebar() {
+    if (sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+    } else {
+        sidebar.classList.add('active');
+        loadChatHistory();
+    }
+}
+
+function closeSidebarHandler() {
+    sidebar.classList.remove('active');
+}
+
+function searchHandler() {
+    const query = searchInput.value.toLowerCase();
+    loadChatHistory(query);
+}
+
+function cancelDeleteHandler() {
+    deleteModal.style.display = 'none';
+}
+
+async function confirmDeleteHandler() {
+    const chatId = deleteModal.getAttribute('data-chat-id');
+    try {
+        await db.collection('chats').doc(chatId).delete();
+        deleteModal.style.display = 'none';
+        if (chatId === currentChatId) {
+            startNewChat();
+        } else {
+            loadChatHistory();
+        }
+    } catch (error) {
+        console.error('চ্যাট ডিলিট করতে সমস্যা:', error);
+        showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।');
+    }
+}
+
+function cancelRenameHandler() {
+    renameModal.style.display = 'none';
+}
+
+async function saveRenameHandler() {
+    const chatId = renameModal.getAttribute('data-chat-id');
+    const newName = renameInput.value.trim();
+    if (newName) {
+        try {
+            await db.collection('chats').doc(chatId).update({
+                name: newName,
+                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            renameModal.style.display = 'none';
+            loadChatHistory();
+        } catch (error) {
+            console.error('চ্যাটের নাম পরিবর্তন করতে সমস্যা:', error);
+            showErrorMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।');
+        }
+    } else {
+        showErrorMessage('দয়া করে একটি বৈধ নাম লিখুন।');
     }
 }
 
@@ -124,7 +153,6 @@ async function saveChatHistory(message, sender) {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Update chat metadata (e.g., name, last message)
         const chatName = await db.collection('chats').doc(currentChatId).get().then(doc => doc.data()?.name || 'নতুন চ্যাট');
         await db.collection('chats').doc(currentChatId).set({
             name: chatName,
@@ -139,6 +167,7 @@ async function saveChatHistory(message, sender) {
 
 // Load Chat History List
 async function loadChatHistory(searchQuery = '') {
+    historyList.innerHTML = '<div class="loading">লোড হচ্ছে...</div>';
     try {
         let query = db.collection('chats').orderBy('updated_at', 'desc');
         const snapshot = await query.get();
@@ -164,7 +193,6 @@ async function loadChatHistory(searchQuery = '') {
                 </div>
             `;
 
-            // Load Chat on Click
             historyItem.addEventListener('click', async (e) => {
                 if (e.target.classList.contains('rename-chat') || e.target.classList.contains('delete-chat')) {
                     return;
@@ -175,14 +203,12 @@ async function loadChatHistory(searchQuery = '') {
                 sidebar.classList.remove('active');
             });
 
-            // Rename Chat
             historyItem.querySelector('.rename-chat').addEventListener('click', () => {
                 renameModal.setAttribute('data-chat-id', doc.id);
                 renameInput.value = chat.name;
                 renameModal.style.display = 'flex';
             });
 
-            // Delete Chat
             historyItem.querySelector('.delete-chat').addEventListener('click', () => {
                 deleteModal.setAttribute('data-chat-id', doc.id);
                 deleteModal.style.display = 'flex';
@@ -219,7 +245,6 @@ async function loadChatMessages(chatId) {
             }
         });
 
-        // Load review data if any
         const submissions = await db.collection('submissions').where('chat_id', '==', chatId).get();
         submissions.forEach(doc => {
             const submission = doc.data();
@@ -276,13 +301,3 @@ function showErrorMessage(message) {
         }
     }
 }
-
-// Initialize Chat History on Page Load
-document.addEventListener('DOMContentLoaded', () => {
-    if (currentChatId && messagesDiv) {
-        loadChatMessages(currentChatId);
-    } else {
-        startNewChat();
-    }
-    loadChatHistory();
-});
