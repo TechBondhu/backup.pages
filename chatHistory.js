@@ -25,8 +25,8 @@ const db = window.db;
 
 // db চেক করা
 if (!db) {
-    console.error("Firestore ডাটাবেস ইনিশিয়ালাইজ করা হয়নি। script.js ফাইলে Firebase সেটআপ চেক করুন।");
-    showErrorMessage("ডাটাবেস সংযোগে সমস্যা হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।");
+    console.error("Firestore ডাটাবেজ ইনিশিয়ালাইজ করা হয়নি। script.js ফাইলে Firebase সেটআপ চেক করুন।");
+    showErrorMessage("ডাটাবেজ সংযোগে সমস্যা হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।");
     throw new Error("Firestore db is not initialized");
 }
 
@@ -34,47 +34,39 @@ if (!db) {
 function setupChatHistoryEventHandlers() {
     // Open Sidebar
     if (historyIcon && sidebar) {
-        historyIcon.removeEventListener('click', toggleSidebar); // পুরানো লিসেনার সরানো
         historyIcon.addEventListener('click', toggleSidebar);
     }
 
     // Close Sidebar
     if (closeSidebar && sidebar) {
-        closeSidebar.removeEventListener('click', closeSidebarHandler);
         closeSidebar.addEventListener('click', closeSidebarHandler);
     }
 
     // Start New Chat
     if (newChatIcon) {
-        newChatIcon.removeEventListener('click', startNewChat);
         newChatIcon.addEventListener('click', startNewChat);
     }
 
     // Search Chat History
     if (searchInput) {
-        searchInput.removeEventListener('input', searchHandler);
         searchInput.addEventListener('input', searchHandler);
     }
 
     // Delete Modal Handlers
     if (cancelDelete) {
-        cancelDelete.removeEventListener('click', cancelDeleteHandler);
         cancelDelete.addEventListener('click', cancelDeleteHandler);
     }
 
     if (confirmDelete) {
-        confirmDelete.removeEventListener('click', confirmDeleteHandler);
         confirmDelete.addEventListener('click', confirmDeleteHandler);
     }
 
     // Rename Modal Handlers
     if (cancelRename) {
-        cancelRename.removeEventListener('click', cancelRenameHandler);
         cancelRename.addEventListener('click', cancelRenameHandler);
     }
 
     if (saveRename) {
-        saveRename.removeEventListener('click', saveRenameHandler);
         saveRename.addEventListener('click', saveRenameHandler);
     }
 }
@@ -206,12 +198,12 @@ async function loadChatHistory(searchQuery = '') {
             historyItem.querySelector('.rename-chat').addEventListener('click', () => {
                 renameModal.setAttribute('data-chat-id', doc.id);
                 renameInput.value = chat.name;
-                renameModal.style.display = 'flex';
+                renameModal.style.display = 'block';
             });
 
             historyItem.querySelector('.delete-chat').addEventListener('click', () => {
                 deleteModal.setAttribute('data-chat-id', doc.id);
-                deleteModal.style.display = 'flex';
+                deleteModal.style.display = 'block';
             });
 
             historyList.appendChild(historyItem);
