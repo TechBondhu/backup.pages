@@ -4,14 +4,16 @@ sessionStorage.setItem('chatId', currentChatId);
 
 // Sanitize Message to Prevent XSS
 function sanitizeMessage(message) {
-    if (typeof message !== 'string') return '';
+    if (typeof message !== 'string') {
+        return '';
+    }
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;')
+        .replace(/'/g, '&#39;')
         .replace(/&/g, '&amp;');
 }
 
@@ -19,16 +21,16 @@ function sanitizeMessage(message) {
 function saveChatHistory(message, sender) {
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     if (!chats[currentChatId]) {
-        chats[currentChatId] = { 
-            title: `Chat ${Object.keys(chats).length + 1}`, 
-            messages: [], 
-            timestamp: new Date().toISOString() 
+        chats[currentChatId] = {
+            title: `Chat ${Object.keys(chats).length + 1}`,
+            messages: [],
+            timestamp: new Date().toISOString()
         };
     }
-    chats[currentChatId].messages.push({ 
-        text: message, 
-        sender: sender, 
-        time: new Date().toISOString() 
+    chats[currentChatId].messages.push({
+        text: message,
+        sender: sender,
+        time: new Date().toISOString()
     });
     localStorage.setItem('chatHistory', JSON.stringify(chats));
 }
@@ -99,7 +101,7 @@ function loadChatHistory() {
         });
     });
 
-    if (historyList && historyList.children.length > 0) {
+    if (historyList && historyList.children.length > 0 && sidebar && chatContainer) {
         sidebar.classList.add('open');
         chatContainer.classList.add('sidebar-open');
     }
@@ -115,7 +117,7 @@ function loadChat(chatId) {
     sessionStorage.setItem('chatId', currentChatId);
     const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     const chat = chats[chatId];
-    if (chat) {
+    if (chat && messagesDiv) {
         messagesDiv.innerHTML = '';
         chat.messages.forEach(msg => {
             const messageDiv = document.createElement('div');
@@ -127,8 +129,10 @@ function loadChat(chatId) {
         if (welcomeMessage) {
             welcomeMessage.style.display = 'none';
         }
-        sidebar.classList.remove('open');
-        chatContainer.classList.remove('sidebar-open');
+        if (sidebar && chatContainer) {
+            sidebar.classList.remove('open');
+            chatContainer.classList.remove('sidebar-open');
+        }
         loadChatHistory();
     }
 }
@@ -173,9 +177,13 @@ function setupChatHistoryEventHandlers() {
     if (historyIcon) {
         historyIcon.addEventListener('click', () => {
             console.log('History icon clicked');
-            sidebar.classList.toggle('open');
-            chatContainer.classList.toggle('sidebar-open');
-            loadChatHistory();
+            if (sidebar && chatContainer) {
+                sidebar.classList.toggle('open');
+                chatContainer.classList.toggle('sidebar-open');
+                loadChatHistory();
+            } else {
+                console.error('Sidebar or chat container not found');
+            }
         });
     }
     if (newChatIcon) {
@@ -184,21 +192,29 @@ function setupChatHistoryEventHandlers() {
     if (closeSidebar) {
         closeSidebar.addEventListener('click', () => {
             console.log('Close sidebar clicked');
-            sidebar.classList.remove('open');
-            chatContainer.classList.remove('sidebar-open');
+            if (sidebar && chatContainer) {
+                sidebar.classList.remove('open');
+                chatContainer.classList.remove('sidebar-open');
+            }
         });
     }
     if (sidebarIcon) {
         sidebarIcon.addEventListener('click', () => {
             console.log('Sidebar icon clicked');
-            sidebar.classList.toggle('open');
-            chatContainer.classList.toggle('sidebar-open');
-            loadChatHistory();
+            if (sidebar && chatContainer) {
+                sidebar.classList.toggle('open');
+                chatContainer.classList.toggle('sidebar-open');
+                loadChatHistory();
+            } else {
+                console.error('Sidebar or chat container not found');
+            }
         });
     }
     if (renameCancelBtn) {
         renameCancelBtn.addEventListener('click', () => {
-            renameModal.style.display = 'none';
+            if (renameModal) {
+                renameModal.style.display = 'none';
+            }
         });
     }
     if (renameSaveBtn) {
@@ -212,12 +228,16 @@ function setupChatHistoryEventHandlers() {
                     loadChatHistory();
                 }
             }
-            renameModal.style.display = 'none';
+            if (renameModal) {
+                renameModal.style.display = 'none';
+            }
         });
     }
     if (deleteCancelBtn) {
         deleteCancelBtn.addEventListener('click', () => {
-            deleteModal.style.display = 'none';
+            if (deleteModal) {
+                deleteModal.style.display = 'none';
+            }
         });
     }
     if (deleteConfirmBtn) {
@@ -232,11 +252,17 @@ function setupChatHistoryEventHandlers() {
                 } else {
                     const messagesDiv = document.getElementById('messages');
                     const welcomeMessage = document.getElementById('welcomeMessage');
-                    messagesDiv.innerHTML = '';
-                    welcomeMessage.style.display = 'block';
+                    if (messagesDiv) {
+                        messagesDiv.innerHTML = '';
+                    }
+                    if (welcomeMessage) {
+                        welcomeMessage.style.display = 'block';
+                    }
                 }
             }
-            deleteModal.style.display = 'none';
+            if (deleteModal) {
+                deleteModal.style.display = 'none';
+            }
         });
     }
 }
