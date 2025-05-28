@@ -1,5 +1,3 @@
-// chatHistory.js
-
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
 const historyList = document.getElementById('historyList');
@@ -26,14 +24,19 @@ const db = window.db;
 // Setup Event Handlers for Chat History
 function setupChatHistoryEventHandlers() {
     // Open Sidebar
-    if (historyIcon) {
+    if (historyIcon && sidebar) {
         historyIcon.addEventListener('click', () => {
-            sidebar.classList.add('active');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            } else {
+                sidebar.classList.add('active');
+                loadChatHistory(); // হিস্ট্রি লোড করা
+            }
         });
     }
 
     // Close Sidebar
-    if (closeSidebar) {
+    if (closeSidebar && sidebar) {
         closeSidebar.addEventListener('click', () => {
             sidebar.classList.remove('active');
         });
