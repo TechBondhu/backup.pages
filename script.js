@@ -1,5 +1,3 @@
-// script.js
-
 // Firebase SDK চেক
 if (typeof firebase === 'undefined') {
     console.error("Firebase SDK লোড হয়নি। index.html-এ Firebase CDN যোগ করুন।");
@@ -55,7 +53,6 @@ function hideWelcomeMessage() {
     }
 }
 
-
 // DOMContentLoaded ইভেন্ট
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
@@ -85,6 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageReviewModal = document.getElementById('imageReviewModal');
     const reviewImage = document.getElementById('reviewImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
+
+    // Show welcome page on initial load
+    if (welcomeMessage) {
+        welcomeMessage.style.display = 'block';
+    }
 
     // State Variables
     let selectedFile = null;
@@ -642,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    // Genres Data
+   // Genres Data
 const genres = [
     { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
     { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
@@ -745,7 +747,6 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-
     function renderGenresList() {
         if (genresList) {
             genresList.innerHTML = '';
@@ -822,4 +823,8 @@ const genres = [
         startNewChat();
     }
     loadChatHistory();
-});
+}); 
+
+
+
+ 
