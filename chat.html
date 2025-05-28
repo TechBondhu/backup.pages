@@ -119,26 +119,6 @@
             <button id="editApplyBtn">পরিবর্তন প্রয়োগ করুন</button>
         </div>
     </div>
-
-    <!-- স্ক্রিপ্টগুলো (সঠিক ক্রমে) -->
-    <script>
-        // Firebase কনফিগারেশন
-        const firebaseConfig = {
-            apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
-            authDomain: "admissionformdb.firebaseapp.com",
-            projectId: "admissionformdb",
-            storageBucket: "admissionformdb.firebasestorage.app",
-            messagingSenderId: "398052082157",
-            appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4"
-        };
-
-        // Firebase ইনিশিয়ালাইজ
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        window.db = firebase.firestore();
-        console.log("Firebase initialized:", window.db);
-    </script>
     <script src="script.js"></script>
     <script src="drag-drop.js"></script>
     <script src="dyna_script.js"></script>
