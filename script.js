@@ -114,7 +114,7 @@ const firebaseConfig = {
     projectId: "admissionformdb",
     storageBucket: "admissionformdb.firebasestorage.app",
     messagingSenderId: "398052082157",
-    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
+    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4"
 };
 
 // Firebase ইনিশিয়ালাইজ করা (গ্লোবাল স্কোপে)
@@ -156,10 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeMessage = document.getElementById('welcomeMessage');
     const previewContainer = document.getElementById('previewContainer');
     const previewImage = document.getElementById('previewImage');
-    const editBtn = document.getElementById('editBtn');
-    const imageReviewModal = document.getElementById('imageReviewModal');
-    const reviewImage = document.getElementById('reviewImage');
-    const deleteImageBtn = document.getElementById('deleteImageBtn');
     const editModal = document.getElementById('editModal');
     const editCanvas = document.getElementById('editCanvas');
     const cropX = document.getElementById('cropX');
@@ -175,6 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const genresModal = document.getElementById('genresModal');
     const closeGenresModal = document.getElementById('closeGenresModal');
     const genresList = document.getElementById('genresList');
+    const imageReviewModal = document.getElementById('imageReviewModal');
+    const reviewImage = document.getElementById('reviewImage');
+    const deleteImageBtn = document.getElementById('deleteImageBtn');
 
     // State Variables
     let selectedFile = null;
@@ -188,20 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
-
-    // Navigation Events
-    const homeIcon = document.querySelector('.home-icon');
-    const settingsIcon = document.getElementById('settingsIcon');
-    const accountIcon = document.getElementById('accountIcon');
-    if (homeIcon) {
-        homeIcon.addEventListener('click', () => window.location.href = 'index.html');
-    }
-    if (settingsIcon) {
-        settingsIcon.addEventListener('click', () => window.location.href = 'settings.html');
-    }
-    if (accountIcon) {
-        accountIcon.addEventListener('click', () => window.location.href = 'account.html');
-    }
 
     // Setup Chat History Event Handlers from chatHistory.js
     setupChatHistoryEventHandlers();
@@ -326,10 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         previewImage.src = e.target.result;
                     }
                     if (previewContainer) {
-                        previewContainer.style.display = 'flex';
-                    }
-                    if (userInput) {
-                        userInput.style.paddingLeft = '110px';
+                        previewContainer.style.display = 'block';
                     }
                 };
                 reader.onerror = () => {
@@ -348,14 +330,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 reviewImage.src = previewImage.src;
             }
             if (imageReviewModal) {
-                imageReviewModal.style.display = 'flex';
+                imageReviewModal.style.display = 'block';
             }
         });
     }
 
     // Image Editing
-    if (editBtn) {
-        editBtn.addEventListener('click', () => {
+    if (previewImage) {
+        previewImage.addEventListener('dblclick', () => {
             image.src = previewImage?.src || '';
             image.onload = () => {
                 if (editCanvas) {
@@ -365,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cropRect.height = Math.min(200, image.height);
                     drawImage();
                     if (editModal) {
-                        editModal.style.display = 'flex';
+                        editModal.style.display = 'block';
                     }
                 }
             };
@@ -467,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reviewImage.src = imageSrc;
         }
         if (imageReviewModal) {
-            imageReviewModal.style.display = 'flex';
+            imageReviewModal.style.display = 'block';
         }
     }
 
@@ -496,9 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (previewContainer) {
             previewContainer.style.display = 'none';
-        }
-        if (userInput) {
-            userInput.style.paddingLeft = '15px';
         }
     }
 
@@ -712,24 +691,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayLoading() {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.classList.add('loading', 'slide-in');
-        loadingDiv.innerHTML = 'Loading <span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        if (messagesDiv) {
-            messagesDiv.appendChild(loadingDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        return loadingDiv;
-    }
-
-    function removeLoading(loadingDiv) {
-        if (loadingDiv) {
-            loadingDiv.classList.add('slide-out');
-            setTimeout(() => loadingDiv.remove(), 300);
-        }
-    }
-
     function callRasaAPI(message, metadata = {}) {
         const typingDiv = showTypingIndicator();
         const payload = { sender: currentChatId, message: message };
@@ -747,11 +708,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         typingDiv.remove();
                         if (!data || data.length === 0) {
                             displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
+                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot'); // ফলব্যতি হ্যান্ডলিং
                             return;
                         }
                         data.forEach(response => {
                             if (response.text && !response.text.toLowerCase().includes('hi')) {
                                 displayMessage(sanitizeMessage(response.text), 'bot');
+                                saveChatHistory(sanitizeMessage(response.text), 'bot'); // বটের মেসেজ সংরক্ষণ
                             }
                             if (response.custom && response.custom.review_data) {
                                 displayReview(response.custom.review_data);
@@ -775,20 +738,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     error: (error) => {
                         typingDiv.remove();
                         displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
+                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot'); // এরর হ্যান্ডলিং
                         console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                     }
                 });
             } else {
                 typingDiv.remove();
                 displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
+                saveChatHistory('jQuery লোড হয়নি।', 'bot'); // jQuery এরর হ্যান্ডলিং
             }
         }, 500);
     }
 
-    // Genres Data (উদাহরণ হিসেবে)
+    // Genres Data
     const genres = [
-        { name: "Admission", icon: "fas fa-graduation-cap", message: "I want to apply for admission" },
-        { name: "Query", icon: "fas fa-question-circle", message: "I have a query" }
+        { name: "এনআইডি আবেদন", icon: "fas fa-id-card", message: "আমি এনআইডি আবেদন করতে চাই" },
+        { name: "পাসপোর্ট আবেদন", icon: "fas fa-passport", message: "আমি পাসপোর্ট আবেদন করতে চাই" },
+        { name: "কোম্পানি রেজিস্ট্রেশন", icon: "fas fa-building", message: "আমি কোম্পানি রেজিস্ট্রেশন করতে চাই" }
     ];
 
     function renderGenresList() {
@@ -815,7 +781,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         callRasaAPI(sanitizeMessage(genre.message));
                     } else {
                         console.error(`Message undefined for genre: ${genre.name}`);
-                        displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+                        displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
+                        saveChatHistory('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
                     }
                 });
                 genresList.appendChild(genreItem);
@@ -826,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function openGenresModal() {
         renderGenresList();
         genresModal.classList.add('slide-in');
-        genresModal.style.display = 'flex';
+        genresModal.style.display = 'block';
         setTimeout(() => genresModal.classList.remove('slide-in'), 300);
     }
 
@@ -861,7 +828,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 callRasaAPI(sanitizeMessage(genre.message));
             } else {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
-                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়। দয়া করে অন্য সেবা নির্বাচন করুন।', 'bot');
+                displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
+                saveChatHistory('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
             }
         });
     });
