@@ -143,7 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
 
-    // Firebase Initialization
+ // script.js
+
+// Firebase Initialization
 const firebaseConfig = {
     apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
     authDomain: "admissionformdb.firebaseapp.com",
@@ -159,6 +161,22 @@ if (!firebase.apps.length) {
 }
 // গ্লোবাল স্কোপে db রাখা
 window.db = firebase.firestore();
+
+// displayMessage ফাংশন (যদি না থাকে)
+function displayMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+    messageDiv.innerHTML = sanitizeMessage(message);
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// sanitizeMessage ফাংশন (যদি না থাকে)
+function sanitizeMessage(message) {
+    const div = document.createElement('div');
+    div.textContent = message;
+    return div.innerHTML;
+}
 
     // Navigation Events
     const homeIcon = document.querySelector('.home-icon');
