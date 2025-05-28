@@ -34,54 +34,75 @@ if (!db) {
 function setupChatHistoryEventHandlers() {
     // Open Sidebar
     if (historyIcon && sidebar) {
+        console.log("historyIcon এবং sidebar পাওয়া গেছে। ইভেন্ট লিসেনার সেট করা হচ্ছে...");
         historyIcon.addEventListener('click', toggleSidebar);
+    } else {
+        console.error("historyIcon বা sidebar এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { historyIcon, sidebar });
     }
 
     // Close Sidebar
     if (closeSidebar && sidebar) {
         closeSidebar.addEventListener('click', closeSidebarHandler);
+    } else {
+        console.error("closeSidebar বা sidebar এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { closeSidebar, sidebar });
     }
 
     // Start New Chat
     if (newChatIcon) {
         newChatIcon.addEventListener('click', startNewChat);
+    } else {
+        console.error("newChatIcon এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { newChatIcon });
     }
 
     // Search Chat History
     if (searchInput) {
         searchInput.addEventListener('input', searchHandler);
+    } else {
+        console.error("searchInput এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { searchInput });
     }
 
     // Delete Modal Handlers
     if (cancelDelete) {
         cancelDelete.addEventListener('click', cancelDeleteHandler);
+    } else {
+        console.error("cancelDelete এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { cancelDelete });
     }
 
     if (confirmDelete) {
         confirmDelete.addEventListener('click', confirmDeleteHandler);
+    } else {
+        console.error("confirmDelete এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { confirmDelete });
     }
 
     // Rename Modal Handlers
     if (cancelRename) {
         cancelRename.addEventListener('click', cancelRenameHandler);
+    } else {
+        console.error("cancelRename এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { cancelRename });
     }
 
     if (saveRename) {
         saveRename.addEventListener('click', saveRenameHandler);
+    } else {
+        console.error("saveRename এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { saveRename });
     }
 }
 
 function toggleSidebar() {
+    console.log("toggleSidebar কল হয়েছে। sidebar এর current state:", sidebar.classList);
     if (sidebar.classList.contains('active')) {
         sidebar.classList.remove('active');
+        console.log("Sidebar বন্ধ করা হয়েছে।");
     } else {
         sidebar.classList.add('active');
+        console.log("Sidebar খোলা হয়েছে। loadChatHistory কল করা হচ্ছে...");
         loadChatHistory();
     }
 }
 
 function closeSidebarHandler() {
     sidebar.classList.remove('active');
+    console.log("Sidebar বন্ধ করা হয়েছে।");
 }
 
 function searchHandler() {
