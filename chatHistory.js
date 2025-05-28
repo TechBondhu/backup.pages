@@ -231,7 +231,7 @@ function loadChatHistory(searchQuery = '') {
 
                     // Delete Chat
                     historyItem.querySelector('.delete-chat').addEventListener('click', () => {
-                        const deleteModal = document.getElementById('deleteModal 이런টি বাংলায় লিখতে হবে।, "মুছুন");
+                        const deleteModal = document.getElementById('deleteModal টি বাংলায় লিখতে হবে।, "মুছুন");
                     historyList.appendChild(historyItem);
                 });
             })
