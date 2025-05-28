@@ -1,3 +1,4 @@
+// State Variables
 let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString() + Math.random().toString(36).substr(2, 9);
 sessionStorage.setItem('chatId', currentChatId);
 
@@ -7,11 +8,11 @@ function sanitizeMessage(message) {
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, ''')
-        .replace(/&/g, '&');
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/&/g, '&amp;');
 }
 
 // Save Chat History to localStorage
@@ -41,7 +42,6 @@ function loadChatHistory() {
         historyList.innerHTML = '';
     }
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-    // Filter only valid chats
     const validChats = Object.keys(chats).filter(chatId => {
         const chat = chats[chatId];
         return chat && chat.title && Array.isArray(chat.messages) && chat.timestamp;
