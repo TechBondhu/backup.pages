@@ -8,11 +8,11 @@ function sanitizeMessage(message) {
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, ''')
-        .replace(/&/g, '&');
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;')
+        .replace(/&/g, '&amp;');
 }
 
 // Save Chat History to localStorage
@@ -172,7 +172,7 @@ function setupChatHistoryEventHandlers() {
 
     if (historyIcon) {
         historyIcon.addEventListener('click', () => {
-            console.log('History icon clicked'); // ডিবাগিংয়ের জন্য
+            console.log('History icon clicked');
             sidebar.classList.toggle('open');
             chatContainer.classList.toggle('sidebar-open');
             loadChatHistory();
@@ -183,14 +183,14 @@ function setupChatHistoryEventHandlers() {
     }
     if (closeSidebar) {
         closeSidebar.addEventListener('click', () => {
-            console.log('Close sidebar clicked'); // ডিবাগিংয়ের জন্য
+            console.log('Close sidebar clicked');
             sidebar.classList.remove('open');
             chatContainer.classList.remove('sidebar-open');
         });
     }
     if (sidebarIcon) {
         sidebarIcon.addEventListener('click', () => {
-            console.log('Sidebar icon clicked'); // ডিবাগিংয়ের জন্য
+            console.log('Sidebar icon clicked');
             sidebar.classList.toggle('open');
             chatContainer.classList.toggle('sidebar-open');
             loadChatHistory();
@@ -243,6 +243,6 @@ function setupChatHistoryEventHandlers() {
 
 // DOM লোড হওয়ার পর ইভেন্ট হ্যান্ডলার সেট করা
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded'); // ডিবাগিংয়ের জন্য
+    console.log('DOM fully loaded');
     setupChatHistoryEventHandlers();
 });
