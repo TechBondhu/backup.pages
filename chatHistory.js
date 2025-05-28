@@ -10,11 +10,11 @@ function sanitizeMessage(message) {
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-        .replace(/&/g, '&amp;');
+        .replace(/</g, '<')
+        .replace(/>/g, '>')
+        .replace(/"/g, '"')
+        .replace(/'/g, ''')
+        .replace(/&/g, '&');
 }
 
 // Save Chat History to localStorage
@@ -40,9 +40,11 @@ function loadChatHistory() {
     const historyList = document.getElementById('historyList');
     const sidebar = document.getElementById('sidebar');
     const chatContainer = document.querySelector('.chat-container');
-    if (historyList) {
-        historyList.innerHTML = '';
+    if (!historyList || !sidebar || !chatContainer) {
+        console.error('Required elements not found:', { historyList, sidebar, chatContainer });
+        return;
     }
+    historyList.innerHTML = '';
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     const validChats = Object.keys(chats).filter(chatId => {
         const chat = chats[chatId];
@@ -101,9 +103,12 @@ function loadChatHistory() {
         });
     });
 
-    if (historyList && historyList.children.length > 0 && sidebar && chatContainer) {
+    if (historyList.children.length > 0) {
         sidebar.classList.add('open');
         chatContainer.classList.add('sidebar-open');
+    } else {
+        sidebar.classList.remove('open');
+        chatContainer.classList.remove('sidebar-open');
     }
 }
 
@@ -181,6 +186,7 @@ function setupChatHistoryEventHandlers() {
                 sidebar.classList.toggle('open');
                 chatContainer.classList.toggle('sidebar-open');
                 loadChatHistory();
+                console.log('Sidebar class:', sidebar.className);
             } else {
                 console.error('Sidebar or chat container not found');
             }
@@ -205,6 +211,7 @@ function setupChatHistoryEventHandlers() {
                 sidebar.classList.toggle('open');
                 chatContainer.classList.toggle('sidebar-open');
                 loadChatHistory();
+                console.log('Sidebar class:', sidebar.className);
             } else {
                 console.error('Sidebar or chat container not found');
             }
