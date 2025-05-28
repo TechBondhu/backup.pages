@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesDiv = document.getElementById('messages');
     const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
-    const welcomeMessage = document.getElementById('welcomeMessage');
     const previewContainer = document.getElementById('previewContainer');
     const previewImage = document.getElementById('previewImage');
     const editModal = document.getElementById('editModal');
@@ -82,11 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageReviewModal = document.getElementById('imageReviewModal');
     const reviewImage = document.getElementById('reviewImage');
     const deleteImageBtn = document.getElementById('deleteImageBtn');
-
-    // Show welcome page on initial load
-    if (welcomeMessage) {
-        welcomeMessage.style.display = 'block';
-    }
 
     // State Variables
     let selectedFile = null;
@@ -351,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (imageReviewModal) {
             imageReviewModal.style.display = 'block';
         }
+    }
     }
 
     if (imageReviewModal) {
@@ -823,8 +818,4 @@ const genres = [
         startNewChat();
     }
     loadChatHistory();
-}); 
-
-
-
- 
+});
