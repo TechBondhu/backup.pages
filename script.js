@@ -100,6 +100,52 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
+// script.js
+
+// Firebase SDK চেক
+if (typeof firebase === 'undefined') {
+    console.error("Firebase SDK লোড হয়নি। index.html-এ Firebase CDN যোগ করুন।");
+}
+
+// Firebase কনফিগারেশন
+const firebaseConfig = {
+    apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
+    authDomain: "admissionformdb.firebaseapp.com",
+    projectId: "admissionformdb",
+    storageBucket: "admissionformdb.firebasestorage.app",
+    messagingSenderId: "398052082157",
+    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
+};
+
+// Firebase ইনিশিয়ালাইজ করা (গ্লোবাল স্কোপে)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+window.db = firebase.firestore();
+console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
+
+// displayMessage ফাংশন (গ্লোবাল স্কোপে)
+function displayMessage(message, sender) {
+    const messagesDiv = document.getElementById('messages');
+    if (!messagesDiv) {
+        console.error("messagesDiv not found");
+        return;
+    }
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
+    messageDiv.innerHTML = sanitizeMessage(message);
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// sanitizeMessage ফাংশন (গ্লোবাল স্কোপে)
+function sanitizeMessage(message) {
+    const div = document.createElement('div');
+    div.textContent = message;
+    return div.innerHTML;
+}
+
+// DOMContentLoaded ইভেন্ট
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
@@ -142,41 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize jsPDF
     const { jsPDF } = window.jspdf;
-
- // script.js
-
-// Firebase Initialization
-const firebaseConfig = {
-    apiKey: "AIzaSyCoIdMx9Zd7kQt9MSZmowbphaQVRl8D16E",
-    authDomain: "admissionformdb.firebaseapp.com",
-    projectId: "admissionformdb",
-    storageBucket: "admissionformdb.firebasestorage.app",
-    messagingSenderId: "398052082157",
-    appId: "1:398052082157:web:0bc02d66cbdf55dd2567e4",
-};
-
-// Firebase ইনিশিয়ালাইজ করা (শুধু একবার)
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-// গ্লোবাল স্কোপে db রাখা
-window.db = firebase.firestore();
-
-// displayMessage ফাংশন (যদি না থাকে)
-function displayMessage(message, sender) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
-    messageDiv.innerHTML = sanitizeMessage(message);
-    messagesDiv.appendChild(messageDiv);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// sanitizeMessage ফাংশন (যদি না থাকে)
-function sanitizeMessage(message) {
-    const div = document.createElement('div');
-    div.textContent = message;
-    return div.innerHTML;
-}
 
     // Navigation Events
     const homeIcon = document.querySelector('.home-icon');
@@ -239,27 +250,6 @@ function sanitizeMessage(message) {
                 welcomeMessage.style.display = 'none';
                 welcomeMessage.classList.remove('fade-out');
             }, 300);
-        }
-    }
-
-    // Display Message
-    function displayMessage(message, sender) {
-        if (sender === 'bot') {
-            displayProgressiveMessage(sanitizeMessage(message), sender);
-        } else {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('user-message', 'slide-in');
-            messageDiv.innerHTML = sanitizeMessage(message);
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-            }
-            saveChatHistory(message, sender);
         }
     }
 
@@ -582,7 +572,6 @@ function sanitizeMessage(message) {
                 });
 
                 displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-                // Call generatePDF from pdfGenerator.js
                 generatePDF(updatedData, reviewCard);
                 reviewCard.setAttribute('data-confirmed', 'true');
                 reviewCard.setAttribute('data-editable', 'false');
@@ -796,6 +785,12 @@ function sanitizeMessage(message) {
         }, 500);
     }
 
+    // Genres Data (উদাহরণ হিসেবে)
+    const genres = [
+        { name: "Admission", icon: "fas fa-graduation-cap", message: "I want to apply for admission" },
+        { name: "Query", icon: "fas fa-question-circle", message: "I have a query" }
+    ];
+
     function renderGenresList() {
         if (genresList) {
             genresList.innerHTML = '';
@@ -872,5 +867,10 @@ function sanitizeMessage(message) {
     });
 
     // Initialize
+    if (currentChatId && messagesDiv) {
+        loadChatMessages(currentChatId);
+    } else {
+        startNewChat();
+    }
     loadChatHistory();
 });
