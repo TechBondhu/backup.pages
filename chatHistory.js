@@ -7,12 +7,12 @@ function sanitizeMessage(message) {
     if (typeof message !== 'string') return '';
     const div = document.createElement('div');
     div.textContent = message;
-    return div.innerHTML
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, ''')
-        .replace(/&/g, '&');
+     return div.innerHTML
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;')
+        .replace(/&/g, '&amp;');
 }
 
 // Generate Title from First 30 Characters
