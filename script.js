@@ -1,4 +1,3 @@
-
 // script.js
 
 // Firebase SDK চেক
@@ -44,7 +43,17 @@ function sanitizeMessage(message) {
     return div.innerHTML;
 }
 
-
+// ওয়েলকাম মেসেজ লুকানোর ফাংশন
+function hideWelcomeMessage() {
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+        welcomeMessage.classList.add('fade-out');
+        setTimeout(() => {
+            welcomeMessage.style.display = 'none';
+            welcomeMessage.classList.remove('fade-out');
+        }, 300);
+    }
+}
 
 const genres = [
     { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
@@ -148,8 +157,6 @@ const genres = [
     { name: 'অর্গানিক ফার্মিং চাকরি', icon: 'fas fa-leaf', message: 'আমি অর্গানিক ফার্মিং চাকরির জন্য আবেদন করতে চাই' }
 ];
 
-
-
 // DOMContentLoaded ইভেন্ট
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
@@ -233,14 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         addNextWord();
-
-        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-            welcomeMessage.classList.add('fade-out');
-            setTimeout(() => {
-                welcomeMessage.style.display = 'none';
-                welcomeMessage.classList.remove('fade-out');
-            }, 300);
-        }
+        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
     }
 
     // Message Sending
@@ -260,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveChatHistory(message, 'user');
             callRasaAPI(message);
             userInput.value = '';
+            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
         } else if (selectedFile) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('user-message', 'slide-in');
@@ -270,14 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.appendChild(img);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
-            }
 
             const formData = new FormData();
             formData.append('image', selectedFile);
@@ -298,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Image Upload Error:', error);
                 });
             clearPreview();
+            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
         }
     }
 
@@ -603,13 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesDiv.appendChild(reviewCard);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
-        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
-            welcomeMessage.classList.add('fade-out');
-            setTimeout(() => {
-                welcomeMessage.style.display = 'none';
-                welcomeMessage.classList.remove('fade-out');
-            }, 300);
-        }
+        // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
     }
 
     function toggleEditMode(card, reviewData) {
@@ -776,14 +764,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             genresModal.style.display = 'none';
                             genresModal.classList.remove('slide-out');
                         }, 300);
-                        welcomeMessage.classList.add('fade-out');
-                        setTimeout(() => {
-                            welcomeMessage.style.display = 'none';
-                            welcomeMessage.classList.remove('fade-out');
-                        }, 300);
                         displayMessage(sanitizeMessage(genre.message), 'user');
                         saveChatHistory(sanitizeMessage(genre.message), 'user');
                         callRasaAPI(sanitizeMessage(genre.message));
+                        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
                     } else {
                         console.error(`Message undefined for genre: ${genre.name}`);
                         displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
@@ -823,14 +807,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const genreName = button.getAttribute('data-genre');
             const genre = genres.find(g => g.name === genreName);
             if (genre && genre.message) {
-                welcomeMessage.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeMessage.style.display = 'none';
-                    welcomeMessage.classList.remove('fade-out');
-                }, 300);
                 displayMessage(sanitizeMessage(genre.message), 'user');
                 saveChatHistory(sanitizeMessage(genre.message), 'user');
                 callRasaAPI(sanitizeMessage(genre.message));
+                hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
             } else {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
                 displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
