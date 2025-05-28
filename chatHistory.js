@@ -1,8 +1,9 @@
+// ==================== Chat History Management Section ====================
 // State Variables
-let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString() + Math.random().toString(36).substr(2, 9);
+let currentChatId = sessionStorage.getItem('chatId') || Date.now().toString();
 sessionStorage.setItem('chatId', currentChatId);
 
-// Sanitize Message
+// Sanitize Message to Prevent XSS
 function sanitizeMessage(message) {
     if (typeof message !== 'string') return '';
     const div = document.createElement('div');
@@ -15,7 +16,7 @@ function sanitizeMessage(message) {
         .replace(/&/g, '&amp;');
 }
 
-// Save Chat History
+// Save Chat History to localStorage
 function saveChatHistory(message, sender) {
     let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     if (!chats[currentChatId]) {
@@ -25,65 +26,72 @@ function saveChatHistory(message, sender) {
     localStorage.setItem('chatHistory', JSON.stringify(chats));
 }
 
-// Load Chat History
+// Load and Display Chat History in Sidebar
 function loadChatHistory() {
     const historyList = document.getElementById('historyList');
     const sidebar = document.getElementById('sidebar');
     const chatContainer = document.querySelector('.chat-container');
-    if (!historyList || !sidebar || !chatContainer) return;
-    historyList.innerHTML = '';
-    let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
-    const validChats = Object.keys(chats).filter(chatId => chats[chatId] && chats[chatId].title && Array.isArray(chats[chatId].messages) && chats[chatId].timestamp);
-
-    if (validChats.length > 0) {
-        validChats.forEach(chatId => {
-            const chat = chats[chatId];
+    if (historyList) {
+        historyList.innerHTML = '';
+    }
+    const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
+    Object.keys(chats).forEach(chatId => {
+        const chat = chats[chatId];
+        if (chat && chat.title) {
             const item = document.createElement('div');
             item.classList.add('history-item');
             item.setAttribute('data-chat-id', chatId);
-            item.innerHTML = `<div class="history-item-content"><p>${sanitizeMessage(chat.title)}</p><div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div></div><div class="options"><i class="fas fa-ellipsis-v"></i></div><div class="dropdown" style="display:none;"><div class="rename-item">Rename</div><div class="delete-item">Delete</div></div>`;
+            item.innerHTML = `
+                <div class="history-item-content">
+                    <p>${sanitizeMessage(chat.title)}</p>
+                    <div class="timestamp">${new Date(chat.timestamp).toLocaleString()}</div>
+                </div>
+                <div class="options">
+                    <i class="fas fa-ellipsis-v" id="optionIcon-${chatId}"></i>
+                </div>
+                <div class="dropdown" id="dropdown-${chatId}">
+                    <div class="dropdown-item rename-item-${chatId}">Rename</div>
+                    <div class="dropdown-item delete-item-${chatId}">Delete</div>
+                </div>
+            `;
             historyList.appendChild(item);
 
             item.addEventListener('click', () => loadChat(chatId));
-            const optionIcon = item.querySelector('.options i');
-            const dropdown = item.querySelector('.dropdown');
-            const renameItem = item.querySelector('.rename-item');
-            const deleteItem = item.querySelector('.delete-item');
+            const optionIcon = item.querySelector(`#optionIcon-${chatId}`);
+            const dropdown = item.querySelector(`#dropdown-${chatId}`);
+            const renameItem = item.querySelector(`.rename-item-${chatId}`);
+            const deleteItem = item.querySelector(`.delete-item-${chatId}`);
 
-            if (optionIcon && dropdown) {
-                optionIcon.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-                });
-            }
-            if (renameItem) {
-                renameItem.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const renameModal = document.getElementById('renameModal');
-                    const renameInput = document.getElementById('renameInput');
-                    if (renameModal && renameInput) {
-                        renameModal.style.display = 'flex';
-                        renameInput.value = chat.title;
-                        currentChatId = chatId;
-                    }
-                });
-            }
-            if (deleteItem) {
-                deleteItem.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const deleteModal = document.getElementById('deleteModal');
-                    if (deleteModal) {
-                        deleteModal.style.display = 'flex';
-                        currentChatId = chatId;
-                    }
-                });
-            }
-        });
+            optionIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+            });
+
+            renameItem.addEventListener('click', () => {
+                const renameModal = document.getElementById('renameModal');
+                const renameInput = document.getElementById('renameInput');
+                if (renameModal && renameInput) {
+                    renameModal.style.display = 'flex';
+                    renameInput.value = chat.title;
+                    currentChatId = chatId;
+                }
+            });
+
+            deleteItem.addEventListener('click', () => {
+                const deleteModal = document.getElementById('deleteModal');
+                if (deleteModal) {
+                    deleteModal.style.display = 'flex';
+                    currentChatId = chatId;
+                }
+            });
+        } else {
+            console.warn(`Chat with ID ${chatId} is missing or invalid. Skipping...`);
+        }
+    });
+
+    if (historyList && historyList.children.length > 0) {
         sidebar.classList.add('open');
         chatContainer.classList.add('sidebar-open');
-    } else {
-        sidebar.classList.remove('open');
-        chatContainer.classList.remove('sidebar-open');
     }
 }
 
@@ -97,20 +105,20 @@ function loadChat(chatId) {
     sessionStorage.setItem('chatId', currentChatId);
     const chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
     const chat = chats[chatId];
-    if (chat && messagesDiv) {
+    if (chat) {
         messagesDiv.innerHTML = '';
         chat.messages.forEach(msg => {
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add(msg.sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.classList.add(msg.sender === 'user' ? 'user-message' : 'bot-message', 'slide-in');
             messageDiv.innerHTML = sanitizeMessage(msg.text);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         });
-        if (welcomeMessage) welcomeMessage.style.display = 'none';
-        if (sidebar && chatContainer) {
-            sidebar.classList.remove('open');
-            chatContainer.classList.remove('sidebar-open');
+        if (welcomeMessage) {
+            welcomeMessage.style.display = 'none';
         }
+        sidebar.classList.remove('open');
+        chatContainer.classList.remove('sidebar-open');
         loadChatHistory();
     }
 }
@@ -122,8 +130,12 @@ function startNewChat() {
     const chatBox = document.getElementById('chatBox');
     currentChatId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
     sessionStorage.setItem('chatId', currentChatId);
-    if (messagesDiv) messagesDiv.innerHTML = '';
-    if (welcomeMessage) welcomeMessage.style.display = 'block';
+    if (messagesDiv) {
+        messagesDiv.innerHTML = '';
+    }
+    if (welcomeMessage) {
+        welcomeMessage.style.display = 'block';
+    }
     if (chatBox) {
         chatBox.classList.add('fade-in');
         setTimeout(() => chatBox.classList.remove('fade-in'), 500);
@@ -132,11 +144,12 @@ function startNewChat() {
     loadChatHistory();
 }
 
-// Event Handlers
+// Chat History Event Handlers
 function setupChatHistoryEventHandlers() {
     const historyIcon = document.getElementById('historyIcon');
-    const sidebarIcon = document.getElementById('sidebarIcon');
+    const newChatIcon = document.getElementById('newChatIcon');
     const closeSidebar = document.getElementById('closeSidebar');
+    const sidebarIcon = document.getElementById('sidebarIcon');
     const renameCancelBtn = document.getElementById('cancelRename');
     const renameSaveBtn = document.getElementById('saveRename');
     const deleteCancelBtn = document.getElementById('cancelDelete');
@@ -147,32 +160,37 @@ function setupChatHistoryEventHandlers() {
     const deleteModal = document.getElementById('deleteModal');
     const renameInput = document.getElementById('renameInput');
 
-    if (historyIcon && sidebar && chatContainer) {
+    if (historyIcon) {
         historyIcon.addEventListener('click', () => {
             sidebar.classList.toggle('open');
             chatContainer.classList.toggle('sidebar-open');
             loadChatHistory();
         });
     }
-    if (sidebarIcon && sidebar && chatContainer) {
+    if (newChatIcon) {
+        newChatIcon.addEventListener('click', startNewChat);
+    }
+    if (closeSidebar) {
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            chatContainer.classList.remove('sidebar-open');
+        });
+    }
+    if (sidebarIcon) {
         sidebarIcon.addEventListener('click', () => {
             sidebar.classList.toggle('open');
             chatContainer.classList.toggle('sidebar-open');
             loadChatHistory();
         });
     }
-    if (closeSidebar && sidebar && chatContainer) {
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            chatContainer.classList.remove('sidebar-open');
+    if (renameCancelBtn) {
+        renameCancelBtn.addEventListener('click', () => {
+            renameModal.style.display = 'none';
         });
     }
-    if (renameCancelBtn && renameModal) {
-        renameCancelBtn.addEventListener('click', () => renameModal.style.display = 'none');
-    }
-    if (renameSaveBtn && renameInput && renameModal) {
+    if (renameSaveBtn) {
         renameSaveBtn.addEventListener('click', () => {
-            const newTitle = renameInput.value.trim();
+            const newTitle = renameInput?.value.trim() || '';
             if (newTitle) {
                 let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
                 if (chats[currentChatId]) {
@@ -184,28 +202,29 @@ function setupChatHistoryEventHandlers() {
             renameModal.style.display = 'none';
         });
     }
-    if (deleteCancelBtn && deleteModal) {
-        deleteCancelBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+    if (deleteCancelBtn) {
+        deleteCancelBtn.addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+        });
     }
-    if (deleteConfirmBtn && deleteModal) {
+    if (deleteConfirmBtn) {
         deleteConfirmBtn.addEventListener('click', () => {
             let chats = JSON.parse(localStorage.getItem('chatHistory') || '{}');
             if (chats[currentChatId]) {
                 delete chats[currentChatId];
                 localStorage.setItem('chatHistory', JSON.stringify(chats));
                 loadChatHistory();
-                if (Object.keys(chats).length === 0) startNewChat();
-                else {
+                if (Object.keys(chats).length === 0) {
+                    startNewChat();
+                } else {
                     const messagesDiv = document.getElementById('messages');
                     const welcomeMessage = document.getElementById('welcomeMessage');
-                    if (messagesDiv) messagesDiv.innerHTML = '';
-                    if (welcomeMessage) welcomeMessage.style.display = 'block';
+                    messagesDiv.innerHTML = '';
+                    welcomeMessage.style.display = 'block';
                 }
             }
             deleteModal.style.display = 'none';
         });
     }
 }
-
-// DOM Load Handler
-document.addEventListener('DOMContentLoaded', setupChatHistoryEventHandlers);
+// ==================== End of Chat History Management Section ====================
