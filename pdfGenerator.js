@@ -11,8 +11,8 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
         console.log("Step 4: Attempting to load NotoSerifBengali fonts");
 
         // GitHub থেকে ফন্ট ফাইলের URL (তোমার ইউজারনেম দিয়ে আপডেট করো)
-        const regularFontUrl = 'https://github.com/TechBondhu/backup.pages/blob/main/fonts/NotoSerifBengali-Regular.ttf';
-        const boldFontUrl = 'https://github.com/TechBondhu/backup.pages/blob/main/fonts/NotoSerifBengali-Bold.ttf';
+        const regularFontUrl = 'https://raw.githubusercontent.com/TechBondhu/backup.pages/main/fonts/NotoSerifBengali-Regular.ttf';
+        const boldFontUrl = 'https://raw.githubusercontent.com/TechBondhu/backup.pages/main/fonts/NotoSerifBengali-Bold.ttf';
 
         // Regular ফন্ট লোড
         const regularResponse = await fetch(regularFontUrl);
