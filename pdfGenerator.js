@@ -64,7 +64,7 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
             nid: {
                 title: 'জাতীয় পরিচয়পত্র আবেদন ফর্ম',
                 sections: [
-                    { section: 'ব্যক্তিগত তথ্য', fields: ['name', 'father_name', 'mother_name'] },
+                    { section: 'ব্যক্তিগত তথ্য', fields: ['name', 'father_name'] },
                     { section: 'ঠিকানা', fields: ['address'] },
                     { section: 'জন্ম তারিখ', fields: ['dob'] },
                 ],
