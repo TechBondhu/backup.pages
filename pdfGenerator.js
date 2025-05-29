@@ -10,7 +10,7 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
     try {
         console.log("Step 4: Attempting to load NotoSerifBengali fonts");
 
-        // GitHub থেকে ফন্ট ফাইলের URL (তোমার ইউজারনেম দিয়ে আপডেট করো)
+        // GitHub থেকে Raw ফন্ট ফাইলের URL
         const regularFontUrl = 'https://raw.githubusercontent.com/TechBondhu/backup.pages/main/fonts/NotoSerifBengali-Regular.ttf';
         const boldFontUrl = 'https://raw.githubusercontent.com/TechBondhu/backup.pages/main/fonts/NotoSerifBengali-Bold.ttf';
 
@@ -51,7 +51,7 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
         doc.text(`তারিখ: ${new Date().toLocaleDateString('bn-BD')}`, 15, 20);
         console.log(`Step 13: Header text added with date: ${new Date().toLocaleDateString('bn-BD')}`);
 
-        // লোগো এবং বর্ডার (তোমার আগের কোড অনুযায়ী)
+        // লোগো এবং বর্ডার
         console.log("Step 14: No valid logoData provided or logoData does not start with 'data:image'");
         console.log("Step 16: Drawing page border");
         doc.setDrawColor(0);
@@ -87,7 +87,7 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
         doc.text(template.title, 105, 40, { align: 'center' });
         console.log(`Step 20: Template title added to PDF: ${template.title}`);
 
-        // টেবিল লেআউট
+        // টেবিল লেআউট (আপডেটেড)
         let yPosition = 60;
         console.log(`Step 21: Starting table layout at y-position: ${yPosition}`);
 
@@ -97,7 +97,7 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
             doc.setFont('NotoSerifBengali', 'bold');
             doc.setFontSize(12);
             yPosition += 10;
-            doc.text(sectionObj.section, 15, yPosition);
+            doc.text(sectionObj.section, 15, yPosition + 5); // প্যাডিং
             console.log(`Step 23: Section heading added at y-position: ${yPosition}`);
 
             sectionObj.fields.forEach(field => {
@@ -107,17 +107,19 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
 
                 doc.setFont('NotoSerifBengali', 'normal');
                 doc.setFontSize(10);
-                doc.rect(15, yPosition, 180, 10); // টেবিল সেল
+                yPosition += 15; // বড় সারি উচ্চতা
+                doc.rect(15, yPosition - 10, 180, 20); // বড় বক্স
                 console.log(`Step 27: Drew table row at y-position: ${yPosition}`);
-                doc.text(`${label}:`, 20, yPosition + 7);
+                doc.text(`${label}:`, 20, yPosition - 5); // প্যাডিং
                 console.log(`Step 28: Added label text: ${label}:`);
 
                 const value = reviewData[field] || 'N/A';
-                const splitValue = doc.splitTextToSize(value, 140);
-                doc.text(splitValue, 50, yPosition + 7);
+                const splitValue = doc.splitTextToSize(value, 120); // প্রস্থ কমিয়ে
+                doc.setLineHeightFactor(1.5); // লাইন হাইট বাড়ানো
+                doc.text(splitValue, 50, yPosition - 5); // পজিশন সামঞ্জস্য
                 console.log(`Step 29: Added value text: ${value}`);
-                yPosition += 10;
             });
+            yPosition += 10; // বেশি ফাঁক
         });
 
         // PDF আউটপুট
