@@ -71,9 +71,8 @@ async function generatePDF(reviewData, reviewCard, formType = 'generic', logoDat
                 fields: {
                     name: 'নাম',
                     father_name: 'পিতার নাম',
-                    mother_name: 'মাতার নাম',
                     address: 'বর্তমান ঠিকানা',
-                    date_of_birth: 'জন্ম তারিখ'
+                    dob: 'জন্ম তারিখ'
                 }
             }
         };
