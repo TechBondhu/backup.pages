@@ -2,7 +2,7 @@
 const formTemplates = {
     nid: {
         title: 'জাতীয় পরিচয়পত্র আবেদন ফর্ম',
-        fields: ['name', 'father_name', 'mother_name', 'nid_number'],
+        fields: ['name', 'father_name', 'addrress', 'date_of_birth'],
         layout: {
             labelWidth: 60,
             valueWidth: 110,
