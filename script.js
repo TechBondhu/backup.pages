@@ -376,125 +376,133 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayReview(reviewData) {
-        const reviewCard = document.createElement('div');
-        reviewCard.classList.add('review-card', 'slide-in');
-        reviewCard.setAttribute('data-editable', 'true');
-        reviewCard.setAttribute('data-id', Date.now());
-        reviewCard.setAttribute('data-confirmed', 'false');
-        reviewCard.innerHTML = '<h3>আপনার তথ্য রিভিউ</h3>';
+function displayReview(reviewData) {
+    const reviewCard = document.createElement('div');
+    reviewCard.classList.add('review-card', 'slide-in');
+    reviewCard.setAttribute('data-editable', 'true');
+    reviewCard.setAttribute('data-id', Date.now());
+    reviewCard.setAttribute('data-confirmed', 'false');
+    reviewCard.innerHTML = '<h3>আপনার তথ্য যাচাই</h3>';
 
-        const reviewContent = document.createElement('div');
-        reviewContent.classList.add('review-content');
+    const reviewContent = document.createElement('div');
+    reviewContent.classList.add('review-content');
 
-        for (const [key, value] of Object.entries(reviewData)) {
-            const reviewItem = document.createElement('div');
-            reviewItem.classList.add('review-item');
-            reviewItem.setAttribute('data-key', key);
+    for (const [key, value] of Object.entries(reviewData)) {
+        const reviewItem = document.createElement('div');
+        reviewItem.classList.add('review-item');
+        reviewItem.setAttribute('data-key', key);
 
-            const label = document.createElement('label');
-            label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
-            reviewItem.appendChild(label);
+        const label = document.createElement('label');
+        label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
+        reviewItem.appendChild(label);
 
-            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                const img = document.createElement('img');
-                img.src = value;
-                reviewItem.appendChild(img);
-            } else {
-                const p = document.createElement('p');
-                p.innerText = value;
-                reviewItem.appendChild(p);
-            }
-
-            reviewContent.appendChild(reviewItem);
+        if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+            const img = document.createElement('img');
+            img.src = value;
+            reviewItem.appendChild(img);
+        } else {
+            const p = document.createElement('p');
+            p.innerText = value;
+            reviewItem.appendChild(p);
         }
 
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'review-buttons';
-
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn ripple-btn';
-        editBtn.innerText = 'Edit';
-        editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
-
-        const confirmBtn = document.createElement('button');
-        confirmBtn.className = 'confirm-btn ripple-btn';
-        confirmBtn.innerText = 'Confirm';
-        confirmBtn.style.display = 'inline-block';
-        let isProcessing = false;
-
-        confirmBtn.addEventListener('click', async () => {
-            if (isProcessing) return;
-            isProcessing = true;
-            confirmBtn.disabled = true;
-
-            try {
-                const updatedData = {};
-                reviewContent.querySelectorAll('.review-item').forEach(item => {
-                    const key = item.getAttribute('data-key');
-                    const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                    if (!value) {
-                        console.warn(`কোনো মান পাওয়া যায়নি: ${key}`);
-                    }
-                    updatedData[key] = value;
-                });
-
-                await db.collection('submissions').add({
-                    review_data: updatedData,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    chat_id: currentChatId
-                });
-
-                displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-                generatePDF(updatedData, reviewCard);
-                reviewCard.setAttribute('data-confirmed', 'true');
-                reviewCard.setAttribute('data-editable', 'false');
-                editBtn.disabled = true;
-                editBtn.style.display = 'none';
-                confirmBtn.style.display = 'none';
-
-                buttonContainer.innerHTML = '';
-                const downloadBtn = document.createElement('button');
-                downloadBtn.className = 'download-btn ripple-btn';
-                downloadBtn.innerText = 'Download PDF';
-                downloadBtn.addEventListener('click', () => {
-                    const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                    if (pdfUrl) {
-                        const link = document.createElement('a');
-                        link.href = pdfUrl;
-                        link.download = 'formbondhu_submission.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    } else {
-                        displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                    }
-                });
-                buttonContainer.appendChild(downloadBtn);
-            } catch (error) {
-                let errorMessage = 'অজানা ত্রুটি ঘটেছে।';
-                if (error.code && error.message) {
-                    errorMessage = `ফায়ারবেজে তথ্য পাঠাতে সমস্যা: ${error.message}`;
-                }
-                displayMessage(errorMessage, 'bot');
-                console.error('Error in confirm button:', error);
-                confirmBtn.disabled = false;
-            } finally {
-                isProcessing = false;
-            }
-        });
-
-        buttonContainer.appendChild(editBtn);
-        buttonContainer.appendChild(confirmBtn);
-
-        reviewCard.appendChild(reviewContent);
-        reviewCard.appendChild(buttonContainer);
-        if (messagesDiv) {
-            messagesDiv.appendChild(reviewCard);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
+        reviewContent.appendChild(reviewItem);
     }
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'review-buttons';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn ripple-btn';
+    editBtn.innerText = 'Edit';
+    editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'confirm-btn ripple-btn';
+    confirmBtn.innerText = 'Confirm';
+    confirmBtn.style.display = 'inline-block';
+    let isProcessing = false;
+
+    confirmBtn.addEventListener('click', async () => {
+        if (isProcessing) return;
+        isProcessing = true;
+        confirmBtn.disabled = true;
+
+        try {
+            const updatedData = {};
+            reviewContent.querySelectorAll('.review-item').forEach(item => {
+                const key = item.getAttribute('data-key');
+                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
+                if (!value) {
+                    console.warn(`কোনো মান পাওয়া যায়নি: ${key}`);
+                }
+                updatedData[key] = value;
+            });
+
+            // PDF-এ শুধু টেক্সট পাঠানোর জন্য ডেটা ফিল্টার করা
+            const textOnlyData = {};
+            for (const [key, value] of Object.entries(updatedData)) {
+                if (typeof value === 'string' && !(value.startsWith('http') || value.startsWith('data:image'))) {
+                    textOnlyData[key] = value;
+                }
+            }
+
+            await db.collection('submissions').add({
+                review_data: updatedData, // মূল ডেটা (ইমেজ সহ) ফায়ারবেসে সেভ
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                chat_id: currentChatId
+            });
+
+            displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
+            generatePDF(textOnlyData, reviewCard); // শুধু টেক্সট-ভিত্তিক ডেটা PDF-এ
+            reviewCard.setAttribute('data-confirmed', 'true');
+            reviewCard.setAttribute('data-editable', 'false');
+            editBtn.disabled = true;
+            editBtn.style.display = 'none';
+            confirmBtn.style.display = 'none';
+
+            buttonContainer.innerHTML = '';
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn ripple-btn';
+            downloadBtn.innerText = 'Download PDF';
+            downloadBtn.addEventListener('click', () => {
+                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                if (pdfUrl) {
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = 'formbondhu_submission.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
+                }
+            });
+            buttonContainer.appendChild(downloadBtn);
+        } catch (error) {
+            let errorMessage = 'অজানা ত্রুটি ঘটেছে।';
+            if (error.code && error.message) {
+                errorMessage = `ফায়ারবেজে তথ্য পাঠাতে সমস্যা: ${error.message}`;
+            }
+            displayMessage(errorMessage, 'bot');
+            console.error('Error in confirm button:', error);
+            confirmBtn.disabled = false;
+        } finally {
+            isProcessing = false;
+        }
+    });
+
+    buttonContainer.appendChild(editBtn);
+    buttonContainer.appendChild(confirmBtn);
+
+    reviewCard.appendChild(reviewContent);
+    reviewCard.appendChild(buttonContainer);
+    if (messagesDiv) {
+        messagesDiv.appendChild(reviewCard);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
+}
 
     function toggleEditMode(card, reviewData) {
         if (card.getAttribute('data-confirmed') === 'true') {
