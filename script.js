@@ -439,22 +439,23 @@ function displayReview(reviewData) {
                 updatedData[key] = value;
             });
 
-            // PDF-এ শুধু টেক্সট পাঠানোর জন্য ডেটা ফিল্টার করা
+            // Text only data for PDF
             const textOnlyData = {};
             for (const [key, value] of Object.entries(updatedData)) {
                 if (typeof value === 'string' && !(value.startsWith('http') || value.startsWith('data:image'))) {
                     textOnlyData[key] = value;
                 }
             }
+            console.log('Text Only Data for PDF:', textOnlyData); // Debug
 
             await db.collection('submissions').add({
-                review_data: updatedData, // মূল ডেটা (ইমেজ সহ) ফায়ারবেসে সেভ
+                review_data: updatedData,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 chat_id: currentChatId
             });
 
             displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-            generatePDF(textOnlyData, reviewCard); // শুধু টেক্সট-ভিত্তিক ডেটা PDF-এ
+            generatePDF(textOnlyData, reviewCard, 'nid'); // Default formType as 'nid' for testing
             reviewCard.setAttribute('data-confirmed', 'true');
             reviewCard.setAttribute('data-editable', 'false');
             editBtn.disabled = true;
@@ -501,9 +502,11 @@ function displayReview(reviewData) {
         messagesDiv.appendChild(reviewCard);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
-    // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
+    
+     // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
 }
-
+   
+ 
     function toggleEditMode(card, reviewData) {
         if (card.getAttribute('data-confirmed') === 'true') {
             displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
