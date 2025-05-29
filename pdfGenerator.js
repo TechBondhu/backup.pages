@@ -9,8 +9,8 @@ const formTemplates = {
             sections: ['ব্যক্তিগত তথ্য', 'ডকুমেন্ট']
         },
         sectionFields: {
-            'ব্যক্তিগত তথ্য': ['name', 'father_name', 'mother_name'],
-            'ডকুমেন্ট': ['nid_number']
+            'ব্যক্তিগত তথ্য': ['name', 'father_name', 'addrress'],
+            'ডকুমেন্ট': ['date_of_birth']
         }
     },
     passport: {
