@@ -53,7 +53,358 @@ function hideWelcomeMessage() {
     }
 }
 
-// DOMContentLoaded ইভেন্ট
+// Genres Data
+const genres = [
+    { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
+    { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
+    { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
+    { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
+    { name: 'টিআইএন (TIN) সার্টিফিকেট আবেদন', icon: 'fas fa-file-invoice', message: 'আমি টিআইএন সার্টিফিকেট আবেদন করতে চাই' },
+    { name: 'ভূমি নামজারি (Mutation) আবেদনপত্র', icon: 'fas fa-map-marked-alt', message: 'আমি ভূমি নামজারি আবেদন করতে চাই' },
+    { name: 'উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন', icon: 'fas fa-graduation-cap', message: 'আমি উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন করতে চাই' },
+    { name: 'জন্ম ও মৃত্যু নিবন্ধন', icon: 'fas fa-certificate', message: 'আমি জন্ম ও মৃত্যু নিবন্ধন করতে চাই' }, 
+];
+
+function callRasaAPI(message, metadata = {}) {
+    const typingDiv = showTypingIndicator();
+    const payload = { sender: currentChatId, message: message };
+    if (Object.keys(metadata).length > 0) {
+        payload.metadata = metadata;
+    }
+    setTimeout(() => {
+        if (typeof $ !== 'undefined') {
+            $.ajax({
+                url: 'http://localhost:5005/webhooks/rest/webhook',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: (data) => {
+                    typingDiv.remove();
+                    if (!data || data.length === 0) {
+                        displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
+                        saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
+                        return;
+                    }
+                    data.forEach(response => {
+                        if (response.text && !response.text.toLowerCase().includes('hi')) {
+                            displayMessage(sanitizeMessage(response.text), 'bot');
+                            saveChatHistory(sanitizeMessage(response.text), 'bot');
+                        }
+                        if (response.custom && response.custom.review_data) {
+                            displayReview(response.custom.review_data);
+                        }
+                        if (response.buttons) {
+                            const buttonDiv = document.createElement('div');
+                            buttonDiv.classList.add('welcome-buttons');
+                            response.buttons.forEach(btn => {
+                                const button = document.createElement('button');
+                                button.innerText = sanitizeMessage(btn.title);
+                                button.classList.add('ripple-btn');
+                                button.addEventListener('click', () => sendMessage(btn.payload));
+                                buttonDiv.appendChild(button);
+                            });
+                            if (messagesDiv) {
+                                messagesDiv.appendChild(buttonDiv);
+                            }
+                        }
+                    });
+                },
+                error: (error) => {
+                    typingDiv.remove();
+                    displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
+                    saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot');
+                    console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
+                }
+            });
+        } else {
+            typingDiv.remove();
+            displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
+            saveChatHistory('jQuery লোড হয়নি।', 'bot');
+        }
+    }, 500);
+}
+
+function displayReview(reviewData) {
+    const reviewCard = document.createElement('div');
+    reviewCard.classList.add('review-card', 'slide-in');
+    reviewCard.setAttribute('data-editable', 'true');
+    reviewCard.setAttribute('data-id', Date.now());
+    reviewCard.setAttribute('data-confirmed', 'false');
+
+    // ফর্ম টাইপ ম্যাপিং বাংলায়
+    const formTypeMap = {
+        'apply_nid': 'জাতীয় পরিচয়পত্র আবেদন',
+        'apply_passport': 'পাসপোর্ট আবেদন',
+        'apply_company_registration': 'কোম্পানি রেজিস্ট্রেশন',
+        'apply_pension': 'পেনশন আবেদন',
+        'apply_tin_certificate': 'টিআইএন সার্টিফিকেট আবেদন',
+        'apply_land_mutation': 'ভূমি নামজারি আবেদন',
+        'apply_trade_license': 'ট্রেড লাইসেন্স আবেদন',
+        'generic': 'জেনেরিক ফর্ম'
+    };
+
+    const formType = reviewData.form_type || 'generic';
+    const formTypeDisplay = formTypeMap[formType] || 'অজানা ফর্ম';
+
+    reviewCard.innerHTML = `<h3>আপনার তথ্য রিভিউ: ${sanitizeMessage(formTypeDisplay)}</h3>`;
+
+    const reviewContent = document.createElement('div');
+    reviewContent.classList.add('review-content');
+
+    for (const [key, value] of Object.entries(reviewData)) {
+        if (key === 'form_type') continue;
+        const reviewItem = document.createElement('div');
+        reviewItem.classList.add('review-item');
+        reviewItem.setAttribute('data-key', key);
+
+        const label = document.createElement('label');
+        label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
+        reviewItem.appendChild(label);
+
+        if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+            const img = document.createElement('img');
+            img.src = value;
+            reviewItem.appendChild(img);
+        } else {
+            const p = document.createElement('p');
+            p.innerText = value;
+            reviewItem.appendChild(p);
+        }
+
+        reviewContent.appendChild(reviewItem);
+    }
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'review-buttons';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn ripple-btn';
+    editBtn.innerText = 'Edit';
+    editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'confirm-btn ripple-btn';
+    confirmBtn.innerText = 'Confirm';
+    confirmBtn.style.display = 'inline-block';
+    let isProcessing = false;
+
+    confirmBtn.addEventListener('click', async () => {
+        if (isProcessing) return;
+        isProcessing = true;
+        confirmBtn.disabled = true;
+
+        try {
+            const updatedData = {};
+            reviewContent.querySelectorAll('.review-item').forEach(item => {
+                const key = item.getAttribute('data-key');
+                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
+                if (!value) {
+                    console.warn(`কোনো মান পাওয়া যায়নি: ${key}`);
+                }
+                updatedData[key] = value;
+            });
+
+            await db.collection('submissions').add({
+                review_data: updatedData,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                chat_id: currentChatId
+            });
+
+            displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
+            generatePDF(updatedData, reviewCard);
+            reviewCard.setAttribute('data-confirmed', 'true');
+            reviewCard.setAttribute('data-editable', 'false');
+            editBtn.disabled = true;
+            editBtn.style.display = 'none';
+            confirmBtn.style.display = 'none';
+
+            buttonContainer.innerHTML = '';
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn ripple-btn';
+            downloadBtn.innerText = 'Download PDF';
+            downloadBtn.addEventListener('click', () => {
+                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                if (pdfUrl) {
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = `formbondhu_submission_${updatedData.form_type || 'generic'}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
+                }
+            });
+            buttonContainer.appendChild(downloadBtn);
+        } catch (error) {
+            let errorMessage = 'অজানা ত্রুটি ঘটেছে।';
+            if (error.code && error.message) {
+                errorMessage = `ফায়ারবেজে তথ্য পাঠাতে সমস্যা: ${error.message}`;
+            }
+            displayMessage(errorMessage, 'bot');
+            console.error('Error in confirm button:', error);
+            confirmBtn.disabled = false;
+        } finally {
+            isProcessing = false;
+        }
+    });
+
+    buttonContainer.appendChild(editBtn);
+    buttonContainer.appendChild(confirmBtn);
+
+    reviewCard.appendChild(reviewContent);
+    reviewCard.appendChild(buttonContainer);
+    const messagesDiv = document.getElementById('messages');
+    if (messagesDiv) {
+        messagesDiv.appendChild(reviewCard);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+}
+
+function toggleEditMode(card, reviewData) {
+    if (card.getAttribute('data-confirmed') === 'true') {
+        displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
+        return;
+    }
+
+    const isEditable = card.getAttribute('data-editable') === 'true';
+    const reviewContent = card.querySelector('.review-content');
+    const editBtn = card.querySelector('.edit-btn');
+    const confirmBtn = card.querySelector('.confirm-btn');
+
+    if (!isEditable) {
+        card.setAttribute('data-editable', 'true');
+        editBtn.innerText = 'Save';
+        confirmBtn.style.display = 'none';
+
+        reviewContent.querySelectorAll('.review-item').forEach(item => {
+            const key = item.getAttribute('data-key');
+            const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
+            item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label>`;
+
+            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+                const img = document.createElement('img');
+                img.src = value;
+                item.appendChild(img);
+
+                const replaceIcon = document.createElement('i');
+                replaceIcon.className = 'fas fa-camera replace-image-icon';
+                item.appendChild(replaceIcon);
+
+                const replaceInput = document.createElement('input');
+                replaceInput.type = 'file';
+                replaceInput.className = 'replace-image-input';
+                replaceInput.accept = 'image/png, image/jpeg';
+                replaceInput.style.display = 'none';
+                item.appendChild(replaceInput);
+
+                replaceIcon.addEventListener('click', () => replaceInput.click());
+
+                replaceInput.addEventListener('change', () => {
+                    const file = replaceInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            img.src = e.target.result;
+                        };
+                        reader.onerror = () => {
+                            displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        displayMessage('কোনো ইমেজ সিলেক্ট করা হয়নি।', 'bot');
+                    }
+                });
+            } else {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = value || '';
+                input.className = 'edit-input';
+                item.appendChild(input);
+            }
+        });
+    } else {
+        const updatedData = { ...reviewData };
+        reviewContent.querySelectorAll('.review-item').forEach(item => {
+            const key = item.getAttribute('data-key');
+            const input = item.querySelector('input.edit-input');
+            const img = item.querySelector('img');
+            if (input) {
+                const newValue = input.value.trim();
+                updatedData[key] = newValue;
+                item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><p>${sanitizeMessage(newValue)}</p>`;
+            } else if (img) {
+                updatedData[key] = img.src;
+                item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}">`;
+            }
+        });
+
+        card.setAttribute('data-editable', 'false');
+        editBtn.innerText = 'Edit';
+        confirmBtn.style.display = 'inline-block';
+    }
+}
+
+function generatePDF(reviewData, reviewCard) {
+    const formType = reviewData.form_type || 'generic';
+    const textOnlyData = {};
+    for (const [key, value] of Object.entries(reviewData)) {
+        if (typeof value !== 'string' || !(value.startsWith('http') || value.startsWith('data:image'))) {
+            textOnlyData[key] = value;
+        } else {
+            textOnlyData[key] = '[Image omitted]';
+        }
+    }
+
+    const payload = {
+        reviewData: textOnlyData,
+        formType: formType
+    };
+
+    fetch('http://localhost:5000/generate-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.pdf_url) {
+            reviewCard.setAttribute('data-pdf-url', data.pdf_url);
+            displayMessage('পিডিএফ সফলভাবে তৈরি হয়েছে এবং ক্লাউডিনারিতে আপলোড করা হয়েছে!', 'bot');
+            saveChatHistory('পিডিএফ সফলভাবে তৈরি হয়েছে।', 'bot');
+
+            const buttonContainer = reviewCard.querySelector('.review-buttons');
+            buttonContainer.innerHTML = '';
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn ripple-btn';
+            downloadBtn.innerText = 'Download PDF';
+            downloadBtn.addEventListener('click', () => {
+                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                if (pdfUrl) {
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = `formbondhu_submission_${formType}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
+                }
+            });
+            buttonContainer.appendChild(downloadBtn);
+        } else {
+            throw new Error(data.error || 'PDF generation failed');
+        }
+    })
+    .catch(error => {
+        console.error('PDF Generation Error:', error);
+        displayMessage(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
+        saveChatHistory(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const sendBtn = document.getElementById('sendBtn');
@@ -132,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         addNextWord();
-        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+        hideWelcomeMessage();
     }
 
     // Message Sending
@@ -152,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveChatHistory(message, 'user');
             callRasaAPI(message);
             userInput.value = '';
-            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+            hideWelcomeMessage();
         } else if (selectedFile) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('user-message', 'slide-in');
@@ -183,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Image Upload Error:', error);
                 });
             clearPreview();
-            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+            hideWelcomeMessage();
         }
     }
 
@@ -343,7 +694,6 @@ document.addEventListener('DOMContentLoaded', () => {
             imageReviewModal.style.display = 'block';
         }
     }
-    
 
     if (imageReviewModal) {
         imageReviewModal.addEventListener('click', (e) => {
@@ -373,367 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-function displayReview(reviewData) {
-    const reviewCard = document.createElement('div');
-    reviewCard.classList.add('review-card', 'slide-in');
-    reviewCard.setAttribute('data-editable', 'true');
-    reviewCard.setAttribute('data-id', Date.now());
-    reviewCard.setAttribute('data-confirmed', 'false');
-
-    // ফর্ম টাইপ ম্যাপিং বাংলায়
-    const formTypeMap = {
-        'apply_nid': 'জাতীয় পরিচয়পত্র আবেদন',
-        'apply_passport': 'পাসপোর্ট আবেদন',
-        'apply_company_registration': 'কোম্পানি রেজিস্ট্রেশন',
-        'apply_pension': 'পেনশন আবেদন',
-        'apply_tin_certificate': 'টিআইএন সার্টিফিকেট আবেদন',
-        'apply_land_mutation': 'ভূমি নামজারি আবেদন',
-        'apply_trade_license': 'ট্রেড লাইসেন্স আবেদন',
-        'generic': 'জেনেরিক ফর্ম'
-    };
-
-    const formType = reviewData.form_type || 'generic';
-    const formTypeDisplay = formTypeMap[formType] || 'অজানা ফর্ম';
-
-    reviewCard.innerHTML = `<h3>আপনার তথ্য রিভিউ: ${sanitizeMessage(formTypeDisplay)}</h3>`;
-
-    const reviewContent = document.createElement('div');
-    reviewContent.classList.add('review-content');
-
-    for (const [key, value] of Object.entries(reviewData)) {
-        if (key === 'form_type') continue; // ফর্ম টাইপ ফিল্ড হিসেবে দেখাব না
-        const reviewItem = document.createElement('div');
-        reviewItem.classList.add('review-item');
-        reviewItem.setAttribute('data-key', key);
-
-        const label = document.createElement('label');
-        label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
-        reviewItem.appendChild(label);
-
-        if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-            const img = document.createElement('img');
-            img.src = value;
-            reviewItem.appendChild(img);
-        } else {
-            const p = document.createElement('p');
-            p.innerText = value;
-            reviewItem.appendChild(p);
-        }
-
-        reviewContent.appendChild(reviewItem);
-    }
-
-    // বাকি কোড অপরিবর্তিত (এডিট, কনফার্ম, ডাউনলোড বাটন ইত্যাদি)
-}
-
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'review-buttons';
-
-    const editBtn = document.createElement('button');
-    editBtn.className = 'edit-btn ripple-btn';
-    editBtn.innerText = 'Edit';
-    editBtn.addEventListener('click', () => toggleEditMode(reviewCard, reviewData));
-
-    const confirmBtn = document.createElement('button');
-    confirmBtn.className = 'confirm-btn ripple-btn';
-    confirmBtn.innerText = 'Confirm';
-    confirmBtn.style.display = 'inline-block';
-    let isProcessing = false;
-
-    confirmBtn.addEventListener('click', async () => {
-        if (isProcessing) return;
-        isProcessing = true;
-        confirmBtn.disabled = true;
-
-        try {
-            const updatedData = {};
-            reviewContent.querySelectorAll('.review-item').forEach(item => {
-                const key = item.getAttribute('data-key');
-                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                if (!value) {
-                    console.warn(`কোনো মান পাওয়া যায়নি: ${key}`);
-                }
-                updatedData[key] = value;
-            });
-
-            await db.collection('submissions').add({
-                review_data: updatedData,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                chat_id: currentChatId
-            });
-
-            displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-            generatePDF(updatedData, reviewCard);
-            reviewCard.setAttribute('data-confirmed', 'true');
-            reviewCard.setAttribute('data-editable', 'false');
-            editBtn.disabled = true;
-            editBtn.style.display = 'none';
-            confirmBtn.style.display = 'none';
-
-            buttonContainer.innerHTML = '';
-            const downloadBtn = document.createElement('button');
-            downloadBtn.className = 'download-btn ripple-btn';
-            downloadBtn.innerText = 'Download PDF';
-            downloadBtn.addEventListener('click', () => {
-                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                if (pdfUrl) {
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.download = `formbondhu_submission_${updatedData.form_type || 'generic'}.pdf`; // .pdf নিশ্চিত করা
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                }
-            });
-            buttonContainer.appendChild(downloadBtn);
-        } catch (error) {
-            let errorMessage = 'অজানা ত্রুটি ঘটেছে।';
-            if (error.code && error.message) {
-                errorMessage = `ফায়ারবেজে তথ্য পাঠাতে সমস্যা: ${error.message}`;
-            }
-            displayMessage(errorMessage, 'bot');
-            console.error('Error in confirm button:', error);
-            confirmBtn.disabled = false;
-        } finally {
-            isProcessing = false;
-        }
-    });
-
-    buttonContainer.appendChild(editBtn);
-    buttonContainer.appendChild(confirmBtn);
-
-    reviewCard.appendChild(reviewContent);
-    reviewCard.appendChild(buttonContainer);
-    if (messagesDiv) {
-        messagesDiv.appendChild(reviewCard);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-}
-
-    function toggleEditMode(card, reviewData) {
-        if (card.getAttribute('data-confirmed') === 'true') {
-            displayMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।', 'bot');
-            return;
-        }
-
-        const isEditable = card.getAttribute('data-editable') === 'true';
-        const reviewContent = card.querySelector('.review-content');
-        const editBtn = card.querySelector('.edit-btn');
-        const confirmBtn = card.querySelector('.confirm-btn');
-
-        if (!isEditable) {
-            card.setAttribute('data-editable', 'true');
-            editBtn.innerText = 'Save';
-            confirmBtn.style.display = 'none';
-
-            reviewContent.querySelectorAll('.review-item').forEach(item => {
-                const key = item.getAttribute('data-key');
-                const value = item.querySelector('p')?.innerText || item.querySelector('img')?.src;
-                item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label>`;
-
-                if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                    const img = document.createElement('img');
-                    img.src = value;
-                    item.appendChild(img);
-
-                    const replaceIcon = document.createElement('i');
-                    replaceIcon.className = 'fas fa-camera replace-image-icon';
-                    item.appendChild(replaceIcon);
-
-                    const replaceInput = document.createElement('input');
-                    replaceInput.type = 'file';
-                    replaceInput.className = 'replace-image-input';
-                    replaceInput.accept = 'image/png, image/jpeg';
-                    replaceInput.style.display = 'none';
-                    item.appendChild(replaceInput);
-
-                    replaceIcon.addEventListener('click', () => replaceInput.click());
-
-                    replaceInput.addEventListener('change', () => {
-                        const file = replaceInput.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                img.src = e.target.result;
-                            };
-                            reader.onerror = () => {
-                                displayMessage('ইমেজ লোড করতে সমস্যা হয়েছে।', 'bot');
-                            };
-                            reader.readAsDataURL(file);
-                        } else {
-                            displayMessage('কোনো ইমেজ সিলেক্ট করা হয়নি।', 'bot');
-                        }
-                    });
-                } else {
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = value || '';
-                    input.className = 'edit-input';
-                    item.appendChild(input);
-                }
-            });
-        } else {
-            const updatedData = { ...reviewData };
-            reviewContent.querySelectorAll('.review-item').forEach(item => {
-                const key = item.getAttribute('data-key');
-                const input = item.querySelector('input.edit-input');
-                const img = item.querySelector('img');
-                if (input) {
-                    const newValue = input.value.trim();
-                    updatedData[key] = newValue;
-                    item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><p>${sanitizeMessage(newValue)}</p>`;
-                } else if (img) {
-                    updatedData[key] = img.src;
-                    item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}">`;
-                }
-            });
-
-            card.setAttribute('data-editable', 'false');
-            editBtn.innerText = 'Edit';
-            confirmBtn.style.display = 'inline-block';
-        }
-    }
-
-    function generatePDF(reviewData, reviewCard) {
-        // Use form_type from reviewData if available, otherwise default to 'generic'
-        const formType = reviewData.form_type || 'generic';
-
-        // Filter text-only data
-        const textOnlyData = {};
-        for (const [key, value] of Object.entries(reviewData)) {
-            if (typeof value !== 'string' || !(value.startsWith('http') || value.startsWith('data:image'))) {
-                textOnlyData[key] = value;
-            } else {
-                textOnlyData[key] = '[Image omitted]';
-            }
-        }
-
-        // Prepare data for the Flask endpoint
-        const payload = {
-            reviewData: textOnlyData,
-            formType: formType
-        };
-
-        // Call Flask /generate-pdf endpoint
-        fetch('http://localhost:5000/generate-pdf', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.pdf_url) {
-                // Store PDF URL in review card for download
-                reviewCard.setAttribute('data-pdf-url', data.pdf_url);
-                displayMessage('পিডিএফ সফলভাবে তৈরি হয়েছে এবং ক্লাউডিনারিতে আপলোড করা হয়েছে!', 'bot');
-                saveChatHistory('পিডিএফ সফলভাবে তৈরি হয়েছে।', 'bot');
-
-                // Update review card buttons (same as original)
-                const buttonContainer = reviewCard.querySelector('.review-buttons');
-                buttonContainer.innerHTML = '';
-                const downloadBtn = document.createElement('button');
-                downloadBtn.className = 'download-btn ripple-btn';
-                downloadBtn.innerText = 'Download PDF';
-                downloadBtn.addEventListener('click', () => {
-                    const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                    if (pdfUrl) {
-                        const link = document.createElement('a');
-                        link.href = pdfUrl;
-                        link.download = `formbondhu_submission_${formType}.pdf`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    } else {
-                        displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                    }
-                });
-                buttonContainer.appendChild(downloadBtn);
-            } else {
-                throw new Error(data.error || 'PDF generation failed');
-            }
-        })
-        .catch(error => {
-            console.error('PDF Generation Error:', error);
-            displayMessage(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
-            saveChatHistory(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
-        });
-    }
-
-    function callRasaAPI(message, metadata = {}) {
-        const typingDiv = showTypingIndicator();
-        const payload = { sender: currentChatId, message: message };
-        if (Object.keys(metadata).length > 0) {
-            payload.metadata = metadata;
-        }
-        setTimeout(() => {
-            if (typeof $ !== 'undefined') {
-                $.ajax({
-                    url: 'http://localhost:5005/webhooks/rest/webhook',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(payload),
-                    success: (data) => {
-                        typingDiv.remove();
-                        if (!data || data.length === 0) {
-                            displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
-                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot'); // ফলব্যাক হ্যান্ডলিং
-                            return;
-                        }
-                        data.forEach(response => {
-                            if (response.text && !response.text.toLowerCase().includes('hi')) {
-                                displayMessage(sanitizeMessage(response.text), 'bot');
-                                saveChatHistory(sanitizeMessage(response.text), 'bot'); // বটের মেসেজ সংরক্ষণ
-                            }
-                            if (response.custom && response.custom.review_data) {
-                                displayReview(response.custom.review_data);
-                            }
-                            if (response.buttons) {
-                                const buttonDiv = document.createElement('div');
-                                buttonDiv.classList.add('welcome-buttons');
-                                response.buttons.forEach(btn => {
-                                    const button = document.createElement('button');
-                                    button.innerText = sanitizeMessage(btn.title);
-                                    button.classList.add('ripple-btn');
-                                    button.addEventListener('click', () => sendMessage(btn.payload));
-                                    buttonDiv.appendChild(button);
-                                });
-                                if (messagesDiv) {
-                                    messagesDiv.appendChild(buttonDiv);
-                                }
-                            }
-                        });
-                    },
-                    error: (error) => {
-                        typingDiv.remove();
-                        displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
-                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot'); // এরর হ্যান্ডলিং
-                        console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
-                    }
-                });
-            } else {
-                typingDiv.remove();
-                displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
-                saveChatHistory('jQuery লোড হয়নি।', 'bot'); // jQuery এরর হ্যান্ডলিং
-            }
-        }, 500);
-    }
-
-   // Genres Data
-const genres = [
-    { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
-    { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
-    { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
-    { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
-    { name: 'টিআইএন (TIN) সার্টিফিকেট আবেদন', icon: 'fas fa-file-invoice', message: 'আমি টিআইএন সার্টিফিকেট আবেদন করতে চাই' },
-    { name: 'ভূমি নামজারি (Mutation) আবেদনপত্র', icon: 'fas fa-map-marked-alt', message: 'আমি ভূমি নামজারি আবেদন করতে চাই' },
-    { name: 'উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন', icon: 'fas fa-graduation-cap', message: 'আমি উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন করতে চাই' },
-    { name: 'জন্ম ও মৃত্যু নিবন্ধন', icon: 'fas fa-certificate', message: 'আমি জন্ম ও মৃত্যু নিবন্ধন করতে চাই' }, 
-];
-
     function renderGenresList() {
         if (genresList) {
             genresList.innerHTML = '';
@@ -751,7 +740,7 @@ const genres = [
                         displayMessage(sanitizeMessage(genre.message), 'user');
                         saveChatHistory(sanitizeMessage(genre.message), 'user');
                         callRasaAPI(sanitizeMessage(genre.message));
-                        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+                        hideWelcomeMessage();
                     } else {
                         console.error(`Message undefined for genre: ${genre.name}`);
                         displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
@@ -794,7 +783,7 @@ const genres = [
                 displayMessage(sanitizeMessage(genre.message), 'user');
                 saveChatHistory(sanitizeMessage(genre.message), 'user');
                 callRasaAPI(sanitizeMessage(genre.message));
-                hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+                hideWelcomeMessage();
             } else {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
                 displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
