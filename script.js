@@ -18,7 +18,7 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 window.db = firebase.firestore();
-console.log("Firebase initialized:", window.db);
+console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
 
 // displayMessage ফাংশন (গ্লোবাল স্কোপে)
 function displayMessage(message, sender) {
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         addNextWord();
-        hideWelcomeMessage();
+        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
     }
 
     // Message Sending
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveChatHistory(message, 'user');
             callRasaAPI(message);
             userInput.value = '';
-            hideWelcomeMessage();
+            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
         } else if (selectedFile) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('user-message', 'slide-in');
@@ -173,19 +173,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.image_url) {
-                        callRasaAPI("image_uploaded", { image_url: data.image_url });
+                        callRasaAPI(data.image_url);
                         saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
                     } else if (data.error) {
                         console.error('Image Upload Error:', data.error);
-                        displayMessage('ইমেজ আপলোডে সমস্যা হয়েছে।', 'bot');
                     }
                 })
                 .catch(error => {
                     console.error('Image Upload Error:', error);
-                    displayMessage('ইমেজ আপলোডে সমস্যা হয়েছে।', 'bot');
                 });
             clearPreview();
-            hideWelcomeMessage();
+            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
         }
     }
 
@@ -314,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const tempCtx = tempCanvas.getContext('2d');
             if (tempCtx) {
                 tempCtx.fillStyle = bgColor === 'transparent' ? 'rgba(0,0,0,0)' : bgColor;
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.fillRect(0, 0, cropRect.width, cropRect.height);
                 tempCtx.filter = `brightness(${100 + brightnessValue}%) contrast(${100 + contrastValue}%)`;
                 tempCtx.drawImage(image, cropRect.x, cropRect.y, cropRect.width, cropRect.height, 0, 0, cropRect.width, cropRect.height);
                 editedImage = tempCanvas.toDataURL('image/jpeg');
@@ -327,22 +325,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    }
+
     if (editCancelBtn) {
         editCancelBtn.addEventListener('click', () => {
             if (editModal) {
                 editModal.style.display = 'none';
             }
         });
+    }
+
     function openImageModal(imageSrc) {
-            if (reviewImage) {
-                reviewImage.src = imageSrc;
-            }
-            if (imageReviewModal) {
-                imageReviewModal.style.display = 'block';
-            }
+        if (reviewImage) {
+            reviewImage.src = imageSrc;
+        }
+        if (imageReviewModal) {
+            imageReviewModal.style.display = 'block';
         }
     }
     
+
     if (imageReviewModal) {
         imageReviewModal.addEventListener('click', (e) => {
             if (e.target === imageReviewModal || e.target === deleteImageBtn) {
@@ -371,82 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // PDF জেনারেশন ফাংশন (দ্বিতীয় কোডের সার্ভার-সাইড পদ্ধতি)
-    async function generatePDF(reviewData, reviewCard) {
-        try {
-            console.log("Initiating PDF generation with reviewData:", reviewData);
-
-            // টেক্সট-অনলি ডেটা ফিল্টার করা
-            const textOnlyData = {};
-            for (const [key, value] of Object.entries(reviewData)) {
-                if (typeof value !== 'string' || !(value.startsWith('http') || value.startsWith('data:image'))) {
-                    textOnlyData[key] = value;
-                } else {
-                    textOnlyData[key] = '[Image omitted]';
-                }
-            }
-
-            const response = await fetch('http://localhost:5000/generate-pdf', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    reviewData: textOnlyData,
-                    formType: 'nid'
-                })
-            });
-
-            if (!response.ok) throw new Error(`Server error: ${response.status} - ${response.statusText}`);
-
-            const data = await response.json();
-            const pdfUrl = data.pdf_url;
-            reviewCard.setAttribute('data-pdf-url', pdfUrl);
-
-            // প্রিভিউ এবং ডাউনলোড বাটন যোগ করা
-            const buttonContainer = reviewCard.querySelector('.review-buttons');
-            buttonContainer.innerHTML = '';
-
-            const previewBtn = document.createElement('button');
-            previewBtn.className = 'preview-btn ripple-btn';
-            previewBtn.innerText = 'Preview PDF';
-            previewBtn.addEventListener('click', async () => {
-                const previewResponse = await fetch('http://localhost:5000/preview-pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reviewData: textOnlyData, formType: 'nid' })
-                });
-                const previewData = await previewResponse.json();
-                const htmlContent = previewData.html_content;
-
-                const previewWindow = window.open('', '_blank');
-                previewWindow.document.write(htmlContent);
-                previewWindow.document.close();
-            });
-
-            const downloadBtn = document.createElement('button');
-            downloadBtn.className = 'download-btn ripple-btn';
-            downloadBtn.innerText = 'Download PDF';
-            downloadBtn.addEventListener('click', () => {
-                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                if (pdfUrl) {
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.download = 'formbondhu_submission.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                }
-            });
-
-            buttonContainer.appendChild(previewBtn);
-            buttonContainer.appendChild(downloadBtn);
-        } catch (error) {
-            console.error("Error generating PDF:", error.message || error);
-            displayMessage('পিডিএফ তৈরিতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।', 'bot');
-        }
-    }
-
     function displayReview(reviewData) {
         const reviewCard = document.createElement('div');
         reviewCard.classList.add('review-card', 'slide-in');
@@ -470,8 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
                 const img = document.createElement('img');
                 img.src = value;
-                img.classList.add('review-image');
-                img.addEventListener('click', () => openImageModal(value));
                 reviewItem.appendChild(img);
             } else {
                 const p = document.createElement('p');
@@ -519,12 +443,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 displayMessage('আপনার তথ্য সফলভাবে ফায়ারবেজে পাঠানো হয়েছে!', 'bot');
-                await generatePDF(updatedData, reviewCard);
+                generatePDF(updatedData, reviewCard);
                 reviewCard.setAttribute('data-confirmed', 'true');
                 reviewCard.setAttribute('data-editable', 'false');
                 editBtn.disabled = true;
                 editBtn.style.display = 'none';
                 confirmBtn.style.display = 'none';
+
+                buttonContainer.innerHTML = '';
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn ripple-btn';
+                downloadBtn.innerText = 'Download PDF';
+                downloadBtn.addEventListener('click', () => {
+                    const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                    if (pdfUrl) {
+                        const link = document.createElement('a');
+                        link.href = pdfUrl;
+                        link.download = 'formbondhu_submission.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
+                    }
+                });
+                buttonContainer.appendChild(downloadBtn);
             } catch (error) {
                 let errorMessage = 'অজানা ত্রুটি ঘটেছে।';
                 if (error.code && error.message) {
@@ -547,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesDiv.appendChild(reviewCard);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
+        // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
     }
 
     function toggleEditMode(card, reviewData) {
@@ -573,7 +517,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
                     const img = document.createElement('img');
                     img.src = value;
-                    img.classList.add('review-image');
                     item.appendChild(img);
 
                     const replaceIcon = document.createElement('i');
@@ -624,7 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><p>${sanitizeMessage(newValue)}</p>`;
                 } else if (img) {
                     updatedData[key] = img.src;
-                    item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}" class="review-image">`;
+                    item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label><img src="${img.src}">`;
                 }
             });
 
@@ -632,6 +575,73 @@ document.addEventListener('DOMContentLoaded', () => {
             editBtn.innerText = 'Edit';
             confirmBtn.style.display = 'inline-block';
         }
+    }
+
+    function generatePDF(reviewData, reviewCard) {
+        // Use form_type from reviewData if available, otherwise default to 'generic'
+        const formType = reviewData.form_type || 'generic';
+
+        // Filter text-only data
+        const textOnlyData = {};
+        for (const [key, value] of Object.entries(reviewData)) {
+            if (typeof value !== 'string' || !(value.startsWith('http') || value.startsWith('data:image'))) {
+                textOnlyData[key] = value;
+            } else {
+                textOnlyData[key] = '[Image omitted]';
+            }
+        }
+
+        // Prepare data for the Flask endpoint
+        const payload = {
+            reviewData: textOnlyData,
+            formType: formType
+        };
+
+        // Call Flask /generate-pdf endpoint
+        fetch('http://localhost:5000/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.pdf_url) {
+                // Store PDF URL in review card for download
+                reviewCard.setAttribute('data-pdf-url', data.pdf_url);
+                displayMessage('পিডিএফ সফলভাবে তৈরি হয়েছে এবং ক্লাউডিনারিতে আপলোড করা হয়েছে!', 'bot');
+                saveChatHistory('পিডিএফ সফলভাবে তৈরি হয়েছে।', 'bot');
+
+                // Update review card buttons (same as original)
+                const buttonContainer = reviewCard.querySelector('.review-buttons');
+                buttonContainer.innerHTML = '';
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn ripple-btn';
+                downloadBtn.innerText = 'Download PDF';
+                downloadBtn.addEventListener('click', () => {
+                    const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                    if (pdfUrl) {
+                        const link = document.createElement('a');
+                        link.href = pdfUrl;
+                        link.download = `formbondhu_submission_${formType}.pdf`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
+                    }
+                });
+                buttonContainer.appendChild(downloadBtn);
+            } else {
+                throw new Error(data.error || 'PDF generation failed');
+            }
+        })
+        .catch(error => {
+            console.error('PDF Generation Error:', error);
+            displayMessage(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
+            saveChatHistory(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
+        });
     }
 
     function callRasaAPI(message, metadata = {}) {
@@ -651,13 +661,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         typingDiv.remove();
                         if (!data || data.length === 0) {
                             displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
-                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
+                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot'); // ফলব্যাক হ্যান্ডলিং
                             return;
                         }
                         data.forEach(response => {
                             if (response.text && !response.text.toLowerCase().includes('hi')) {
                                 displayMessage(sanitizeMessage(response.text), 'bot');
-                                saveChatHistory(sanitizeMessage(response.text), 'bot');
+                                saveChatHistory(sanitizeMessage(response.text), 'bot'); // বটের মেসেজ সংরক্ষণ
                             }
                             if (response.custom && response.custom.review_data) {
                                 displayReview(response.custom.review_data);
@@ -681,24 +691,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     error: (error) => {
                         typingDiv.remove();
                         displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
-                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot');
+                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot'); // এরর হ্যান্ডলিং
                         console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                     }
                 });
             } else {
                 typingDiv.remove();
                 displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
-                saveChatHistory('jQuery লোড হয়নি।', 'bot');
+                saveChatHistory('jQuery লোড হয়নি।', 'bot'); // jQuery এরর হ্যান্ডলিং
             }
         }, 500);
     }
 
-    // Genres Data (অপরিবর্তিত, সংক্ষেপে রাখা হয়েছে)
-    const genres = [
-        { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
-        { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
-        // ... (বাকি genres অপরিবর্তিত, প্রথম কোড থেকে)
-    ];
+   // Genres Data
+const genres = [
+    { name: 'এনআইডি আবেদন', icon: 'fas fa-id-card', message: 'আমার জন্য একটি এনআইডি তৈরি করতে চাই' },
+    { name: 'পাসপোর্ট আবেদন', icon: 'fas fa-passport', message: 'আমি পাসপোর্ট আবেদন করতে চাই' },
+    { name: 'কোম্পানি রেজিস্ট্রেশন', icon: 'fas fa-building', message: 'আমি কোম্পানি রেজিস্ট্রেশন করতে চাই' },
+    { name: 'পেনশন আবেদন ফর্ম', icon: 'fas fa-money-check-alt', message: 'আমি পেনশন আবেদন করতে চাই' },
+    { name: 'টিআইএন (TIN) সার্টিফিকেট আবেদন', icon: 'fas fa-file-invoice', message: 'আমি টিআইএন সার্টিফিকেট আবেদন করতে চাই' },
+    { name: 'ভূমি নামজারি (Mutation) আবেদনপত্র', icon: 'fas fa-map-marked-alt', message: 'আমি ভূমি নামজারি আবেদন করতে চাই' },
+    { name: 'উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন', icon: 'fas fa-graduation-cap', message: 'আমি উপবৃত্তি বা শিক্ষাবৃত্তির আবেদন করতে চাই' },
+    { name: 'জন্ম ও মৃত্যু নিবন্ধন', icon: 'fas fa-certificate', message: 'আমি জন্ম ও মৃত্যু নিবন্ধন করতে চাই' }, 
+];
 
     function renderGenresList() {
         if (genresList) {
@@ -717,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         displayMessage(sanitizeMessage(genre.message), 'user');
                         saveChatHistory(sanitizeMessage(genre.message), 'user');
                         callRasaAPI(sanitizeMessage(genre.message));
-                        hideWelcomeMessage();
+                        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
                     } else {
                         console.error(`Message undefined for genre: ${genre.name}`);
                         displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
@@ -760,7 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayMessage(sanitizeMessage(genre.message), 'user');
                 saveChatHistory(sanitizeMessage(genre.message), 'user');
                 callRasaAPI(sanitizeMessage(genre.message));
-                hideWelcomeMessage();
+                hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
             } else {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
                 displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
