@@ -457,111 +457,113 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // PDF জেনারেশন ফাংশন (Confirm বাটনে কল হবে)
-    async function generatePDF(reviewData, reviewCard, formType = 'nid') {
-        try {
-            console.log("Step 83: Initiating PDF generation with reviewData:", reviewData, "formType:", formType);
+async function generatePDF(reviewData, reviewCard, formType = 'nid') {
+    try {
+        console.log("Step 83: Initiating PDF generation with reviewData:", reviewData, "formType:", formType);
 
-            const response = await fetch('http://localhost:5000/generate-pdf', {
+        const response = await fetch('http://localhost:5000/generate-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                reviewData,
+                formType
+            })
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status} - ${response.statusText}`);
+
+        const data = await response.json();
+        const pdfUrl = data.pdf_url;
+        reviewCard.setAttribute('data-pdf-url', pdfUrl);
+        console.log("Step 84: PDF URL set:", pdfUrl);
+
+        // Preview এবং Download বাটন যোগ করা
+        const buttonContainer = reviewCard.querySelector('.review-buttons');
+        buttonContainer.innerHTML = ''; // পুরানো বাটনগুলো ক্লিয়ার করা
+
+        const previewBtn = document.createElement('button');
+        previewBtn.className = 'preview-btn ripple-btn';
+        previewBtn.innerText = 'Preview PDF';
+        previewBtn.addEventListener('click', async () => {
+            const previewResponse = await fetch('http://localhost:5000/preview-pdf', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    reviewData,
-                    formType
-                })
+                body: JSON.stringify({ reviewData, formType })
             });
+            const previewData = await previewResponse.json();
+            const htmlContent = previewData.html_content;
 
-            if (!response.ok) throw new Error(`Server error: ${response.status} - ${response.statusText}`);
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(htmlContent);
+            previewWindow.document.close();
+        });
 
-            const data = await response.json();
-            const pdfUrl = data.pdf_url;
-            reviewCard.setAttribute('data-pdf-url', pdfUrl);
-            console.log("Step 84: PDF URL set:", pdfUrl);
-
-            // Preview এবং Download বাটন যোগ করা
-            const buttonContainer = reviewCard.querySelector('.review-buttons');
-            buttonContainer.innerHTML = ''; // পুরানো বাটনগুলো ক্লিয়ার করা
-
-            const previewBtn = document.createElement('button');
-            previewBtn.className = 'preview-btn ripple-btn';
-            previewBtn.innerText = 'Preview PDF';
-            previewBtn.addEventListener('click', async () => {
-                const previewResponse = await fetch('http://localhost:5000/preview-pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reviewData, formType })
-                });
-                const previewData = await previewResponse.json();
-                const htmlContent = previewData.html_content;
-
-                const previewWindow = window.open('', '_blank');
-                previewWindow.document.write(htmlContent);
-                previewWindow.document.close();
-            });
-
-            const downloadBtn = document.createElement('button');
-            downloadBtn.className = 'download-btn ripple-btn';
-            downloadBtn.innerText = 'Download PDF';
-            downloadBtn.addEventListener('click', () => {
-                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                if (pdfUrl) {
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.download = 'formbondhu_submission.pdf';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    console.log("Step 85: PDF download initiated");
-                } else {
-                    displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                }
-            });
-
-            buttonContainer.appendChild(previewBtn);
-            buttonContainer.appendChild(downloadBtn);
-        } catch (error) {
-            console.error("Step 86: Error generating PDF:", error.message || error);
-            displayMessage('পিডিএফ তৈরিতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।', 'bot');
-        }
-    }
-
-    function displayReview(reviewData) {
-        console.log("Step 87: displayReview called with reviewData:", reviewData);
-        const reviewCard = document.createElement('div');
-        reviewCard.classList.add('review-card', 'slide-in');
-        reviewCard.setAttribute('data-editable', 'true');
-        reviewCard.setAttribute('data-id', Date.now());
-        reviewCard.setAttribute('data-confirmed', 'false');
-        console.log("Step 88: Created reviewCard with attributes:", reviewCard.attributes);
-
-        reviewCard.innerHTML = '<h3>আপনার তথ্য যাচাই</h3>';
-        const reviewContent = document.createElement('div');
-        reviewContent.classList.add('review-content');
-
-        console.log("Step 89: Processing reviewData entries...");
-        for (const [key, value] of Object.entries(reviewData)) {
-            console.log("Step 89a: Processing key:", key, "value:", value);
-            const reviewItem = document.createElement('div');
-            reviewItem.classList.add('review-item');
-            reviewItem.setAttribute('data-key', key);
-
-            const label = document.createElement('label');
-            label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
-            reviewItem.appendChild(label);
-
-            if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
-                console.log("Step 89b: Found image for key:", key);
-                const img = document.createElement('img');
-                img.src = value;
-                reviewItem.appendChild(img);
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'download-btn ripple-btn';
+        downloadBtn.innerText = 'Download PDF';
+        downloadBtn.addEventListener('click', () => {
+            const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+            if (pdfUrl) {
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = 'formbondhu_submission.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                console.log("Step 85: PDF download initiated");
             } else {
-                console.log("Step 89c: Found text for key:", key);
-                const p = document.createElement('p');
-                p.innerText = value;
-                reviewItem.appendChild(p);
+                displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
             }
+        });
 
-            reviewContent.appendChild(reviewItem);
+        buttonContainer.appendChild(previewBtn);
+        buttonContainer.appendChild(downloadBtn);
+    } catch (error) {
+        console.error("Step 86: Error generating PDF:", error.message || error);
+        displayMessage('পিডিএফ তৈরিতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।', 'bot');
+    }
+}
+
+function displayReview(reviewData) {
+    console.log("Step 87: displayReview called with reviewData:", reviewData);
+    const reviewCard = document.createElement('div');
+    reviewCard.classList.add('review-card', 'slide-in');
+    reviewCard.setAttribute('data-editable', 'true');
+    reviewCard.setAttribute('data-id', Date.now());
+    reviewCard.setAttribute('data-confirmed', 'false');
+    console.log("Step 88: Created reviewCard with attributes:", reviewCard.attributes);
+
+    reviewCard.innerHTML = '<h3>আপনার তথ্য যাচাই</h3>';
+    const reviewContent = document.createElement('div');
+    reviewContent.classList.add('review-content');
+
+    console.log("Step 89: Processing reviewData entries...");
+    for (const [key, value] of Object.entries(reviewData)) {
+        console.log("Step 89a: Processing key:", key, "value:", value);
+        const reviewItem = document.createElement('div');
+        reviewItem.classList.add('review-item');
+        reviewItem.setAttribute('data-key', key);
+
+        const label = document.createElement('label');
+        label.innerText = key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ') + ':';
+        reviewItem.appendChild(label);
+
+        if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
+            console.log("Step 89b: Found image for key:", key);
+            const img = document.createElement('img');
+            img.src = value; // Cloudinary URL এখানে কাজ করবে
+            img.alt = 'Uploaded Image';
+            img.style.maxWidth = '100%';
+            reviewItem.appendChild(img);
+        } else {
+            console.log("Step 89c: Found text for key:", key);
+            const p = document.createElement('p');
+            p.innerText = value;
+            reviewItem.appendChild(p);
         }
+
+        reviewContent.appendChild(reviewItem);
+    }
 
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'review-buttons';
