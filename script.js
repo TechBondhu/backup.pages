@@ -379,12 +379,29 @@ function displayReview(reviewData) {
     reviewCard.setAttribute('data-editable', 'true');
     reviewCard.setAttribute('data-id', Date.now());
     reviewCard.setAttribute('data-confirmed', 'false');
-    reviewCard.innerHTML = '<h3>আপনার তথ্য রিভিউ</h3>';
+
+    // ফর্ম টাইপ ম্যাপিং বাংলায়
+    const formTypeMap = {
+        'apply_nid': 'জাতীয় পরিচয়পত্র আবেদন',
+        'apply_passport': 'পাসপোর্ট আবেদন',
+        'apply_company_registration': 'কোম্পানি রেজিস্ট্রেশন',
+        'apply_pension': 'পেনশন আবেদন',
+        'apply_tin_certificate': 'টিআইএন সার্টিফিকেট আবেদন',
+        'apply_land_mutation': 'ভূমি নামজারি আবেদন',
+        'apply_trade_license': 'ট্রেড লাইসেন্স আবেদন',
+        'generic': 'জেনেরিক ফর্ম'
+    };
+
+    const formType = reviewData.form_type || 'generic';
+    const formTypeDisplay = formTypeMap[formType] || 'অজানা ফর্ম';
+
+    reviewCard.innerHTML = `<h3>আপনার তথ্য রিভিউ: ${sanitizeMessage(formTypeDisplay)}</h3>`;
 
     const reviewContent = document.createElement('div');
     reviewContent.classList.add('review-content');
 
     for (const [key, value] of Object.entries(reviewData)) {
+        if (key === 'form_type') continue; // ফর্ম টাইপ ফিল্ড হিসেবে দেখাব না
         const reviewItem = document.createElement('div');
         reviewItem.classList.add('review-item');
         reviewItem.setAttribute('data-key', key);
@@ -405,6 +422,9 @@ function displayReview(reviewData) {
 
         reviewContent.appendChild(reviewItem);
     }
+
+    // বাকি কোড অপরিবর্তিত (এডিট, কনফার্ম, ডাউনলোড বাটন ইত্যাদি)
+}
 
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'review-buttons';
