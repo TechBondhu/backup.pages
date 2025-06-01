@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>লগইন - ফর্মবন্ধু</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="brand-header">
+        <h1>ফর্মবন্ধু - লগইন করুন</h1>
+    </header>
+    <div class="auth-container">
+        <div class="auth-box">
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="emailOrPhone">ইমেইল বা ফোন নম্বর</label>
+                    <input type="text" id="emailOrPhone" placeholder="ইমেইল বা ফোন নম্বর লিখুন" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">পাসওয়ার্ড</label>
+                    <input type="password" id="password" placeholder="পাসওয়ার্ড লিখুন" required>
+                </div>
+                <button type="submit" class="auth-btn">লগইন</button>
+            </form>
+            <div class="social-login">
+                <p>অথবা, দিয়ে লগইন করুন</p>
+                <button class="social-btn google-btn" id="googleSignIn">
+                    <i class="fab fa-google"></i> গুগল
+                </button>
+                <button class="social-btn facebook-btn" id="facebookSignIn">
+                    <i class="fab fa-facebook-f"></i> ফেসবুক
+                </button>
+            </div>
+            <p class="auth-link">পাসওয়ার্ড ভুলে গেছেন? <a href="reset-password.html">পাসওয়ার্ড রিসেট করুন</a></p>
+            <p class="auth-link">অ্যাকাউন্ট নেই? <a href="signup.html">সাইন আপ করুন</a></p>
+            <p id="error-message" class="error-message"></p>
+        </div>
+    </div>
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script type="module" src="auth.js"></script>
+</body>
+</html>
