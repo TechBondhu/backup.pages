@@ -92,8 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let contrastValue = 0;
     let bgColor = 'white';
 
-    // Setup Chat History Event Handlers from chatHistory.js
-    setupChatHistoryEventHandlers();
+ 
 
     // Show Typing Indicator
     function showTypingIndicator() {
