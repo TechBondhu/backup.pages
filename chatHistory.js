@@ -1,6 +1,4 @@
 // chatHistory.js
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
 const historyList = document.getElementById('historyList');
@@ -22,8 +20,8 @@ const welcomeMessage = document.getElementById('welcomeMessage');
 let currentChatId = localStorage.getItem('currentChatId') || null;
 let currentUserUid = null;
 
-// Firebase Auth and Firestore
-const auth = getAuth();
+// Firebase
+const auth = firebase.auth();
 const db = window.db;
 
 if (!db) {
@@ -33,7 +31,7 @@ if (!db) {
 }
 
 // Get current user UID
-onAuthStateChanged(auth, (user) => {
+auth.onAuthStateChanged((user) => {
     if (user) {
         currentUserUid = user.uid;
         loadChatHistory(); // Initial load after user is authenticated
@@ -161,28 +159,25 @@ async function saveChatHistory(message, sender) {
         await startNewChat();
     }
     try {
-        // মেসেজ সেভ করা
         await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // শুধুমাত্র ইউজারের মেসেজ থেকে টাইটেল জেনারেট করা
         if (sender === 'user') {
             const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
             await db.collection('chats').doc(currentChatId).set({
-                uid: currentUserUid, // UID যোগ করা
+                uid: currentUserUid,
                 name: title,
                 last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
         } else {
-            // বটের মেসেজের ক্ষেত্রে শুধু last_message আপডেট করা
             const existingChat = await db.collection('chats').doc(currentChatId).get();
             const chatName = existingChat.data()?.name || 'চ্যাট';
             await db.collection('chats').doc(currentChatId).set({
-                uid: currentUserUid, // UID যোগ করা
+                uid: currentUserUid,
                 name: chatName,
                 last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
@@ -204,7 +199,7 @@ async function loadChatHistory(searchQuery = '') {
     historyList.innerHTML = '<div class="loading">লোড হচ্ছে...</div>';
     try {
         let query = db.collection('chats')
-            .where('uid', '==', currentUserUid) // UID ফিল্টার
+            .where('uid', '==', currentUserUid)
             .orderBy('updated_at', 'desc');
         const snapshot = await query.get();
         historyList.innerHTML = '';
@@ -342,3 +337,6 @@ function showErrorMessage(message) {
         }
     }
 }
+
+// Initialize event handlers
+setupChatHistoryEventHandlers();
