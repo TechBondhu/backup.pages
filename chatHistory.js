@@ -1,4 +1,5 @@
 // chatHistory.js
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -19,49 +20,54 @@ const welcomeMessage = document.getElementById('welcomeMessage');
 
 // Global Variables
 let currentChatId = localStorage.getItem('currentChatId') || null;
+let currentUserUid = null;
 
-// db ব্যবহারের জন্য window.db থেকে নেওয়া
+// Firebase Auth and Firestore
+const auth = getAuth();
 const db = window.db;
 
-// db চেক করা
 if (!db) {
     console.error("Firestore ডাটাবেজ ইনিশিয়ালাইজ করা হয়নি। script.js ফাইলে Firebase সেটআপ চেক করুন।");
     showErrorMessage("ডাটাবেজ সংযোগে সমস্যা হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।");
     throw new Error("Firestore db is not initialized");
 }
 
+// Get current user UID
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUserUid = user.uid;
+        loadChatHistory(); // Initial load after user is authenticated
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
 // Setup Event Handlers for Chat History
 function setupChatHistoryEventHandlers() {
-    // Open Sidebar
     if (historyIcon && sidebar) {
-        console.log("historyIcon এবং sidebar পাওয়া গেছে। ইভেন্ট লিসেনার সেট করা হচ্ছে...");
         historyIcon.addEventListener('click', toggleSidebar);
     } else {
         console.error("historyIcon বা sidebar এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { historyIcon, sidebar });
     }
 
-    // Close Sidebar
     if (closeSidebar && sidebar) {
         closeSidebar.addEventListener('click', closeSidebarHandler);
     } else {
         console.error("closeSidebar বা sidebar এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { closeSidebar, sidebar });
     }
 
-    // Start New Chat
     if (newChatIcon) {
         newChatIcon.addEventListener('click', startNewChat);
     } else {
         console.error("newChatIcon এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { newChatIcon });
     }
 
-    // Search Chat History
     if (searchInput) {
         searchInput.addEventListener('input', searchHandler);
     } else {
         console.error("searchInput এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { searchInput });
     }
 
-    // Delete Modal Handlers
     if (cancelDelete) {
         cancelDelete.addEventListener('click', cancelDeleteHandler);
     } else {
@@ -74,7 +80,6 @@ function setupChatHistoryEventHandlers() {
         console.error("confirmDelete এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { confirmDelete });
     }
 
-    // Rename Modal Handlers
     if (cancelRename) {
         cancelRename.addEventListener('click', cancelRenameHandler);
     } else {
@@ -89,20 +94,16 @@ function setupChatHistoryEventHandlers() {
 }
 
 function toggleSidebar() {
-    console.log("toggleSidebar কল হয়েছে। sidebar এর current state:", sidebar.classList);
     if (sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
-        console.log("Sidebar বন্ধ করা হয়েছে।");
     } else {
         sidebar.classList.add('open');
-        console.log("Sidebar খোলা হয়েছে। loadChatHistory কল করা হচ্ছে...");
         loadChatHistory();
     }
 }
 
 function closeSidebarHandler() {
     sidebar.classList.remove('open');
-    console.log("Sidebar বন্ধ করা হয়েছে।");
 }
 
 function searchHandler() {
@@ -171,6 +172,7 @@ async function saveChatHistory(message, sender) {
         if (sender === 'user') {
             const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
             await db.collection('chats').doc(currentChatId).set({
+                uid: currentUserUid, // UID যোগ করা
                 name: title,
                 last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
@@ -180,6 +182,7 @@ async function saveChatHistory(message, sender) {
             const existingChat = await db.collection('chats').doc(currentChatId).get();
             const chatName = existingChat.data()?.name || 'চ্যাট';
             await db.collection('chats').doc(currentChatId).set({
+                uid: currentUserUid, // UID যোগ করা
                 name: chatName,
                 last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
@@ -191,13 +194,25 @@ async function saveChatHistory(message, sender) {
     }
 }
 
-// Load Chat History List
+// Load Chat History List with UID Filter
 async function loadChatHistory(searchQuery = '') {
+    if (!currentUserUid) {
+        showErrorMessage('ইউজার লগইন করেননি। দয়া করে লগইন করুন।');
+        return;
+    }
+
     historyList.innerHTML = '<div class="loading">লোড হচ্ছে...</div>';
     try {
-        let query = db.collection('chats').orderBy('updated_at', 'desc');
+        let query = db.collection('chats')
+            .where('uid', '==', currentUserUid) // UID ফিল্টার
+            .orderBy('updated_at', 'desc');
         const snapshot = await query.get();
         historyList.innerHTML = '';
+
+        if (snapshot.empty) {
+            historyList.innerHTML = '<div>কোনো চ্যাট হিস্ট্রি পাওয়া যায়নি।</div>';
+            return;
+        }
 
         snapshot.forEach(doc => {
             const chat = doc.data();
