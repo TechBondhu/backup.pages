@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সাইন আপ - ফর্মবন্ধু</title>
+    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="brand-header">
+        <h1>ফর্মবন্ধু - সাইন আপ করুন</h1>
+    </header>
+    <div class="auth-container">
+        <div class="auth-box">
+            <form id="signupForm">
+                <div class="input-group">
+                    <label for="displayName">ইউজার নাম</label>
+                    <input type="text" id="displayName" placeholder="আপনার নাম লিখুন" required>
+                </div>
+                <div class="input-group">
+                    <label for="emailOrPhone">ইমেইল বা ফোন নম্বর</label>
+                    <input type="text" id="emailOrPhone" placeholder="ইমেইল বা ফোন নম্বর লিখুন" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">পাসওয়ার্ড</label>
+                    <input type="password" id="password" placeholder="পাসওয়ার্ড লিখুন" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">পাসওয়ার্ড নিশ্চিত করুন</label>
+                    <input type="password" id="confirmPassword" placeholder="পাসওয়ার্ড পুনরায় লিখুন" required>
+                </div>
+                <button type="submit" class="auth-btn">সাইন আপ</button>
+            </form>
+            <div class="social-login">
+                <p>অথবা, দিয়ে সাইন আপ করুন</p>
+                <button class="social-btn google-btn" id="googleSignUp">
+                    <i class="fab fa-google"></i> গুগল
+                </button>
+                <button class="social-btn facebook-btn" id="facebookSignUp">
+                    <i class="fab fa-facebook-f"></i> ফেসবুক
+                </button>
+            </div>
+            <p class="auth-link">ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
+            <p id="error-message" class="error-message"></p>
+        </div>
+    </div>
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script type="module" src="auth.js"></script>
+</body>
+</html>
