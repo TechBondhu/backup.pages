@@ -122,10 +122,12 @@ async function confirmDeleteHandler() {
         await db.collection('chats').doc(chatId).delete();
         deleteModal.style.display = 'none';
         if (chatId === currentChatId) {
-            startNewChat();
-        } else {
-            loadChatHistory();
+            currentChatId = null;
+            localStorage.removeItem('currentChatId');
+            if (messagesDiv) messagesDiv.innerHTML = '';
+            if (welcomeMessage) welcomeMessage.style.display = 'block';
         }
+        loadChatHistory();
     } catch (error) {
         console.error('চ্যাট ডিলিট করতে সমস্যা:', error);
         showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।');
@@ -167,32 +169,21 @@ async function saveChatHistory(message, sender) {
         return;
     }
     try {
-        await db.collection('chats').doc(currentChatId).collection('messages').add({
+        const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        if (sender === 'user') {
-            const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-            await db.collection('chats').doc(currentChatId).set({
-                uid: currentUserUid,
-                name: title,
-                last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
-                updated_at: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-            console.log("Chat saved with UID:", currentUserUid); // ডিবাগিং লগ
-        } else {
-            const existingChat = await db.collection('chats').doc(currentChatId).get();
-            const chatName = existingChat.data()?.name || 'চ্যাট';
-            await db.collection('chats').doc(currentChatId).set({
-                uid: currentUserUid,
-                name: chatName,
-                last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
-                updated_at: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-            console.log("Bot message saved with UID:", currentUserUid); // ডিবাগিং লগ
-        }
+        const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+        await db.collection('chats').doc(currentChatId).set({
+            uid: currentUserUid,
+            name: title,
+            last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        console.log("Chat saved with UID:", currentUserUid, "Message ID:", messageRef.id); // ডিবাগিং লগ
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি সেভ করতে সমস্যা:', error);
         showErrorMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।');
@@ -231,8 +222,8 @@ async function loadChatHistory(searchQuery = '') {
             historyItem.setAttribute('data-chat-id', doc.id);
             historyItem.innerHTML = `
                 <div class="history-content">
-                    <span class="history-title">${sanitizeMessage(chat.name)}</span>
-                    <span class="history-preview">${sanitizeMessage(chat.last_message)}</span>
+                    <span class="history-title">${sanitizeMessage(chat.name || 'নতুন চ্যাট')}</span>
+                    <span class="history-preview">${sanitizeMessage(chat.last_message || 'কোনো মেসেজ নেই')}</span>
                 </div>
                 <div class="history-actions">
                     <i class="fas fa-edit rename-chat" title="নাম পরিবর্তন"></i>
@@ -252,7 +243,7 @@ async function loadChatHistory(searchQuery = '') {
 
             historyItem.querySelector('.rename-chat').addEventListener('click', () => {
                 renameModal.setAttribute('data-chat-id', doc.id);
-                renameInput.value = chat.name;
+                renameInput.value = chat.name || 'নতুন চ্যাট';
                 renameModal.style.display = 'block';
             });
 
@@ -310,14 +301,17 @@ async function loadChatMessages(chatId) {
 // Start a New Chat
 async function startNewChat() {
     try {
-        currentChatId = db.collection('chats').doc().id;
+        const newChatRef = await db.collection('chats').add({
+            uid: currentUserUid,
+            name: 'নতুন চ্যাট',
+            last_message: 'চ্যাট শুরু হয়েছে',
+            created_at: firebase.firestore.FieldValue.serverTimestamp(),
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        currentChatId = newChatRef.id;
         localStorage.setItem('currentChatId', currentChatId);
-        if (messagesDiv) {
-            messagesDiv.innerHTML = '';
-        }
-        if (welcomeMessage) {
-            welcomeMessage.style.display = 'block';
-        }
+        if (messagesDiv) messagesDiv.innerHTML = '';
+        if (welcomeMessage) welcomeMessage.style.display = 'block';
         await loadChatHistory();
     } catch (error) {
         console.error('নতুন চ্যাট শুরু করতে সমস্যা:', error);
