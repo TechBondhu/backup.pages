@@ -34,8 +34,11 @@ if (!db) {
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentUserUid = user.uid;
+        console.log("User logged in with UID:", currentUserUid); // ডিবাগিং লগ
         loadChatHistory(); // Initial load after user is authenticated
     } else {
+        currentUserUid = null;
+        console.log("No user logged in, redirecting to login.html");
         window.location.href = 'login.html';
     }
 });
@@ -158,6 +161,11 @@ async function saveChatHistory(message, sender) {
     if (!currentChatId) {
         await startNewChat();
     }
+    if (!currentUserUid) {
+        console.error("No user UID available, cannot save chat history.");
+        showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
+        return;
+    }
     try {
         await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
@@ -173,6 +181,7 @@ async function saveChatHistory(message, sender) {
                 last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
+            console.log("Chat saved with UID:", currentUserUid); // ডিবাগিং লগ
         } else {
             const existingChat = await db.collection('chats').doc(currentChatId).get();
             const chatName = existingChat.data()?.name || 'চ্যাট';
@@ -182,6 +191,7 @@ async function saveChatHistory(message, sender) {
                 last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
+            console.log("Bot message saved with UID:", currentUserUid); // ডিবাগিং লগ
         }
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি সেভ করতে সমস্যা:', error);
@@ -192,6 +202,7 @@ async function saveChatHistory(message, sender) {
 // Load Chat History List with UID Filter
 async function loadChatHistory(searchQuery = '') {
     if (!currentUserUid) {
+        console.error("currentUserUid is null, cannot load chat history.");
         showErrorMessage('ইউজার লগইন করেননি। দয়া করে লগইন করুন।');
         return;
     }
