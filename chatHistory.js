@@ -203,8 +203,15 @@ async function saveChatHistory(message, sender) {
         const lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
         const chatDoc = await db.collection('chats').doc(currentChatId).get();
         const chatData = chatDoc.data();
-        const chatName = chatData.name || (sender === 'user' ? (message.length > 30 ? message.substring(0, 30) + '...' : message) : 'নতুন চ্যাট');
+        let chatName = chatData.name;
         
+        // Set chat name from first user message if not already set
+        if (!chatName && sender === 'user') {
+            chatName = message.length > 30 ? message.substring(0, 30) + '...' : message;
+        } else if (!chatName) {
+            chatName = 'নতুন চ্যাট';
+        }
+
         await db.collection('chats').doc(currentChatId).update({
             name: chatName,
             last_message: lastMessage,
@@ -303,6 +310,10 @@ async function loadChatMessages(chatId) {
         welcomeMessage.style.display = 'none';
 
         const snapshot = await db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp', 'asc').get();
+        if (snapshot.empty) {
+            console.log("No messages found for chatId:", chatId);
+        }
+
         snapshot.forEach(doc => {
             const msg = doc.data();
             if (msg.sender === 'user' || msg.sender === 'bot') {
@@ -317,9 +328,9 @@ async function loadChatMessages(chatId) {
 
         const submissions = await db.collection('submissions').where('chat_id', '==', chatId).get();
         submissions.forEach(doc => {
-            const submission = doc.data();
-            if (submission.review_data && typeof displayReview === 'function') {
-                displayReview(submission.review_data);
+            const sub = doc.data();
+            if (sub.review_data && typeof displayReview === 'function') {
+                displayReview(sub.review_data);
             }
         });
 
@@ -332,7 +343,7 @@ async function loadChatMessages(chatId) {
 
 // Start a New Chat
 async function startNewChat() {
-    console.log("Starting new chat with currentUserUid:", currentUserUid);
+    console.log("Starting new chat with UID:", currentUserUid);
     if (!currentUserUid) {
         console.error("No user UID available, cannot start new chat.");
         showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
@@ -349,6 +360,15 @@ async function startNewChat() {
         currentChatId = newChatRef.id;
         localStorage.setItem('currentChatId', currentChatId);
         console.log("New chat created successfully, chatId:", currentChatId);
+
+        // Initialize the messages sub-collection with a dummy message to ensure it exists
+        await db.collection('chats').doc(currentChatId).collection('messages').add({
+            message: 'Chat session started',
+            sender: 'system',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log("Messages sub-collection initialized for chatId:", currentChatId);
+
         if (messagesDiv) messagesDiv.innerHTML = '';
         if (welcomeMessage) welcomeMessage.style.display = 'block';
         await loadChatHistory();
