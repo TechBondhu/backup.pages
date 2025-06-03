@@ -36,6 +36,92 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
+// Chat History Functions (chatHistory.js থেকে এখানে সরানো হয়েছে)
+async function startNewChat() {
+    if (!currentUserUid) {
+        console.error("No user UID found, cannot start new chat.");
+        return;
+    }
+    try {
+        const chatRef = await db.collection('chats').add({
+            uid: currentUserUid,
+            created_at: firebase.firestore.FieldValue.serverTimestamp(),
+            updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+            last_message: "New chat started",
+            messages: []
+        });
+        currentChatId = chatRef.id;
+        console.log("New chat started with ID:", currentChatId);
+    } catch (error) {
+        console.error("Error starting new chat:", error);
+        throw error;
+    }
+}
+
+async function loadChatMessages(chatId) {
+    if (!chatId) {
+        console.error("No chat ID provided to load messages.");
+        return;
+    }
+    try {
+        const chatDoc = await db.collection('chats').doc(chatId).get();
+        if (chatDoc.exists) {
+            const messages = chatDoc.data().messages || [];
+            messages.forEach(msg => {
+                displayMessage(msg.content, msg.sender);
+            });
+        } else {
+            console.warn("Chat document not found for ID:", chatId);
+        }
+    } catch (error) {
+        console.error("Error loading chat messages:", error);
+        throw error;
+    }
+}
+
+async function saveChatHistory(message, sender) {
+    if (!currentChatId || !currentUserUid) {
+        console.error("No chat ID or user UID found to save chat history.");
+        return;
+    }
+    try {
+        const chatRef = db.collection('chats').doc(currentChatId);
+        await chatRef.update({
+            messages: firebase.firestore.FieldValue.arrayUnion({
+                sender: sender,
+                content: message,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }),
+            updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+            last_message: message
+        });
+        console.log("Chat history saved:", { sender, message });
+    } catch (error) {
+        console.error("Error saving chat history:", error);
+        displayMessage(`চ্যাট হিস্ট্রি সেভ করতে সমস্যা: ${error.message}`, 'bot');
+    }
+}
+
+async function loadChatHistory() {
+    if (!currentUserUid) {
+        console.error("No user UID found to load chat history.");
+        return;
+    }
+    try {
+        const chatsSnapshot = await db.collection('chats')
+            .where('uid', '==', currentUserUid)
+            .orderBy('updated_at', 'desc')
+            .get();
+        chatsSnapshot.forEach(doc => {
+            const chatData = doc.data();
+            console.log("Chat loaded:", doc.id, chatData.last_message);
+        });
+    } catch (error) {
+        console.error("চ্যাট হিস্ট্রি লোড করতে সমস্যা:", error);
+        displayMessage(`চ্যাট হিস্ট্রি লোড করতে সমস্যা: ${error.message}`, 'bot');
+    }
+}
+
 // displayMessage ফাংশন (গ্লোবাল স্কোপে)
 function displayMessage(message, sender) {
     const messagesDiv = document.getElementById('messages');
