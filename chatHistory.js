@@ -170,8 +170,11 @@ async function saveRenameHandler() {
 
 // Save Chat Message to Firestore
 async function saveChatHistory(message, sender) {
+    console.log("Starting saveChatHistory - currentChatId:", currentChatId, "currentUserUid:", currentUserUid);
     if (!currentChatId) {
+        console.log("No currentChatId, starting new chat...");
         await startNewChat();
+        console.log("After startNewChat, currentChatId is now:", currentChatId);
     }
     if (!currentUserUid) {
         console.error("No user UID available, cannot save chat history.");
@@ -179,11 +182,14 @@ async function saveChatHistory(message, sender) {
         return;
     }
     try {
+        console.log("Saving message:", message, "by", sender, "in chat:", currentChatId);
         const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        console.log("Message saved successfully, message ID:", messageRef.id);
 
         const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
         await db.collection('chats').doc(currentChatId).set({
@@ -193,13 +199,12 @@ async function saveChatHistory(message, sender) {
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        console.log("Chat saved with UID:", currentUserUid, "Message ID:", messageRef.id);
+        console.log("Chat metadata updated successfully with UID:", currentUserUid);
     } catch (error) {
-        console.error('চ্যাট হিস্ট্রি সেভ করতে সমস্যা:', error);
-        showErrorMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।');
+        console.error("চ্যাট হিস্ট্রি সেভ করতে সমস্যা:", error);
+        showErrorMessage("চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।");
     }
 }
-
 // Load Chat History List with UID Filter
 async function loadChatHistory(searchQuery = '') {
     if (!currentUserUid) {
