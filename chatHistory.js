@@ -15,29 +15,37 @@ const renameInput = document.getElementById('renameInput');
 const messagesDiv = document.getElementById('messages');
 const welcomeMessage = document.getElementById('welcomeMessage');
 
+console.log('DOM Elements initialized:', { sidebar, historyList, historyIcon, closeSidebar, newChatIcon, searchInput, deleteModal, renameModal, messagesDiv, welcomeMessage });
+
 // Global Variables
 let currentChatId = localStorage.getItem('currentChatId') || null;
 let currentUserUid = null;
+
+console.log('Initial global variables:', { currentChatId, currentUserUid });
 
 // Firebase
 const auth = firebase.auth();
 const db = window.db;
 
 if (!db) {
-    console.error("Firestore ডাটাবেজ ইনিশিয়ালাইজ করা হয়নি। script.js ফাইলে Firebase সেটআপ চেক করুন।");
+    console.error("Firestore database not initialized. Check Firebase setup in script.js.");
     showErrorMessage("ডাটাবেজ সংযোগে সমস্যা হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।");
     throw new Error("Firestore db is not initialized");
 }
+console.log('Firestore database initialized successfully');
 
 // Get current user UID
 auth.onAuthStateChanged((user) => {
+    console.log('Auth state changed, user:', user ? user.uid : null);
     if (user) {
         currentUserUid = user.uid;
         console.log("User logged in with UID:", currentUserUid);
         loadChatHistory();
         if (currentChatId) {
+            console.log('Loading messages for existing chatId:', currentChatId);
             loadChatMessages(currentChatId);
         } else {
+            console.log('No currentChatId, starting new chat');
             startNewChat();
         }
     } else {
@@ -49,131 +57,172 @@ auth.onAuthStateChanged((user) => {
 
 // Setup Event Handlers for Chat History
 function setupChatHistoryEventHandlers() {
+    console.log('Setting up event handlers');
     if (historyIcon && sidebar) {
         historyIcon.addEventListener('click', toggleSidebar);
+        console.log('historyIcon click listener added');
     } else {
-        console.error("historyIcon বা sidebar এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { historyIcon, sidebar });
+        console.error("historyIcon or sidebar element not found.", { historyIcon, sidebar });
     }
 
     if (closeSidebar && sidebar) {
         closeSidebar.addEventListener('click', closeSidebarHandler);
+        console.log('closeSidebar click listener added');
     } else {
-        console.error("closeSidebar বা sidebar এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { closeSidebar, sidebar });
+        console.error("closeSidebar or sidebar element not found.", { closeSidebar, sidebar });
     }
 
     if (newChatIcon) {
         newChatIcon.addEventListener('click', startNewChat);
+        console.log('newChatIcon click listener added');
     } else {
-        console.error("newChatIcon এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { newChatIcon });
+        console.error("newChatIcon element not found.", { newChatIcon });
     }
 
     if (searchInput) {
         searchInput.addEventListener('input', searchHandler);
+        console.log('searchInput input listener added');
     } else {
-        console.error("searchInput এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { searchInput });
+        console.error("searchInput element not found.", { searchInput });
     }
 
     if (cancelDelete) {
         cancelDelete.addEventListener('click', cancelDeleteHandler);
+        console.log('cancelDelete click listener added');
     } else {
-        console.error("cancelDelete এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { cancelDelete });
+        console.error("cancelDelete element not found.", { cancelDelete });
     }
 
     if (confirmDelete) {
         confirmDelete.addEventListener('click', confirmDeleteHandler);
+        console.log('confirmDelete click listener added');
     } else {
-        console.error("confirmDelete এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { confirmDelete });
+        console.error("confirmDelete element not found.", { confirmDelete });
     }
 
     if (cancelRename) {
         cancelRename.addEventListener('click', cancelRenameHandler);
+        console.log('cancelRename click listener added');
     } else {
-        console.error("cancelRename এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { cancelRename });
+        console.error("cancelRename element not found.", { cancelRename });
     }
 
     if (saveRename) {
         saveRename.addEventListener('click', saveRenameHandler);
+        console.log('saveRename click listener added');
     } else {
-        console.error("saveRename এলিমেন্ট পাওয়া যায়নি। DOM চেক করুন।", { saveRename });
+        console.error("saveRename element not found.", { saveRename });
     }
 }
 
 function toggleSidebar() {
+    console.log('Toggling sidebar, current state:', sidebar.classList.contains('open'));
     if (sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
+        console.log('Sidebar closed');
     } else {
         sidebar.classList.add('open');
+        console.log('Sidebar opened, loading chat history');
         loadChatHistory();
     }
 }
 
 function closeSidebarHandler() {
+    console.log('Closing sidebar');
     sidebar.classList.remove('open');
+    console.log('Sidebar closed');
 }
 
 function searchHandler() {
     const query = searchInput.value.toLowerCase();
+    console.log('Search triggered with query:', query);
     loadChatHistory(query);
 }
 
 function cancelDeleteHandler() {
+    console.log('Cancel delete modal');
     deleteModal.style.display = 'none';
 }
 
 async function confirmDeleteHandler() {
     const chatId = deleteModal.getAttribute('data-chat-id');
+    console.log('Confirm delete for chatId:', chatId);
     try {
-        // Delete chat document
+        console.log('Deleting chat document:', chatId);
         await db.collection('chats').doc(chatId).delete();
-        // Delete all messages in the chat
+        console.log('Chat document deleted');
+
+        console.log('Fetching messages for deletion, chatId:', chatId);
         const messagesSnapshot = await db.collection('chats').doc(chatId).collection('messages').get();
+        console.log('Messages to delete:', messagesSnapshot.size);
         const batch = db.batch();
         messagesSnapshot.docs.forEach(doc => {
+            console.log('Queueing message for deletion:', doc.id);
             batch.delete(doc.ref);
         });
         await batch.commit();
+        console.log('All messages deleted');
+
         deleteModal.style.display = 'none';
+        console.log('Delete modal closed');
+
         if (chatId === currentChatId) {
+            console.log('Current chat deleted, resetting chatId');
             currentChatId = null;
             localStorage.removeItem('currentChatId');
-            if (messagesDiv) messagesDiv.innerHTML = '';
-            if (welcomeMessage) welcomeMessage.style.display = 'block';
+            if (messagesDiv) {
+                messagesDiv.innerHTML = '';
+                console.log('Messages div cleared');
+            }
+            if (welcomeMessage) {
+                welcomeMessage.style.display = 'block';
+                console.log('Welcome message displayed');
+            }
+            console.log('Starting new chat after deletion');
             await startNewChat();
         }
+        console.log('Reloading chat history after deletion');
         loadChatHistory();
     } catch (error) {
-        console.error('চ্যাট ডিলিট করতে সমস্যা:', error);
+        console.error('Error deleting chat:', error);
         showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।');
     }
 }
 
 function cancelRenameHandler() {
+    console.log('Cancel rename modal');
     renameModal.style.display = 'none';
 }
 
 async function saveRenameHandler() {
     const chatId = renameModal.getAttribute('data-chat-id');
     const newName = renameInput.value.trim();
+    console.log('Rename chatId:', chatId, 'to:', newName);
     if (newName) {
         try {
+            console.log('Updating chat name in Firestore');
             await db.collection('chats').doc(chatId).update({
                 name: newName,
                 updated_at: firebase.firestore.FieldValue.serverTimestamp()
             });
+            console.log('Chat name updated successfully');
             renameModal.style.display = 'none';
+            console.log('Rename modal closed');
+            console.log('Reloading chat history after rename');
             loadChatHistory();
         } catch (error) {
-            console.error('চ্যাটের নাম পরিবর্তন করতে সমস্যা:', error);
+            console.error('Error renaming chat:', error);
             showErrorMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।');
         }
     } else {
+        console.error('Invalid chat name provided');
         showErrorMessage('দয়া করে একটি বৈধ নাম লিখুন।');
     }
 }
 
 // Save Chat Message to Firestore
 async function saveChatHistory(message, sender) {
-    console.log("Starting saveChatHistory - currentChatId:", currentChatId, "currentUserUid:", currentUserUid, "message:", message, "sender:", sender);
+    console.log('saveChatHistory called:', { currentChatId, currentUserUid, message, sender });
     if (!currentUserUid) {
         console.error("No user UID available, cannot save chat history.");
         showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
@@ -181,7 +230,7 @@ async function saveChatHistory(message, sender) {
     }
 
     if (!currentChatId) {
-        console.log("No currentChatId, starting new chat...");
+        console.log('No currentChatId, starting new chat');
         await startNewChat();
         if (!currentChatId) {
             console.error("Failed to set currentChatId after startNewChat");
@@ -191,44 +240,48 @@ async function saveChatHistory(message, sender) {
     }
 
     try {
-        // Save message to Firestore
+        console.log('Saving message to Firestore, path:', `chats/${currentChatId}/messages`);
         const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        console.log("Message saved successfully, message ID:", messageRef.id);
+        console.log('Message saved successfully, messageId:', messageRef.id);
 
-        // Update chat metadata
-        const lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
+        console.log('Fetching current chat document to update metadata');
         const chatDoc = await db.collection('chats').doc(currentChatId).get();
         const chatData = chatDoc.data();
+        console.log('Current chat data:', chatData);
+
         let chatName = chatData.name;
-        
-        // Set chat name from first user message if not already set
         if (!chatName && sender === 'user') {
             chatName = message.length > 30 ? message.substring(0, 30) + '...' : message;
+            console.log('Setting chat name from user message:', chatName);
         } else if (!chatName) {
             chatName = 'নতুন চ্যাট';
+            console.log('Using default chat name:', chatName);
         }
 
+        const lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
+        console.log('Updating chat metadata:', { chatName, lastMessage });
         await db.collection('chats').doc(currentChatId).update({
             name: chatName,
             last_message: lastMessage,
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
         });
-        console.log("Chat metadata updated successfully with UID:", currentUserUid);
+        console.log('Chat metadata updated successfully');
 
-        // Reload chat history to reflect the new message
+        console.log('Reloading chat history after saving message');
         loadChatHistory();
     } catch (error) {
-        console.error("চ্যাট হিস্ট্রি সেভ করতে সমস্যা:", error);
+        console.error('Error saving chat history:', error);
         showErrorMessage("চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে: " + error.message);
     }
 }
 
 // Load Chat History List with UID Filter
 async function loadChatHistory(searchQuery = '') {
+    console.log('loadChatHistory called with query:', searchQuery, 'UID:', currentUserUid);
     if (!currentUserUid) {
         console.error("currentUserUid is null, cannot load chat history.");
         showErrorMessage('ইউজার লগইন করেননি। দয়া করে লগইন করুন।');
@@ -236,22 +289,30 @@ async function loadChatHistory(searchQuery = '') {
     }
 
     historyList.innerHTML = '<div class="loading">লোড হচ্ছে...</div>';
+    console.log('Cleared historyList, showing loading state');
     try {
+        console.log('Querying Firestore for chats with UID:', currentUserUid);
         let query = db.collection('chats')
             .where('uid', '==', currentUserUid)
             .orderBy('updated_at', 'desc');
         const snapshot = await query.get();
+        console.log('Chats retrieved, count:', snapshot.size);
+
         historyList.innerHTML = '';
+        console.log('Cleared loading state');
 
         if (snapshot.empty) {
             historyList.innerHTML = '<div>কোনো চ্যাট হিস্ট্রি পাওয়া যায়নি।</div>';
+            console.log('No chat history found');
             return;
         }
 
         snapshot.forEach(doc => {
             const chat = doc.data();
+            console.log('Processing chat:', { chatId: doc.id, name: chat.name, last_message: chat.last_message });
             const searchLower = searchQuery.toLowerCase();
             if (searchQuery && !chat.name.toLowerCase().includes(searchLower) && !chat.last_message.toLowerCase().includes(searchLower)) {
+                console.log('Chat skipped due to search filter:', doc.id);
                 return;
             }
 
@@ -268,32 +329,39 @@ async function loadChatHistory(searchQuery = '') {
                     <i class="fas fa-trash delete-chat" title="মুছুন"></i>
                 </div>
             `;
+            console.log('Created history item for chatId:', doc.id);
 
             historyItem.addEventListener('click', async (e) => {
                 if (e.target.classList.contains('rename-chat') || e.target.classList.contains('delete-chat')) {
+                    console.log('Clicked rename or delete, skipping chat load');
                     return;
                 }
+                console.log('Loading chat messages for chatId:', doc.id);
                 currentChatId = doc.id;
                 localStorage.setItem('currentChatId', currentChatId);
                 await loadChatMessages(currentChatId);
                 sidebar.classList.remove('open');
+                console.log('Sidebar closed after loading chat');
             });
 
             historyItem.querySelector('.rename-chat').addEventListener('click', () => {
+                console.log('Opening rename modal for chatId:', doc.id);
                 renameModal.setAttribute('data-chat-id', doc.id);
                 renameInput.value = chat.name || 'নতুন চ্যাট';
                 renameModal.style.display = 'block';
             });
 
             historyItem.querySelector('.delete-chat').addEventListener('click', () => {
+                console.log('Opening delete modal for chatId:', doc.id);
                 deleteModal.setAttribute('data-chat-id', doc.id);
                 deleteModal.style.display = 'block';
             });
 
             historyList.appendChild(historyItem);
+            console.log('Appended history item to historyList:', doc.id);
         });
     } catch (error) {
-        console.error('চ্যাট হিস্ট্রি লোড করতে সমস্যা:', error);
+        console.error('Error loading chat history:', error);
         showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে।');
         historyList.innerHTML = '<div>হিস্ট্রি লোড করতে সমস্যা হয়েছে।</div>';
     }
@@ -301,55 +369,68 @@ async function loadChatHistory(searchQuery = '') {
 
 // Load Messages for a Specific Chat
 async function loadChatMessages(chatId) {
+    console.log('loadChatMessages called for chatId:', chatId);
     try {
         if (!messagesDiv) {
             console.error('messagesDiv not found');
             return;
         }
         messagesDiv.innerHTML = '';
+        console.log('Cleared messagesDiv');
         welcomeMessage.style.display = 'none';
+        console.log('Hid welcome message');
 
+        console.log('Querying messages for chatId:', chatId);
         const snapshot = await db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp', 'asc').get();
+        console.log('Messages retrieved, count:', snapshot.size);
+
         if (snapshot.empty) {
-            console.log("No messages found for chatId:", chatId);
+            console.log('No messages found for chatId:', chatId);
         }
 
         snapshot.forEach(doc => {
             const msg = doc.data();
+            console.log('Processing message:', { messageId: doc.id, sender: msg.sender, message: msg.message });
             if (msg.sender === 'user' || msg.sender === 'bot') {
                 if (typeof displayMessage === 'function') {
                     displayMessage(sanitizeMessage(msg.message), msg.sender);
+                    console.log('Displayed message:', msg.message);
                 } else {
-                    console.error('displayMessage ফাংশন পাওয়া যায়নি।');
+                    console.error('displayMessage function not found');
                     showErrorMessage('মেসেজ প্রদর্শনে সমস্যা হয়েছে।');
                 }
             }
         });
 
+        console.log('Querying submissions for chatId:', chatId);
         const submissions = await db.collection('submissions').where('chat_id', '==', chatId).get();
+        console.log('Submissions retrieved, count:', submissions.size);
         submissions.forEach(doc => {
             const sub = doc.data();
             if (sub.review_data && typeof displayReview === 'function') {
                 displayReview(sub.review_data);
+                console.log('Displayed review data:', sub.review_data);
             }
         });
 
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        console.log('Scrolled messagesDiv to bottom');
     } catch (error) {
-        console.error('চ্যাট মেসেজ লোড করতে সমস্যা:', error);
+        console.error('Error loading chat messages:', error);
         showErrorMessage('চ্যাট মেসেজ লোড করতে সমস্যা হয়েছে।');
     }
 }
 
 // Start a New Chat
 async function startNewChat() {
-    console.log("Starting new chat with UID:", currentUserUid);
+    console.log('startNewChat called with UID:', currentUserUid);
     if (!currentUserUid) {
-        console.error("No user UID available, cannot start new chat.");
-        showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
+        console.error('No user UID available, cannot start new chat');
+        showErrorMessage('ইউজার লগইন করেননি। দয়া করে লগইন করুন।');
         return;
     }
     try {
+        console.log('Creating new chat document in Firestore');
         const newChatRef = await db.collection('chats').add({
             uid: currentUserUid,
             name: 'নতুন চ্যাট',
@@ -359,27 +440,35 @@ async function startNewChat() {
         });
         currentChatId = newChatRef.id;
         localStorage.setItem('currentChatId', currentChatId);
-        console.log("New chat created successfully, chatId:", currentChatId);
+        console.log('New chat created, chatId:', currentChatId);
 
-        // Initialize the messages sub-collection with a dummy message to ensure it exists
+        console.log('Initializing messages sub-collection for chatId:', currentChatId);
         await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: 'Chat session started',
             sender: 'system',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        console.log("Messages sub-collection initialized for chatId:", currentChatId);
+        console.log('Messages sub-collection initialized with system message');
 
-        if (messagesDiv) messagesDiv.innerHTML = '';
-        if (welcomeMessage) welcomeMessage.style.display = 'block';
+        if (messagesDiv) {
+            messagesDiv.innerHTML = '';
+            console.log('Cleared messagesDiv');
+        }
+        if (welcomeMessage) {
+            welcomeMessage.style.display = 'block';
+            console.log('Displayed welcome message');
+        }
+        console.log('Reloading chat history after new chat creation');
         await loadChatHistory();
     } catch (error) {
-        console.error('নতুন চ্যাট শুরু করতে সমস্যা:', error);
+        console.error('Error starting new chat:', error);
         showErrorMessage('নতুন চ্যাট শুরু করতে সমস্যা হয়েছে।');
     }
 }
 
 // Sanitize Message
 function sanitizeMessage(message) {
+    console.log('Sanitizing message:', message);
     const div = document.createElement('div');
     div.textContent = message;
     return div.innerHTML;
@@ -387,8 +476,10 @@ function sanitizeMessage(message) {
 
 // Fallback Error Message Display
 function showErrorMessage(message) {
+    console.log('Showing error message:', message);
     if (typeof displayMessage === 'function') {
         displayMessage(message, 'bot');
+        console.log('Error message displayed via displayMessage');
     } else {
         if (messagesDiv) {
             const messageDiv = document.createElement('div');
@@ -396,6 +487,7 @@ function showErrorMessage(message) {
             messageDiv.innerHTML = sanitizeMessage(message);
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            console.log('Error message displayed via fallback');
         } else {
             console.error('messagesDiv not found for error message display');
         }
@@ -403,4 +495,5 @@ function showErrorMessage(message) {
 }
 
 // Initialize event handlers
+console.log('Initializing event handlers');
 setupChatHistoryEventHandlers();
