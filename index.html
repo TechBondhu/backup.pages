@@ -14,580 +14,210 @@
     <meta name="twitter:card" content="summary_large_image">
     <link rel="canonical" href="https://techbondhu.github.io">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- Tiro Bangla ফন্ট লোড করা -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- ফন্ট প্রি-লোড করা -->
-    <link rel="preload" href="path/to/tiro-bangla.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" as="style" onload="this.rel='stylesheet'">
     <style>
-        /* Tiro Bangla ফন্ট সংজ্ঞায়িত করা */
-        @font-face {
-            font-family: 'Tiro Bangla';
-            src: url('path/to/tiro-bangla.woff2') format('woff2'),
-                 url('path/to/tiro-bangla.woff') format('woff');
-            font-weight: 400;
-            font-style: normal;
-            font-display: swap; /* ফন্ট লোডিংয়ের সময় ফ্লিকারিং প্রতিরোধ */
-        }
-
-        @font-face {
-            font-family: 'Tiro Bangla';
-            src: url('path/to/tiro-bangla-bold.woff2') format('woff2'),
-                 url('path/to/tiro-bangla-bold.woff') format('woff');
-            font-weight: 700;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Tiro Bangla', serif; /* শুধুমাত্র Tiro Bangla এবং ফলব্যাক হিসেবে serif */
-        }
-
         body {
-            color: #333;
+            font-family: 'Hind Siliguri', sans-serif;
+            background: #0F172A;
+            color: #F1F5F9;
             overflow-x: hidden;
-            background-color: #E5E7EB;
-            font-weight: 400;
         }
-
-        /* Header */
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: fixed;
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .text-neon { color: #A855F7; }
+        .hover-glow { transition: all 0.3s; }
+        .hover-glow:hover { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); transform: translateY(-5px); }
+        .animate-slide-in { animation: slideIn 1s ease-out forwards; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-pulse-neon { animation: pulseNeon 2s infinite; }
+        @keyframes pulseNeon {
+            0%, 100% { text-shadow: 0 0 5px #A855F7; }
+            50% { text-shadow: 0 0 20px #A855F7; }
+        }
+        #particles-js {
+            position: absolute;
             width: 100%;
-            top: 0;
-            z-index: 1000;
-            padding: 10px 0;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1E3A8A;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-        }
-
-        nav ul li {
-            margin-left: 20px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: #1E3A8A;
-            font-size: 14px;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-
-        nav ul li a:hover {
-            color: #F59E0B;
-        }
-
-        .hamburger {
-            display: none;
-            font-size: 22px;
-            color: #1E3A8A;
-            cursor: pointer;
-        }
-
-        /* Hero Section */
-        .hero {
             height: 100vh;
-            background: linear-gradient(135deg, #1E3A8A, #3B82F6);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            padding: 20px;
-        }
-
-        .hero h1 {
-            font-size: 40px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            line-height: 1.2;
-            animation: fadeInDown 1s ease-out;
-        }
-
-        .hero p {
-            font-size: 18px;
-            font-weight: 400;
-            margin-bottom: 25px;
-            max-width: 500px;
-            line-height: 1.6;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .hero .btn {
-            background-color: #F59E0B;
-            color: #fff;
-            padding: 10px 25px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            transition: background-color 0.3s;
-            animation: fadeInUp 1s ease-out 0.5s;
-            animation-fill-mode: both;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .hero .btn:hover {
-            background-color: #D97706;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            top: 10%;
-            left: 10%;
-            animation: float 5s infinite ease-in-out;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 160px;
-            height: 160px;
-            background: rgba(255, 245, 255, 0.2);
-            border-radius: 50%;
-            bottom: 10%;
-            right: 10%;
-            animation: float 7s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Features Section */
-        .features {
-            padding: 60px 15px;
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .features h2 {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            color: #1E3A8A;
-            line-height: 1.2;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .feature-card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        .feature-card:nth-child(2) { animation-delay: 0.2s; }
-        .feature-card:nth-child(3) { animation-delay: 0.4s; }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-card i {
-            font-size: 35px;
-            color: #F59E0B;
-            margin-bottom: 10px;
-        }
-
-        .feature-card h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #1E3A8A;
-            line-height: 1.2;
-        }
-
-        .feature-card p {
-            font-size: 14px;
-            font-weight: 400;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        /* Testimonial Section */
-        .testimonials {
-            padding: 60px 15px;
-            background-color: #fff;
-            text-align: center;
-            margin-bottom: 80px;
-        }
-
-        .testimonials h2 {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            color: #1E3A8A;
-            line-height: 1.2;
-        }
-
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .testimonial-card {
-            background-color: #F9FAFB;
-            padding: 15px;
-            border-radius: 10px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        .testimonial-card:nth-child(2) { animation-delay: 0.2s; }
-        .testimonial-card:nth-child(3) { animation-delay: 0.4s; }
-
-        .testimonial-card p {
-            font-size: 14px;
-            font-weight: 400;
-            color: #555;
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-
-        .testimonial-card span {
-            font-size: 12px;
-            font-weight: 600;
-            color: #F59E0B;
-        }
-
-        /* Chatbot Widget */
-        .chatbot-widget {
-            position: fixed;
-            bottom: 70px;
-            right: 15px;
-            background-color: #1E3A8A;
-            color: white;
-            padding: 12px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            z-index: 2;
-        }
-
-        .chatbot-widget:hover {
-            background-color: #F59E0B;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #1E3A8A;
-            color: white;
-            text-align: center;
-            padding: 15px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        footer p {
-            font-size: 12px;
-            font-weight: 400;
-            line-height: 1.6;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 15px;
-            }
-
-            .hero h1 {
-                font-size: 28px;
-                line-height: 1.3;
-            }
-
-            .hero p {
-                font-size: 14px;
-                max-width: 90%;
-                line-height: 1.5;
-            }
-
-            .hero .btn {
-                padding: 8px 20px;
-                font-size: 14px;
-            }
-
-            .hamburger {
-                display: block;
-            }
-
-            nav ul {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 50px;
-                left: 0;
-                width: 100%;
-                background-color: #fff;
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-                padding: 10px 0;
-            }
-
-            nav ul.active {
-                display: flex;
-            }
-
-            nav ul li {
-                margin: 8px 0;
-            }
-
-            nav ul li a {
-                font-size: 16px;
-                font-weight: 600;
-            }
-
-            .features, .testimonials {
-                padding: 40px 10px;
-            }
-
-            .features h2, .testimonials h2 {
-                font-size: 24px;
-                line-height: 1.3;
-            }
-
-            .feature-card h3 {
-                font-size: 18px;
-                line-height: 1.2;
-            }
-
-            .feature-card p {
-                font-size: 13px;
-                line-height: 1.5;
-            }
-
-            .testimonial-card p {
-                font-size: 13px;
-                line-height: 1.5;
-            }
-
-            .testimonial-card span {
-                font-size: 11px;
-            }
-
-            .testimonials {
-                margin-bottom: 70px;
-            }
-
-            .chatbot-widget {
-                padding: 10px 15px;
-                font-size: 12px;
-                bottom: 70px;
-            }
-
-            footer p {
-                font-size: 11px;
-                line-height: 1.5;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 24px;
-                line-height: 1.3;
-            }
-
-            .hero p {
-                font-size: 12px;
-                line-height: 1.5;
-            }
-
-            .hero .btn {
-                padding: 6px 15px;
-                font-size: 12px;
-            }
-
-            .features h2, .testimonials h2 {
-                font-size: 20px;
-                line-height: 1.3;
-            }
-
-            .feature-card h3 {
-                font-size: 16px;
-                line-height: 1.2;
-            }
-
-            .feature-card p {
-                font-size: 12px;
-                line-height: 1.5;
-            }
-
-            .testimonial-card p {
-                font-size: 12px;
-                line-height: 1.5;
-            }
-
-            .testimonial-card span {
-                font-size: 10px;
-            }
-
-            .chatbot-widget {
-                padding: 8px 12px;
-                font-size: 11px;
-            }
-
-            footer p {
-                font-size: 10px;
-                line-height: 1.5;
-            }
+            top: 0;
+            left: 0;
+            z-index: 0;
         }
     </style>
 </head>
 <body>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
     <!-- Header -->
-    <header>
-        <div class="nav-container">
-            <div class="logo">ফর্মবন্ধু</div>
-            <nav>
-                <div class="hamburger" onclick="toggleMenu()">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <ul id="navMenu">
-                    <li><a href="#home" onclick="smoothScroll('home')">হোম</a></li>
-                    <li><a href="#features" onclick="smoothScroll('features')">বৈশিষ্ট্য</a></li>
-                    <li><a href="#testimonials" onclick="smoothScroll('testimonials')">প্রশংসাপত্র</a></li>
-                    <li><a href="javascript:void(0)" onclick="redirectToChat(event)">চ্যাটবট</a></li>
-                    <li><a href="#contact" onclick="smoothScroll('contact')">যোগাযোগ</a></li>
-                </ul>
+    <header class="fixed w-full glass-effect z-50 py-4">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div class="text-3xl font-bold text-neon animate-pulse-neon">ফর্মবন্ধু</div>
+            <nav class="space-x-6 hidden md:flex">
+                <a href="#home" onclick="smoothScroll('home')" class="text-gray-200 hover:text-neon font-semibold">হোম</a>
+                <a href="#features" onclick="smoothScroll('features')" class="text-gray-200 hover:text-neon font-semibold">বৈশিষ্ট্য</a>
+                <a href="#testimonials" onclick="smoothScroll('testimonials')" class="text-gray-200 hover:text-neon font-semibold">প্রশংসাপত্র</a>
+                <a href="#cta" onclick="smoothScroll('cta')" class="text-gray-200 hover:text-neon font-semibold">শুরু করুন</a>
             </nav>
+            <div class="md:hidden">
+                <button id="menuBtn" class="text-gray-200 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="md:hidden glass-effect py-4 px-6 space-y-4 hidden">
+            <a href="#home" onclick="smoothScroll('home')" class="block text-gray-200 hover:text-neon font-semibold">হোম</a>
+            <a href="#features" onclick="smoothScroll('features')" class="block text-gray-200 hover:text-neon font-semibold">বৈশিষ্ট্য</a>
+            <a href="#testimonials" onclick="smoothScroll('testimonials')" class="block text-gray-200 hover:text-neon font-semibold">প্রশংসাপত্র</a>
+            <a href="#cta" onclick="smoothScroll('cta')" class="block text-gray-200 hover:text-neon font-semibold">শুরু করুন</a>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero" id="home">
-        <h1>ফর্মবন্ধুর সাথে আবেদন প্রক্রিয়ায় বিপ্লব আনুন</h1>
-        <p>আমাদের এআই-চালিত চ্যাটবট প্ল্যাটফর্মের মাধ্যমে তাৎক্ষণিক আবেদনের ভবিষ্যৎ অভিজ্ঞতা অর্জন করুন।</p>
-        <a href="javascript:void(0)" class="btn" onclick="redirectToChat(event)">শুরু করুন</a>
+    <section id="home" class="min-h-screen flex items-center justify-center text-center relative z-10">
+        <div class="px-4">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white animate-slide-in">ফর্মবন্ধুর সাথে আবেদন প্রক্রিয়ায় বিপ্লব আনুন</h1>
+            <p class="text-lg md:text-2xl mb-8 max-w-3xl mx-auto text-gray-300 animate-slide-in delay-200">আমাদের এআই-চালিত চ্যাটবট প্ল্যাটফর্মের মাধ্যমে তাৎক্ষণিক আবেদনের ভবিষ্যৎ অভিজ্ঞতা অর্জন করুন।</p>
+            <a href="javascript:void(0)" id="startBtn" class="bg-purple-600 text-white px-10 py-4 rounded-full text-lg font-bold hover-glow animate-slide-in delay-400">শুরু করুন</a>
+        </div>
     </section>
 
     <!-- Features Section -->
-    <section class="features" id="features">
-        <h2>কেন ফর্মবন্ধু অনন্য</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <i class="fas fa-bolt"></i>
-                <h3>দ্রুতগতি</h3>
-                <p>আমাদের সহজবোধ্য চ্যাটবট ইন্টারফেসের মাধ্যমে সেকেন্ডের মধ্যে আবেদন জমা দিন।</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-clock"></i>
-                <h3>সর্বদা উপলব্ধ</h3>
-                <p>নিরবচ্ছিন্ন ব্যবহারকারী অভিজ্ঞতার জন্য আমাদের প্ল্যাটফর্মে ২৪/৭ অ্যাক্সেস করুন।</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-shield-alt"></i>
-                <h3>নিরাপদ ও নির্ভরযোগ্য</h3>
-                <p>অত্যাধুনিক নিরাপত্তা ব্যবস্থার মাধ্যমে আপনার তথ্য সুরক্ষিত থাকে।</p>
+    <section id="features" class="py-24 px-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-12 animate-slide-in">কেন ফর্মবন্ধু অনন্য</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="glass-effect p-8 rounded-2xl hover-glow transition-all duration-300">
+                    <i class="fas fa-bolt text-5xl text-neon mb-6"></i>
+                    <h3 class="text-2xl font-bold text-white mb-4">দ্রুতগতি</h3>
+                    <p class="text-gray-300">আমাদের সহজবোধ্য চ্যাটবট ইন্টারফেসের মাধ্যমে সেকেন্ডের মধ্যে আবেদন জমা দিন।</p>
+                </div>
+                <div class="glass-effect p-8 rounded-2xl hover-glow transition-all duration-300">
+                    <i class="fas fa-clock text-5xl text-neon mb-6"></i>
+                    <h3 class="text-2xl font-bold text-white mb-4">সর্বদা উপলব্ধ</h3>
+                    <p class="text-gray-300">নিরবচ্ছিন্ন ব্যবহারকারী অভিজ্ঞতার জন্য আমাদের প্ল্যাটফর্মে ২৪/৭ অ্যাক্সেস করুন।</p>
+                </div>
+                <div class="glass-effect p-8 rounded-2xl hover-glow transition-all duration-300">
+                    <i class="fas fa-shield-alt text-5xl text-neon mb-6"></i>
+                    <h3 class="text-2xl font-bold text-white mb-4">নিরাপদ ও নির্ভরযোগ্য</h3>
+                    <p class="text-gray-300">অত্যাধুনিক নিরাপত্তা ব্যবস্থার মাধ্যমে আপনার তথ্য সুরক্ষিত থাকে।</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials" id="testimonials">
-        <h2>আমাদের ব্যবহারকারীরা কী বলেন</h2>
-        <div class="testimonial-grid">
-            <div class="testimonial-card">
-                <p>"ফর্মবন্ধু আমাদের আবেদন প্রক্রিয়াকে রূপান্তরিত করেছে। এটি দ্রুত এবং নির্ভরযোগ্য!"</p>
-                <span>- John Doe, টেক লিড</span>
-            </div>
-            <div class="testimonial-card">
-                <p>"চ্যাটবট ইন্টারফেসটি একটি গেম-চেঞ্জার। এই প্ল্যাটফর্মটি অত্যন্ত সুপারিশ করি।"</p>
-                <span>- Sarah Ahmed, ব্যবসার মালিক</span>
-            </div>
-            <div class="testimonial-card">
-                <p>"নিরাপদ, দক্ষ এবং ব্যবহারকারী-বান্ধব। ফর্মবন্ধু হল ভবিষ্যৎ!"</p>
-                <span>- Priya Sen, ডেভেলপার</span>
+    <section id="testimonials" class="py-24 px-6 bg-gray-900/50">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-12 animate-slide-in">আমাদের ব্যবহারকারীরা কী বলেন</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="glass-effect p-6 rounded-2xl hover-glow transition-all duration-300">
+                    <p class="text-gray-300 mb-4">"ফর্মবন্ধু আমাদের আবেদন প্রক্রিয়াকে রূপান্তরিত করেছে। এটি দ্রুত এবং নির্ভরযোগ্য!"</p>
+                    <span class="text-neon font-semibold">- John Doe, টেক লিড</span>
+                </div>
+                <div class="glass-effect p-6 rounded-2xl hover-glow transition-all duration-300">
+                    <p class="text-gray-300 mb-4">"চ্যাটবট ইন্টারফেসটি একটি গেম-চেঞ্জার। এই প্ল্যাটফর্মটি অত্যন্ত সুপারিশ করি।"</p>
+                    <span class="text-neon font-semibold">- Sarah Ahmed, ব্যবসার মালিক</span>
+                </div>
+                <div class="glass-effect p-6 rounded-2xl hover-glow transition-all duration-300">
+                    <p class="text-gray-300 mb-4">"নিরাপদ, দক্ষ এবং ব্যবহারকারী-বান্ধব। ফর্মবন্ধু হল ভবিষ্যৎ!"</p>
+                    <span class="text-neon font-semibold">- Priya Sen, ডেভেলপার</span>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- CTA Section -->
+    <section id="cta" class="py-24 px-6">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 animate-slide-in">এখনই যোগ দিন!</h2>
+            <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto text-gray-300 animate-slide-in delay-200">ফর্মবন্ধুর সাথে আপনার আবেদন প্রক্রিয়া সহজ করুন।</p>
+            <form class="max-w-xl mx-auto flex flex-col md:flex-row gap-4 animate-slide-in delay-400">
+                <input type="email" placeholder="আপনার ইমেইল লিখুন..." class="p-4 rounded-lg glass-effect border-none focus:outline-none flex-1 text-white placeholder-gray-400" required>
+                <button type="submit" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover-glow transition-all duration-300">সাইন আপ করুন</button>
+            </form>
+        </div>
+    </section>
+
     <!-- Chatbot Widget -->
-    <div class="chatbot-widget" onclick="redirectToChat(event)">
+    <div id="useChatbotBtn" class="fixed bottom-6 right-6 bg-purple-600 text-white p-4 rounded-full hover-glow transition-all duration-300 flex items-center gap-2">
         <i class="fas fa-comment"></i> আমাদের চ্যাটবট ব্যবহার করুন
     </div>
 
     <!-- Footer -->
-    <footer id="contact">
-        <p>© ২০২৫ ফর্মবন্ধু , সর্বস্বত্ব সংরক্ষিত।</p>
+    <footer class="bg-gray-900 py-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-sm text-gray-400">© ২০২৫ ফর্মবন্ধু | <a href="#privacy" class="text-neon hover:underline">গোপনীয়তা নীতি</a> | <a href="#terms" class="text-neon hover:underline">শর্তাবলী</a></p>
+        </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script>
-        // Toggle Hamburger Menu
-        function toggleMenu() {
-            const navMenu = document.getElementById('navMenu');
-            navMenu.classList.toggle('active');
-        }
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#A855F7' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#A855F7', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+            },
+            retina_detect: true
+        });
 
-        // Smooth Scroll Function
         function smoothScroll(sectionId) {
             document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
-            toggleMenu();
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
         }
 
-        // Redirect to Chatbot Page
-        function redirectToChat(event) {
-            event.preventDefault();
-            window.location.replace('chat.html');
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const startBtn = document.getElementById('startBtn');
+            const useChatbotBtn = document.getElementById('useChatbotBtn');
+
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Simple redirect logic (replace with Firebase if needed)
+            const redirectTo = (userLoggedIn) => {
+                const url = userLoggedIn ? 'chat.html' : 'signup.html';
+                startBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = url; });
+                useChatbotBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = url; });
+            };
+
+            redirectTo(false); // Default to signup for new users
+
+            // CTA Form Submission
+            const ctaForm = document.querySelector('#cta form');
+            ctaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = ctaForm.querySelector('input').value;
+                if (email) {
+                    alert('ধন্যবাদ! আপনি সফলভাবে সাইন আপ করেছেন। আমরা শীঘ্রই যোগাযোগ করব।');
+                    ctaForm.reset();
+                } else {
+                    alert('অনুগ্রহ করে একটি বৈধ ইমেইল লিখুন।');
+                }
+            });
+        });
     </script>
 </body>
 </html>
