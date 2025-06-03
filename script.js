@@ -29,6 +29,7 @@ firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         currentUserUid = user.uid;
         console.log("User logged in:", currentUserUid);
+        initializeChat(); // Authentication সফল হলে চ্যাট ইনিশিয়ালাইজ করো
     } else {
         currentUserUid = null;
         console.log("No user logged in");
@@ -36,7 +37,18 @@ firebase.auth().onAuthStateChanged((user) => {
     }
 });
 
-// Chat History Functions (chatHistory.js থেকে এখানে সরানো হয়েছে)
+// Chat Initialization Function
+function initializeChat() {
+    if (currentChatId && document.getElementById('messages')) {
+        loadChatMessages(currentChatId).catch(err => console.error("Load chat messages error:", err));
+    } else {
+        startNewChat().then(() => {
+            if (document.getElementById('messages')) loadChatHistory();
+        }).catch(err => console.error("Start new chat error:", err));
+    }
+}
+
+// Chat History Functions
 async function startNewChat() {
     if (!currentUserUid) {
         console.error("No user UID found, cannot start new chat.");
@@ -877,13 +889,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // Initialize
-    if (currentChatId && messagesDiv) {
-        loadChatMessages(currentChatId).catch(err => console.error("Load chat messages error:", err));
-    } else {
-        startNewChat().then(() => {
-            if (messagesDiv) loadChatHistory();
-        }).catch(err => console.error("Start new chat error:", err));
-    }
 });
