@@ -127,9 +127,11 @@ async function confirmDeleteHandler() {
         await db.collection('chats').doc(chatId).delete();
         // Delete all messages in the chat
         const messagesSnapshot = await db.collection('chats').doc(chatId).collection('messages').get();
-        for (const doc of messagesSnapshot.docs) {
-            await doc.ref.delete();
-        }
+        const batch = db.batch();
+        messagesSnapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
         deleteModal.style.display = 'none';
         if (chatId === currentChatId) {
             currentChatId = null;
@@ -197,9 +199,14 @@ async function saveChatHistory(message, sender) {
         });
         console.log("Message saved successfully, message ID:", messageRef.id);
 
-        // Update chat metadata with last message only
+        // Update chat metadata
         const lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
+        const chatDoc = await db.collection('chats').doc(currentChatId).get();
+        const chatData = chatDoc.data();
+        const chatName = chatData.name || (sender === 'user' ? (message.length > 30 ? message.substring(0, 30) + '...' : message) : 'নতুন চ্যাট');
+        
         await db.collection('chats').doc(currentChatId).update({
+            name: chatName,
             last_message: lastMessage,
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
         });
