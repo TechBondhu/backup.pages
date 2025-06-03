@@ -1,4 +1,3 @@
-// chatHistory.js
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
 const historyList = document.getElementById('historyList');
@@ -124,7 +123,9 @@ function cancelDeleteHandler() {
 async function confirmDeleteHandler() {
     const chatId = deleteModal.getAttribute('data-chat-id');
     try {
+        // Delete chat document
         await db.collection('chats').doc(chatId).delete();
+        // Delete all messages in the chat
         const messagesSnapshot = await db.collection('chats').doc(chatId).collection('messages').get();
         for (const doc of messagesSnapshot.docs) {
             await doc.ref.delete();
@@ -171,41 +172,41 @@ async function saveRenameHandler() {
 // Save Chat Message to Firestore
 async function saveChatHistory(message, sender) {
     console.log("Starting saveChatHistory - currentChatId:", currentChatId, "currentUserUid:", currentUserUid, "message:", message, "sender:", sender);
+    if (!currentUserUid) {
+        console.error("No user UID available, cannot save chat history.");
+        showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
+        return;
+    }
+
     if (!currentChatId) {
         console.log("No currentChatId, starting new chat...");
         await startNewChat();
-        console.log("After startNewChat, currentChatId is now:", currentChatId);
         if (!currentChatId) {
             console.error("Failed to set currentChatId after startNewChat");
             showErrorMessage("নতুন চ্যাট তৈরি করতে সমস্যা হয়েছে।");
             return;
         }
     }
-    if (!currentUserUid) {
-        console.error("No user UID available, cannot save chat history.");
-        showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
-        return;
-    }
+
     try {
-        console.log("Saving message to Firestore...");
+        // Save message to Firestore
         const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         console.log("Message saved successfully, message ID:", messageRef.id);
 
-        const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-        console.log("Updating chat metadata...");
-        await db.collection('chats').doc(currentChatId).set({
-            uid: currentUserUid,
-            name: title,
-            last_message: message.length > 50 ? message.substring(0, 50) + '...' : message,
+        // Update chat metadata with last message only
+        const lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
+        await db.collection('chats').doc(currentChatId).update({
+            last_message: lastMessage,
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-
+        });
         console.log("Chat metadata updated successfully with UID:", currentUserUid);
+
+        // Reload chat history to reflect the new message
+        loadChatHistory();
     } catch (error) {
         console.error("চ্যাট হিস্ট্রি সেভ করতে সমস্যা:", error);
         showErrorMessage("চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে: " + error.message);
@@ -235,7 +236,8 @@ async function loadChatHistory(searchQuery = '') {
 
         snapshot.forEach(doc => {
             const chat = doc.data();
-            if (searchQuery && !chat.name.toLowerCase().includes(searchQuery) && !chat.last_message.toLowerCase().includes(searchQuery)) {
+            const searchLower = searchQuery.toLowerCase();
+            if (searchQuery && !chat.name.toLowerCase().includes(searchLower) && !chat.last_message.toLowerCase().includes(searchLower)) {
                 return;
             }
 
@@ -279,6 +281,7 @@ async function loadChatHistory(searchQuery = '') {
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি লোড করতে সমস্যা:', error);
         showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে।');
+        historyList.innerHTML = '<div>হিস্ট্রি লোড করতে সমস্যা হয়েছে।</div>';
     }
 }
 
