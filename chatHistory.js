@@ -34,8 +34,13 @@ if (!db) {
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentUserUid = user.uid;
-        console.log("User logged in with UID:", currentUserUid); // ডিবাগিং লগ
-        loadChatHistory(); // Initial load after user is authenticated
+        console.log("User logged in with UID:", currentUserUid);
+        loadChatHistory();
+        if (currentChatId) {
+            loadChatMessages(currentChatId);
+        } else {
+            startNewChat();
+        }
     } else {
         currentUserUid = null;
         console.log("No user logged in, redirecting to login.html");
@@ -120,12 +125,17 @@ async function confirmDeleteHandler() {
     const chatId = deleteModal.getAttribute('data-chat-id');
     try {
         await db.collection('chats').doc(chatId).delete();
+        const messagesSnapshot = await db.collection('chats').doc(chatId).collection('messages').get();
+        for (const doc of messagesSnapshot.docs) {
+            await doc.ref.delete();
+        }
         deleteModal.style.display = 'none';
         if (chatId === currentChatId) {
             currentChatId = null;
             localStorage.removeItem('currentChatId');
             if (messagesDiv) messagesDiv.innerHTML = '';
             if (welcomeMessage) welcomeMessage.style.display = 'block';
+            await startNewChat();
         }
         loadChatHistory();
     } catch (error) {
@@ -183,7 +193,7 @@ async function saveChatHistory(message, sender) {
             updated_at: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        console.log("Chat saved with UID:", currentUserUid, "Message ID:", messageRef.id); // ডিবাগিং লগ
+        console.log("Chat saved with UID:", currentUserUid, "Message ID:", messageRef.id);
     } catch (error) {
         console.error('চ্যাট হিস্ট্রি সেভ করতে সমস্যা:', error);
         showErrorMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।');
