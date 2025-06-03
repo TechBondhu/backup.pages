@@ -20,6 +20,23 @@ if (!firebase.apps.length) {
 window.db = firebase.firestore();
 console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
 
+// Global variable for user UID
+let currentUserUid = null;
+
+// Authentication State Listener
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        currentUserUid = user.uid;
+        console.log("User logged in:", currentUserUid);
+        // ইউজার লগইন হলে chatHistory.js-এর জন্য UID সেট হবে
+    } else {
+        currentUserUid = null;
+        console.log("No user logged in");
+        // Redirect to login if not authenticated
+        window.location.href = 'login.html';
+    }
+});
+
 // displayMessage ফাংশন (গ্লোবাল স্কোপে)
 function displayMessage(message, sender) {
     const messagesDiv = document.getElementById('messages');
@@ -91,8 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let brightnessValue = 0;
     let contrastValue = 0;
     let bgColor = 'white';
-
- 
 
     // Show Typing Indicator
     function showTypingIndicator() {
@@ -342,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
             imageReviewModal.style.display = 'block';
         }
     }
-    
 
     if (imageReviewModal) {
         imageReviewModal.addEventListener('click', (e) => {
@@ -490,7 +504,6 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesDiv.appendChild(reviewCard);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
-        // রিভিউ কার্ডে ওয়েলকাম মেসেজ লুকানোর প্রয়োজন নেই, কারণ এটি বটের রেসপন্স
     }
 
     function toggleEditMode(card, reviewData) {
@@ -578,10 +591,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generatePDF(reviewData, reviewCard) {
-        // Use form_type from reviewData if available, otherwise default to 'generic'
         const formType = reviewData.form_type || 'generic';
 
-        // Filter text-only data
         const textOnlyData = {};
         for (const [key, value] of Object.entries(reviewData)) {
             if (typeof value !== 'string' || !(value.startsWith('http') || value.startsWith('data:image'))) {
@@ -591,13 +602,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Prepare data for the Flask endpoint
         const payload = {
             reviewData: textOnlyData,
             formType: formType
         };
 
-        // Call Flask /generate-pdf endpoint
         fetch('http://localhost:5000/generate-pdf', {
             method: 'POST',
             headers: {
@@ -608,12 +617,10 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.pdf_url) {
-                // Store PDF URL in review card for download
                 reviewCard.setAttribute('data-pdf-url', data.pdf_url);
                 displayMessage('পিডিএফ সফলভাবে তৈরি হয়েছে এবং ক্লাউডিনারিতে আপলোড করা হয়েছে!', 'bot');
                 saveChatHistory('পিডিএফ সফলভাবে তৈরি হয়েছে।', 'bot');
 
-                // Update review card buttons
                 const buttonContainer = reviewCard.querySelector('.review-buttons');
                 buttonContainer.innerHTML = '';
                 const downloadBtn = document.createElement('button');
@@ -624,8 +631,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (pdfUrl) {
                         const link = document.createElement('a');
                         link.href = pdfUrl;
-                        const serverFileName = decodeURIComponent(pdfUrl.split('/').pop()); // Cloudinary URL থেকে ফাইলের নাম
-                        link.download = serverFileName; // সার্ভারের নাম, যা .pdf ধারণ করে
+                        const serverFileName = decodeURIComponent(pdfUrl.split('/').pop());
+                        link.download = serverFileName;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -662,16 +669,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         typingDiv.remove();
                         if (!data || data.length === 0) {
                             displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
-                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot'); // ফলব্যাক হ্যান্ডলিং
+                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
                             return;
                         }
                         data.forEach(response => {
                             if (response.text && !response.text.toLowerCase().includes('hi')) {
                                 displayMessage(sanitizeMessage(response.text), 'bot');
-                                saveChatHistory(sanitizeMessage(response.text), 'bot'); // বটের মেসেজ সংরক্ষণ
+                                saveChatHistory(sanitizeMessage(response.text), 'bot');
                             }
                             if (response.custom && response.custom.review_data) {
-                                // form_type লগ যোগ করা
                                 const formType = response.custom.review_data.form_type || 
                                                response.events?.find(e => e.event === 'slot' && e.name === 'form_type')?.value;
                                 console.log('Step 125: Detected form_type from Rasa:', formType, 'for message:', message);
@@ -696,14 +702,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     error: (error) => {
                         typingDiv.remove();
                         displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
-                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot'); // এরর হ্যান্ডলিং
+                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot');
                         console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                     }
                 });
             } else {
                 typingDiv.remove();
                 displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
-                saveChatHistory('jQuery লোড হয়নি।', 'bot'); // jQuery এরর হ্যান্ডলিং
+                saveChatHistory('jQuery লোড হয়নি।', 'bot');
             }
         }, 500);
     }
@@ -735,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         displayMessage(sanitizeMessage(genre.message), 'user');
                         saveChatHistory(sanitizeMessage(genre.message), 'user');
                         callRasaAPI(sanitizeMessage(genre.message));
-                        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+                        hideWelcomeMessage();
                     } else {
                         console.error(`Message undefined for genre: ${genre.name}`);
                         displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
@@ -778,7 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayMessage(sanitizeMessage(genre.message), 'user');
                 saveChatHistory(sanitizeMessage(genre.message), 'user');
                 callRasaAPI(sanitizeMessage(genre.message));
-                hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+                hideWelcomeMessage();
             } else {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
                 displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
