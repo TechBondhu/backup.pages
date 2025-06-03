@@ -170,11 +170,16 @@ async function saveRenameHandler() {
 
 // Save Chat Message to Firestore
 async function saveChatHistory(message, sender) {
-    console.log("Starting saveChatHistory - currentChatId:", currentChatId, "currentUserUid:", currentUserUid);
+    console.log("Starting saveChatHistory - currentChatId:", currentChatId, "currentUserUid:", currentUserUid, "message:", message, "sender:", sender);
     if (!currentChatId) {
         console.log("No currentChatId, starting new chat...");
         await startNewChat();
         console.log("After startNewChat, currentChatId is now:", currentChatId);
+        if (!currentChatId) {
+            console.error("Failed to set currentChatId after startNewChat");
+            showErrorMessage("নতুন চ্যাট তৈরি করতে সমস্যা হয়েছে।");
+            return;
+        }
     }
     if (!currentUserUid) {
         console.error("No user UID available, cannot save chat history.");
@@ -182,7 +187,7 @@ async function saveChatHistory(message, sender) {
         return;
     }
     try {
-        console.log("Saving message:", message, "by", sender, "in chat:", currentChatId);
+        console.log("Saving message to Firestore...");
         const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: message,
             sender: sender,
@@ -192,6 +197,7 @@ async function saveChatHistory(message, sender) {
         console.log("Message saved successfully, message ID:", messageRef.id);
 
         const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+        console.log("Updating chat metadata...");
         await db.collection('chats').doc(currentChatId).set({
             uid: currentUserUid,
             name: title,
@@ -202,9 +208,10 @@ async function saveChatHistory(message, sender) {
         console.log("Chat metadata updated successfully with UID:", currentUserUid);
     } catch (error) {
         console.error("চ্যাট হিস্ট্রি সেভ করতে সমস্যা:", error);
-        showErrorMessage("চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে।");
+        showErrorMessage("চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে: " + error.message);
     }
 }
+
 // Load Chat History List with UID Filter
 async function loadChatHistory(searchQuery = '') {
     if (!currentUserUid) {
