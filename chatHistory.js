@@ -315,6 +315,12 @@ async function loadChatMessages(chatId) {
 
 // Start a New Chat
 async function startNewChat() {
+    console.log("Starting new chat with currentUserUid:", currentUserUid);
+    if (!currentUserUid) {
+        console.error("No user UID available, cannot start new chat.");
+        showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
+        return;
+    }
     try {
         const newChatRef = await db.collection('chats').add({
             uid: currentUserUid,
@@ -325,6 +331,7 @@ async function startNewChat() {
         });
         currentChatId = newChatRef.id;
         localStorage.setItem('currentChatId', currentChatId);
+        console.log("New chat created successfully, chatId:", currentChatId);
         if (messagesDiv) messagesDiv.innerHTML = '';
         if (welcomeMessage) welcomeMessage.style.display = 'block';
         await loadChatHistory();
