@@ -20,7 +20,8 @@ if (!firebase.apps.length) {
 window.db = firebase.firestore();
 console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
 
-// Global variable for user UID
+// Global Variables
+let currentChatId = null; // গ্লোবাল স্কোপে ডিফাইন
 let currentUserUid = null;
 
 // Authentication State Listener
@@ -28,11 +29,9 @@ firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         currentUserUid = user.uid;
         console.log("User logged in:", currentUserUid);
-        // ইউজার লগইন হলে chatHistory.js-এর জন্য UID সেট হবে
     } else {
         currentUserUid = null;
         console.log("No user logged in");
-        // Redirect to login if not authenticated
         window.location.href = 'login.html';
     }
 });
@@ -472,8 +471,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (pdfUrl) {
                         const link = document.createElement('a');
                         link.href = pdfUrl;
-                        const serverFileName = decodeURIComponent(pdfUrl.split('/').pop()); // Cloudinary URL থেকে ফাইলের নাম
-                        link.download = serverFileName; // সার্ভারের নাম, যা .pdf ধারণ করে
+                        const serverFileName = decodeURIComponent(pdfUrl.split('/').pop());
+                        link.download = serverFileName;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -795,9 +794,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     if (currentChatId && messagesDiv) {
-        loadChatMessages(currentChatId);
+        loadChatMessages(currentChatId).catch(err => console.error("Load chat messages error:", err));
     } else {
-        startNewChat();
+        startNewChat().then(() => {
+            if (messagesDiv) loadChatHistory();
+        }).catch(err => console.error("Start new chat error:", err));
     }
-    loadChatHistory();
 });
