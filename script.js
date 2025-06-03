@@ -21,118 +21,18 @@ window.db = firebase.firestore();
 console.log("Firebase initialized:", window.db); // ডিবাগ করার জন্য
 
 // Global Variables
-let currentChatId = null; // গ্লোবাল স্কোপে ডিফাইন
-let currentUserUid = null;
+let currentChatId = localStorage.getItem('currentChatId') || null;
 
 // Authentication State Listener
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-        currentUserUid = user.uid;
-        console.log("User logged in:", currentUserUid);
-        initializeChat(); // Authentication সফল হলে চ্যাট ইনিশিয়ালাইজ করো
+        console.log("User logged in:", user.uid);
+        // chatHistory.js-এর মাধ্যমে হিস্ট্রি লোড হবে
     } else {
-        currentUserUid = null;
         console.log("No user logged in");
         window.location.href = 'login.html';
     }
 });
-
-// Chat Initialization Function
-function initializeChat() {
-    if (currentChatId && document.getElementById('messages')) {
-        loadChatMessages(currentChatId).catch(err => console.error("Load chat messages error:", err));
-    } else {
-        startNewChat().then(() => {
-            if (document.getElementById('messages')) loadChatHistory();
-        }).catch(err => console.error("Start new chat error:", err));
-    }
-}
-
-// Chat History Functions
-async function startNewChat() {
-    if (!currentUserUid) {
-        console.error("No user UID found, cannot start new chat.");
-        return;
-    }
-    try {
-        const chatRef = await db.collection('chats').add({
-            uid: currentUserUid,
-            created_at: firebase.firestore.FieldValue.serverTimestamp(),
-            updated_at: firebase.firestore.FieldValue.serverTimestamp(),
-            last_message: "New chat started",
-            messages: []
-        });
-        currentChatId = chatRef.id;
-        console.log("New chat started with ID:", currentChatId);
-    } catch (error) {
-        console.error("Error starting new chat:", error);
-        throw error;
-    }
-}
-
-async function loadChatMessages(chatId) {
-    if (!chatId) {
-        console.error("No chat ID provided to load messages.");
-        return;
-    }
-    try {
-        const chatDoc = await db.collection('chats').doc(chatId).get();
-        if (chatDoc.exists) {
-            const messages = chatDoc.data().messages || [];
-            messages.forEach(msg => {
-                displayMessage(msg.content, msg.sender);
-            });
-        } else {
-            console.warn("Chat document not found for ID:", chatId);
-        }
-    } catch (error) {
-        console.error("Error loading chat messages:", error);
-        throw error;
-    }
-}
-
-async function saveChatHistory(message, sender) {
-    if (!currentChatId || !currentUserUid) {
-        console.error("No chat ID or user UID found to save chat history.");
-        return;
-    }
-    try {
-        const chatRef = db.collection('chats').doc(currentChatId);
-        await chatRef.update({
-            messages: firebase.firestore.FieldValue.arrayUnion({
-                sender: sender,
-                content: message,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }),
-            updated_at: firebase.firestore.FieldValue.serverTimestamp(),
-            last_message: message
-        });
-        console.log("Chat history saved:", { sender, message });
-    } catch (error) {
-        console.error("Error saving chat history:", error);
-        displayMessage(`চ্যাট হিস্ট্রি সেভ করতে সমস্যা: ${error.message}`, 'bot');
-    }
-}
-
-async function loadChatHistory() {
-    if (!currentUserUid) {
-        console.error("No user UID found to load chat history.");
-        return;
-    }
-    try {
-        const chatsSnapshot = await db.collection('chats')
-            .where('uid', '==', currentUserUid)
-            .orderBy('updated_at', 'desc')
-            .get();
-        chatsSnapshot.forEach(doc => {
-            const chatData = doc.data();
-            console.log("Chat loaded:", doc.id, chatData.last_message);
-        });
-    } catch (error) {
-        console.error("চ্যাট হিস্ট্রি লোড করতে সমস্যা:", error);
-        displayMessage(`চ্যাট হিস্ট্রি লোড করতে সমস্যা: ${error.message}`, 'bot');
-    }
-}
 
 // displayMessage ফাংশন (গ্লোবাল স্কোপে)
 function displayMessage(message, sender) {
@@ -238,32 +138,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentIndex++;
                 setTimeout(addNextWord, 100);
             } else {
-                saveChatHistory(message, sender);
+                if (typeof saveChatHistory === 'function') {
+                    saveChatHistory(message, sender); // chatHistory.js থেকে কল করা হবে
+                }
             }
         }
 
         addNextWord();
-        hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+        hideWelcomeMessage();
     }
 
     // Message Sending
-    if (sendBtn) {
-        sendBtn.addEventListener('click', sendMessage);
-    }
-    if (userInput) {
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.repeat) sendMessage();
-        });
-    }
-
     function sendMessage() {
-        const message = userInput?.value.trim();
+        const message = userInput?.value?.trim();
         if (message) {
             displayMessage(message, 'user');
-            saveChatHistory(message, 'user');
+            if (typeof saveChatHistory === 'function') {
+                saveChatHistory(message, 'user'); // chatHistory.js থেকে কল করা হবে
+            }
             callRasaAPI(message);
             userInput.value = '';
-            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+            hideWelcomeMessage();
         } else if (selectedFile) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('user-message', 'slide-in');
@@ -285,7 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.image_url) {
                         callRasaAPI(data.image_url);
-                        saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+                        if (typeof saveChatHistory === 'function') {
+                            saveChatHistory(`[Image: ${selectedFile.name}]`, 'user');
+                        }
                     } else if (data.error) {
                         console.error('Image Upload Error:', data.error);
                     }
@@ -294,8 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Image Upload Error:', error);
                 });
             clearPreview();
-            hideWelcomeMessage(); // ওয়েলকাম মেসেজ লুকানো
+            hideWelcomeMessage();
         }
+    }
+
+    // Event Listeners for Message Sending
+    if (sendBtn) {
+        sendBtn.addEventListener('click', sendMessage);
+    }
+    if (userInput) {
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.repeat) sendMessage();
+        });
     }
 
     // Image Upload and Preview
@@ -546,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatedData[key] = value;
                 });
 
-                await db.collection('submissions').add({
+                await window.db.collection('submissions').add({
                     review_data: updatedData,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     chat_id: currentChatId
@@ -594,7 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buttonContainer.appendChild(editBtn);
         buttonContainer.appendChild(confirmBtn);
-
         reviewCard.appendChild(reviewContent);
         reviewCard.appendChild(buttonContainer);
         if (messagesDiv) {
@@ -716,28 +622,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.pdf_url) {
                 reviewCard.setAttribute('data-pdf-url', data.pdf_url);
                 displayMessage('পিডিএফ সফলভাবে তৈরি হয়েছে এবং ক্লাউডিনারিতে আপলোড করা হয়েছে!', 'bot');
-                saveChatHistory('পিডিএফ সফলভাবে তৈরি হয়েছে।', 'bot');
-
-                const buttonContainer = reviewCard.querySelector('.review-buttons');
-                buttonContainer.innerHTML = '';
-                const downloadBtn = document.createElement('button');
-                downloadBtn.className = 'download-btn ripple-btn';
-                downloadBtn.innerText = 'Download PDF';
-                downloadBtn.addEventListener('click', () => {
-                    const pdfUrl = reviewCard.getAttribute('data-pdf-url');
-                    if (pdfUrl) {
-                        const link = document.createElement('a');
-                        link.href = pdfUrl;
-                        const serverFileName = decodeURIComponent(pdfUrl.split('/').pop());
-                        link.download = serverFileName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    } else {
-                        displayMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।', 'bot');
-                    }
-                });
-                buttonContainer.appendChild(downloadBtn);
+                if (typeof saveChatHistory === 'function') {
+                    saveChatHistory('পিডিএফ সফলভাবে তৈরি হয়েছে।', 'bot');
+                }
             } else {
                 throw new Error(data.error || 'PDF generation failed');
             }
@@ -745,7 +632,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => {
             console.error('PDF Generation Error:', error);
             displayMessage(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
-            saveChatHistory(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
+            if (typeof saveChatHistory === 'function') {
+                saveChatHistory(`পিডিএফ তৈরিতে সমস্যা: ${error.message}`, 'bot');
+            }
         });
     }
 
@@ -766,18 +655,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         typingDiv.remove();
                         if (!data || data.length === 0) {
                             displayMessage('কোনো প্রতিক্রিয়া পাওয়া যায়নি। দয়া করে আবার চেষ্টা করুন।', 'bot');
-                            saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
+                            if (typeof saveChatHistory === 'function') {
+                                saveChatHistory('কোনো প্রতিক্রিয়া পাওয়া যায়নি।', 'bot');
+                            }
                             return;
                         }
                         data.forEach(response => {
                             if (response.text && !response.text.toLowerCase().includes('hi')) {
                                 displayMessage(sanitizeMessage(response.text), 'bot');
-                                saveChatHistory(sanitizeMessage(response.text), 'bot');
+                                if (typeof saveChatHistory === 'function') {
+                                    saveChatHistory(sanitizeMessage(response.text), 'bot');
+                                }
                             }
                             if (response.custom && response.custom.review_data) {
                                 const formType = response.custom.review_data.form_type || 
                                                response.events?.find(e => e.event === 'slot' && e.name === 'form_type')?.value;
-                                console.log('Step 125: Detected form_type from Rasa:', formType, 'for message:', message);
+                                console.log('Detected form_type from Rasa:', formType, 'for message:', message);
                                 displayReview(response.custom.review_data);
                             }
                             if (response.buttons) {
@@ -799,14 +692,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     error: (error) => {
                         typingDiv.remove();
                         displayMessage('বটের সাথে সংযোগে সমস্যা হয়েছে। দয়া করে সার্ভার চেক করুন।', 'bot');
-                        saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot');
+                        if (typeof saveChatHistory === 'function') {
+                            saveChatHistory('বটের সাথে সংযোগে সমস্যা হয়েছে।', 'bot');
+                        }
                         console.error('Rasa API Error:', error.status, error.statusText, error.responseText);
                     }
                 });
             } else {
                 typingDiv.remove();
                 displayMessage('jQuery লোড হয়নি। দয়া করে jQuery লাইব্রেরি যোগ করুন।', 'bot');
-                saveChatHistory('jQuery লোড হয়নি।', 'bot');
+                if (typeof saveChatHistory === 'function') {
+                    saveChatHistory('jQuery লোড হয়নি।', 'bot');
+                }
             }
         }, 500);
     }
@@ -836,13 +733,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             genresModal.classList.remove('slide-out');
                         }, 300);
                         displayMessage(sanitizeMessage(genre.message), 'user');
-                        saveChatHistory(sanitizeMessage(genre.message), 'user');
+                        if (typeof saveChatHistory === 'function') {
+                            saveChatHistory(sanitizeMessage(genre.message), 'user');
+                        }
                         callRasaAPI(sanitizeMessage(genre.message));
                         hideWelcomeMessage();
                     } else {
                         console.error(`Message undefined for genre: ${genre.name}`);
                         displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
-                        saveChatHistory('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
+                        if (typeof saveChatHistory === 'function') {
+                            saveChatHistory('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
+                        }
                     }
                 });
                 genresList.appendChild(genreItem);
@@ -879,13 +780,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const genre = genres.find(g => g.name === genreName);
             if (genre && genre.message) {
                 displayMessage(sanitizeMessage(genre.message), 'user');
-                saveChatHistory(sanitizeMessage(genre.message), 'user');
+                if (typeof saveChatHistory === 'function') {
+                    saveChatHistory(sanitizeMessage(genre.message), 'user');
+                }
                 callRasaAPI(sanitizeMessage(genre.message));
                 hideWelcomeMessage();
             } else {
                 console.error(`Genre not found or message undefined for: ${genreName}`);
                 displayMessage('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
-                saveChatHistory('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
+                if (typeof saveChatHistory === 'function') {
+                    saveChatHistory('এই সেবাটি বর্তমানে উপলব্ধ নয়।', 'bot');
+                }
             }
         });
     });
