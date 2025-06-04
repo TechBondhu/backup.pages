@@ -447,7 +447,6 @@ async function loadChatHistory(searchQuery = '') {
     } catch (error) {
         console.error('Error loading chat history:', error);
         showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে: ' + error.message);
-        historyList.innerHTML = '<div>হিস্ট্রি লোড করতে সমস্যা হয়েছে।</div>';
     }
 }
 
@@ -527,7 +526,13 @@ async function startNewChat() {
         return;
     }
     try {
-        console.log('Creating new chat document in Firestore');
+        console.log('Creating new chat document in Firestore with data:', {
+            uid: currentUserUid,
+            name: 'নতুন চ্যাট',
+            last_message: 'চ্যাট শুরু হয়েছে',
+            created_at: 'serverTimestamp',
+            updated_at: 'serverTimestamp'
+        });
         const newChatRef = await db.collection('chats').add({
             uid: currentUserUid,
             name: 'নতুন চ্যাট',
@@ -601,3 +606,27 @@ function showErrorMessage(message) {
 // Initialize event handlers
 console.log('Initializing event handlers');
 setupChatHistoryEventHandlers();
+
+// Setup message form handler
+console.log('Setting up message form handler');
+const messageForm = document.getElementById('messageForm');
+if (messageForm) {
+    messageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('Message form submitted');
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        if (message) {
+            console.log('Sending message:', message);
+            await saveChatHistory(message, 'user');
+            messageInput.value = '';
+            console.log('Message input cleared');
+        } else {
+            console.warn('Empty message input');
+            showErrorMessage('দয়া করে একটি মেসেজ লিখুন।');
+        }
+    });
+    console.log('Message form handler set up');
+} else {
+    console.error('messageForm not found');
+}
