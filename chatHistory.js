@@ -14,6 +14,8 @@ const saveRename = document.getElementById('saveRename');
 const renameInput = document.getElementById('renameInput');
 const messagesDiv = document.getElementById('messages');
 const welcomeMessage = document.getElementById('welcomeMessage');
+const messageForm = document.getElementById('messageForm');
+const messageInput = document.getElementById('messageInput');
 
 console.log('DOM Elements initialized:', {
     sidebar: !!sidebar,
@@ -30,7 +32,9 @@ console.log('DOM Elements initialized:', {
     saveRename: !!saveRename,
     renameInput: !!renameInput,
     messagesDiv: !!messagesDiv,
-    welcomeMessage: !!welcomeMessage
+    welcomeMessage: !!welcomeMessage,
+    messageForm: !!messageForm,
+    messageInput: !!messageInput
 });
 
 // Global Variables
@@ -130,17 +134,41 @@ function setupChatHistoryEventHandlers() {
     } else {
         console.error("saveRename element not found", { saveRename: !!saveRename });
     }
+
+    if (messageForm && messageInput) {
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('Message form submitted');
+            const message = messageInput.value.trim();
+            if (message) {
+                console.log('Sending message:', message);
+                await saveChatHistory(message, 'user');
+                messageInput.value = '';
+                console.log('Message input cleared');
+            } else {
+                console.warn('Empty message input');
+                showErrorMessage('দয়া করে একটি মেসেজ লিখুন।');
+            }
+        });
+        console.log('Message form handler set up');
+    } else {
+        console.error('messageForm or messageInput not found', { messageForm: !!messageForm, messageInput: !!messageInput });
+    }
 }
 
 function toggleSidebar() {
-    console.log('toggleSidebar called, current sidebar state:', sidebar.classList.contains('open'));
-    if (sidebar.classList.contains('open')) {
-        sidebar.classList.remove('open');
-        console.log('Sidebar closed');
+    console.log('toggleSidebar called, current sidebar state:', sidebar ? sidebar.classList.contains('open') : 'sidebar not found');
+    if (sidebar) {
+        if (sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            console.log('Sidebar closed');
+        } else {
+            sidebar.classList.add('open');
+            console.log('Sidebar opened, triggering loadChatHistory');
+            loadChatHistory();
+        }
     } else {
-        sidebar.classList.add('open');
-        console.log('Sidebar opened, triggering loadChatHistory');
-        loadChatHistory();
+        console.error('Sidebar element not found');
     }
 }
 
@@ -155,7 +183,7 @@ function closeSidebarHandler() {
 }
 
 function searchHandler() {
-    const query = searchInput.value.toLowerCase();
+    const query = searchInput ? searchInput.value.toLowerCase() : '';
     console.log('searchHandler called with query:', query);
     loadChatHistory(query);
 }
@@ -172,7 +200,7 @@ function cancelDeleteHandler() {
 
 async function confirmDeleteHandler() {
     console.log('confirmDeleteHandler called');
-    const chatId = deleteModal.getAttribute('data-chat-id');
+    const chatId = deleteModal ? deleteModal.getAttribute('data-chat-id') : null;
     console.log('Attempting to delete chat with chatId:', chatId);
     if (!chatId) {
         console.error('No chatId found in delete modal');
@@ -243,8 +271,8 @@ function cancelRenameHandler() {
 
 async function saveRenameHandler() {
     console.log('saveRenameHandler called');
-    const chatId = renameModal.getAttribute('data-chat-id');
-    const newName = renameInput.value.trim();
+    const chatId = renameModal ? renameModal.getAttribute('data-chat-id') : null;
+    const newName = renameInput ? renameInput.value.trim() : '';
     console.log('Attempting to rename chatId:', chatId, 'to:', newName);
     if (!chatId) {
         console.error('No chatId found in rename modal');
@@ -284,6 +312,12 @@ async function saveChatHistory(message, sender) {
         return;
     }
 
+    if (!message || typeof message !== 'string') {
+        console.error('Invalid message provided:', message);
+        showErrorMessage('অবৈধ মেসেজ প্রদান করা হয়েছে।');
+        return;
+    }
+
     if (!currentChatId) {
         console.log('No currentChatId, starting new chat');
         await startNewChat();
@@ -295,21 +329,26 @@ async function saveChatHistory(message, sender) {
     }
 
     try {
-        console.log('Saving message to Firestore, path:', `chats/${currentChatId}/messages`);
-        const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
-            message: message,
-            sender: sender,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        console.log('Message saved successfully, messageId:', messageRef.id);
-
-        console.log('Fetching current chat document to update metadata');
+        console.log('Verifying chat document exists:', currentChatId);
         const chatDoc = await db.collection('chats').doc(currentChatId).get();
         if (!chatDoc.exists) {
             console.error('Chat document does not exist:', currentChatId);
             showErrorMessage('চ্যাট ডকুমেন্ট পাওয়া যায়নি।');
             return;
         }
+        console.log('Chat document exists:', chatDoc.data());
+
+        console.log('Saving message to Firestore, path:', `chats/${currentChatId}/messages`);
+        const messageData = {
+            message: message,
+            sender: sender,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        console.log('Message data to save:', messageData);
+        const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add(messageData);
+        console.log('Message saved successfully, messageId:', messageRef.id);
+
+        console.log('Fetching current chat document to update metadata');
         const chatData = chatDoc.data();
         console.log('Current chat data:', chatData);
 
@@ -544,13 +583,35 @@ async function startNewChat() {
         localStorage.setItem('currentChatId', currentChatId);
         console.log('New chat created, chatId:', currentChatId);
 
-        console.log('Adding system message to messages sub-collection');
+        console.log('Verifying chat document creation');
+        const chatDoc = await db.collection('chats').doc(currentChatId).get();
+        if (!chatDoc.exists) {
+            console.error('Failed to verify chat document creation:', currentChatId);
+            showErrorMessage('চ্যাট ডকুমেন্ট তৈরি ব্যর্থ হয়েছে।');
+            return;
+        }
+        console.log('Chat document verified:', chatDoc.data());
+
+        console.log('Adding system message to messages sub-collection with data:', {
+            message: 'Chat session started',
+            sender: 'system',
+            timestamp: 'serverTimestamp'
+        });
         const systemMessageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: 'Chat session started',
             sender: 'system',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         console.log('System message added, messageId:', systemMessageRef.id);
+
+        console.log('Verifying system message creation');
+        const messageDoc = await db.collection('chats').doc(currentChatId).collection('messages').doc(systemMessageRef.id).get();
+        if (!messageDoc.exists) {
+            console.error('Failed to verify system message creation:', systemMessageRef.id);
+            showErrorMessage('সিস্টেম মেসেজ তৈরি ব্যর্থ হয়েছে।');
+            return;
+        }
+        console.log('System message verified:', messageDoc.data());
 
         if (messagesDiv) {
             messagesDiv.innerHTML = '';
@@ -606,27 +667,3 @@ function showErrorMessage(message) {
 // Initialize event handlers
 console.log('Initializing event handlers');
 setupChatHistoryEventHandlers();
-
-// Setup message form handler
-console.log('Setting up message form handler');
-const messageForm = document.getElementById('messageForm');
-if (messageForm) {
-    messageForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        console.log('Message form submitted');
-        const messageInput = document.getElementById('messageInput');
-        const message = messageInput.value.trim();
-        if (message) {
-            console.log('Sending message:', message);
-            await saveChatHistory(message, 'user');
-            messageInput.value = '';
-            console.log('Message input cleared');
-        } else {
-            console.warn('Empty message input');
-            showErrorMessage('দয়া করে একটি মেসেজ লিখুন।');
-        }
-    });
-    console.log('Message form handler set up');
-} else {
-    console.error('messageForm not found');
-}
