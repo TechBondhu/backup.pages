@@ -491,7 +491,7 @@ function toggleEdit(reviewCard, editBtn, reviewContent, confirmBtn, reviewData) 
         reviewContent.querySelectorAll('.review-item').forEach(item => {
             const key = item.getAttribute('data-key');
             const value = item.querySelector('p')?.textContent || item.querySelector('img')?.src;
-            item.innerHTML = '<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label>';
+            item.innerHTML = `<label>${sanitizeMessage(key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '))}:</label>`;
 
             if (typeof value === 'string' && (value.startsWith('http') || value.startsWith('data:image'))) {
                 const img = document.createElement('img');
