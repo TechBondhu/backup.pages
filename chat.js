@@ -773,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Apply Edit
     elements.editApplyBtn?.addEventListener('click', () => {
-        const tempCanvas cấu.createElement('canvas');
+        const tempCanvas = document.createElement('canvas');
         tempCanvas.width = cropRect.width;
         tempCanvas.height = cropRect.height;
         const tempCtx = tempCanvas.getContext('2d');
