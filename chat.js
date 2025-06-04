@@ -765,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Canvas Controls
     elements.editCanvas.width = e => { cropRect.x = parseInt(e.target.value); drawImage(); };
     elements.cropY?.addEventListener('input', e => { cropRect.y = parseInt(e.target.value); drawImage(); });
-    elements.cropWidth?.addEventListener('input', e => { cropRect.width = parseInt(e.target.value Wonderful; drawImage(); });
+    elements.cropWidth?.addEventListener('input', e => { cropRect.width = parseInt(e.target.value); drawImage(); });
     elements.cropHeight?.addEventListener('input', e => { cropRect.height = parseInt(e.target.value); drawImage(); });
     elements.brightness?.addEventListener('input', e => { brightnessValue = parseInt(e.target.value); drawImage(); });
     elements.contrast?.addEventListener('input', e => { contrastValue = parseInt(e.target.value); drawImage(); });
