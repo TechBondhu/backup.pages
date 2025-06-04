@@ -15,7 +15,23 @@ const renameInput = document.getElementById('renameInput');
 const messagesDiv = document.getElementById('messages');
 const welcomeMessage = document.getElementById('welcomeMessage');
 
-console.log('DOM Elements initialized:', { sidebar, historyList, historyIcon, closeSidebar, newChatIcon, searchInput, deleteModal, renameModal, messagesDiv, welcomeMessage });
+console.log('DOM Elements initialized:', {
+    sidebar: !!sidebar,
+    historyList: !!historyList,
+    historyIcon: !!historyIcon,
+    closeSidebar: !!closeSidebar,
+    newChatIcon: !!newChatIcon,
+    searchInput: !!searchInput,
+    deleteModal: !!deleteModal,
+    renameModal: !!renameModal,
+    cancelDelete: !!cancelDelete,
+    confirmDelete: !!confirmDelete,
+    cancelRename: !!cancelRename,
+    saveRename: !!saveRename,
+    renameInput: !!renameInput,
+    messagesDiv: !!messagesDiv,
+    welcomeMessage: !!welcomeMessage
+});
 
 // Global Variables
 let currentChatId = localStorage.getItem('currentChatId') || null;
@@ -34,12 +50,13 @@ if (!db) {
 }
 console.log('Firestore database initialized successfully');
 
-// Get current user UID
+// Auth state change handler
 auth.onAuthStateChanged((user) => {
-    console.log('Auth state changed, user:', user ? user.uid : null);
+    console.log('Auth state changed, user:', user ? { uid: user.uid, email: user.email } : null);
     if (user) {
         currentUserUid = user.uid;
         console.log("User logged in with UID:", currentUserUid);
+        console.log('Loading chat history for user');
         loadChatHistory();
         if (currentChatId) {
             console.log('Loading messages for existing chatId:', currentChatId);
@@ -57,175 +74,213 @@ auth.onAuthStateChanged((user) => {
 
 // Setup Event Handlers for Chat History
 function setupChatHistoryEventHandlers() {
-    console.log('Setting up event handlers');
+    console.log('Setting up event handlers for chat history');
     if (historyIcon && sidebar) {
         historyIcon.addEventListener('click', toggleSidebar);
         console.log('historyIcon click listener added');
     } else {
-        console.error("historyIcon or sidebar element not found.", { historyIcon, sidebar });
+        console.error("historyIcon or sidebar element not found", { historyIcon: !!historyIcon, sidebar: !!sidebar });
     }
 
     if (closeSidebar && sidebar) {
         closeSidebar.addEventListener('click', closeSidebarHandler);
         console.log('closeSidebar click listener added');
     } else {
-        console.error("closeSidebar or sidebar element not found.", { closeSidebar, sidebar });
+        console.error("closeSidebar or sidebar element not found", { closeSidebar: !!closeSidebar, sidebar: !!sidebar });
     }
 
     if (newChatIcon) {
         newChatIcon.addEventListener('click', startNewChat);
         console.log('newChatIcon click listener added');
     } else {
-        console.error("newChatIcon element not found.", { newChatIcon });
+        console.error("newChatIcon element not found", { newChatIcon: !!newChatIcon });
     }
 
     if (searchInput) {
         searchInput.addEventListener('input', searchHandler);
         console.log('searchInput input listener added');
     } else {
-        console.error("searchInput element not found.", { searchInput });
+        console.error("searchInput element not found", { searchInput: !!searchInput });
     }
 
     if (cancelDelete) {
         cancelDelete.addEventListener('click', cancelDeleteHandler);
         console.log('cancelDelete click listener added');
     } else {
-        console.error("cancelDelete element not found.", { cancelDelete });
+        console.error("cancelDelete element not found", { cancelDelete: !!cancelDelete });
     }
 
     if (confirmDelete) {
         confirmDelete.addEventListener('click', confirmDeleteHandler);
         console.log('confirmDelete click listener added');
     } else {
-        console.error("confirmDelete element not found.", { confirmDelete });
+        console.error("confirmDelete element not found", { confirmDelete: !!confirmDelete });
     }
 
     if (cancelRename) {
         cancelRename.addEventListener('click', cancelRenameHandler);
         console.log('cancelRename click listener added');
     } else {
-        console.error("cancelRename element not found.", { cancelRename });
+        console.error("cancelRename element not found", { cancelRename: !!cancelRename });
     }
 
     if (saveRename) {
         saveRename.addEventListener('click', saveRenameHandler);
         console.log('saveRename click listener added');
     } else {
-        console.error("saveRename element not found.", { saveRename });
+        console.error("saveRename element not found", { saveRename: !!saveRename });
     }
 }
 
 function toggleSidebar() {
-    console.log('Toggling sidebar, current state:', sidebar.classList.contains('open'));
+    console.log('toggleSidebar called, current sidebar state:', sidebar.classList.contains('open'));
     if (sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
         console.log('Sidebar closed');
     } else {
         sidebar.classList.add('open');
-        console.log('Sidebar opened, loading chat history');
+        console.log('Sidebar opened, triggering loadChatHistory');
         loadChatHistory();
     }
 }
 
 function closeSidebarHandler() {
-    console.log('Closing sidebar');
-    sidebar.classList.remove('open');
-    console.log('Sidebar closed');
+    console.log('closeSidebarHandler called');
+    if (sidebar) {
+        sidebar.classList.remove('open');
+        console.log('Sidebar closed');
+    } else {
+        console.error('Sidebar element not found during close');
+    }
 }
 
 function searchHandler() {
     const query = searchInput.value.toLowerCase();
-    console.log('Search triggered with query:', query);
+    console.log('searchHandler called with query:', query);
     loadChatHistory(query);
 }
 
 function cancelDeleteHandler() {
-    console.log('Cancel delete modal');
-    deleteModal.style.display = 'none';
+    console.log('cancelDeleteHandler called');
+    if (deleteModal) {
+        deleteModal.style.display = 'none';
+        console.log('Delete modal closed');
+    } else {
+        console.error('deleteModal element not found');
+    }
 }
 
 async function confirmDeleteHandler() {
+    console.log('confirmDeleteHandler called');
     const chatId = deleteModal.getAttribute('data-chat-id');
-    console.log('Confirm delete for chatId:', chatId);
+    console.log('Attempting to delete chat with chatId:', chatId);
+    if (!chatId) {
+        console.error('No chatId found in delete modal');
+        showErrorMessage('চ্যাট আইডি পাওয়া যায়নি।');
+        return;
+    }
     try {
         console.log('Deleting chat document:', chatId);
         await db.collection('chats').doc(chatId).delete();
-        console.log('Chat document deleted');
+        console.log('Chat document deleted successfully');
 
         console.log('Fetching messages for deletion, chatId:', chatId);
         const messagesSnapshot = await db.collection('chats').doc(chatId).collection('messages').get();
         console.log('Messages to delete:', messagesSnapshot.size);
-        const batch = db.batch();
-        messagesSnapshot.docs.forEach(doc => {
-            console.log('Queueing message for deletion:', doc.id);
-            batch.delete(doc.ref);
-        });
-        await batch.commit();
-        console.log('All messages deleted');
+        if (!messagesSnapshot.empty) {
+            const batch = db.batch();
+            messagesSnapshot.docs.forEach(doc => {
+                console.log('Queueing message for deletion:', doc.id);
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+            console.log('All messages deleted successfully');
+        } else {
+            console.log('No messages found to delete');
+        }
 
-        deleteModal.style.display = 'none';
-        console.log('Delete modal closed');
+        if (deleteModal) {
+            deleteModal.style.display = 'none';
+            console.log('Delete modal closed');
+        }
 
         if (chatId === currentChatId) {
-            console.log('Current chat deleted, resetting chatId');
+            console.log('Current chat deleted, resetting currentChatId');
             currentChatId = null;
             localStorage.removeItem('currentChatId');
             if (messagesDiv) {
                 messagesDiv.innerHTML = '';
                 console.log('Messages div cleared');
+            } else {
+                console.error('messagesDiv not found');
             }
             if (welcomeMessage) {
                 welcomeMessage.style.display = 'block';
                 console.log('Welcome message displayed');
+            } else {
+                console.error('welcomeMessage not found');
             }
             console.log('Starting new chat after deletion');
             await startNewChat();
         }
         console.log('Reloading chat history after deletion');
-        loadChatHistory();
+        await loadChatHistory();
     } catch (error) {
         console.error('Error deleting chat:', error);
-        showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে।');
+        showErrorMessage('চ্যাট ডিলিট করতে সমস্যা হয়েছে: ' + error.message);
     }
 }
 
 function cancelRenameHandler() {
-    console.log('Cancel rename modal');
-    renameModal.style.display = 'none';
+    console.log('cancelRenameHandler called');
+    if (renameModal) {
+        renameModal.style.display = 'none';
+        console.log('Rename modal closed');
+    } else {
+        console.error('renameModal element not found');
+    }
 }
 
 async function saveRenameHandler() {
+    console.log('saveRenameHandler called');
     const chatId = renameModal.getAttribute('data-chat-id');
     const newName = renameInput.value.trim();
-    console.log('Rename chatId:', chatId, 'to:', newName);
-    if (newName) {
-        try {
-            console.log('Updating chat name in Firestore');
-            await db.collection('chats').doc(chatId).update({
-                name: newName,
-                updated_at: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log('Chat name updated successfully');
+    console.log('Attempting to rename chatId:', chatId, 'to:', newName);
+    if (!chatId) {
+        console.error('No chatId found in rename modal');
+        showErrorMessage('চ্যাট আইডি পাওয়া যায়নি।');
+        return;
+    }
+    if (!newName) {
+        console.error('No valid chat name provided');
+        showErrorMessage('দয়া করে একটি বৈধ নাম লিখুন।');
+        return;
+    }
+    try {
+        console.log('Updating chat name in Firestore');
+        await db.collection('chats').doc(chatId).update({
+            name: newName,
+            updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('Chat name updated successfully');
+        if (renameModal) {
             renameModal.style.display = 'none';
             console.log('Rename modal closed');
-            console.log('Reloading chat history after rename');
-            loadChatHistory();
-        } catch (error) {
-            console.error('Error renaming chat:', error);
-            showErrorMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে।');
         }
-    } else {
-        console.error('Invalid chat name provided');
-        showErrorMessage('দয়া করে একটি বৈধ নাম লিখুন।');
+        console.log('Reloading chat history after rename');
+        await loadChatHistory();
+    } catch (error) {
+        console.error('Error renaming chat:', error);
+        showErrorMessage('চ্যাটের নাম পরিবর্তন করতে সমস্যা হয়েছে: ' + error.message);
     }
 }
 
 // Save Chat Message to Firestore
 async function saveChatHistory(message, sender) {
-    console.log('saveChatHistory called:', { currentChatId, currentUserUid, message, sender });
+    console.log('saveChatHistory called with:', { message, sender, currentChatId, currentUserUid });
     if (!currentUserUid) {
-        console.error("No user UID available, cannot save chat history.");
-        showErrorMessage("ইউজার লগইন করেননি। দয়া করে লগইন করুন।");
+        console.error('No user UID available, cannot save chat history');
+        showErrorMessage('ইউজার লগইন করেননি। দয়া করে লগইন করুন।');
         return;
     }
 
@@ -233,8 +288,8 @@ async function saveChatHistory(message, sender) {
         console.log('No currentChatId, starting new chat');
         await startNewChat();
         if (!currentChatId) {
-            console.error("Failed to set currentChatId after startNewChat");
-            showErrorMessage("নতুন চ্যাট তৈরি করতে সমস্যা হয়েছে।");
+            console.error('Failed to set currentChatId after startNewChat');
+            showErrorMessage('নতুন চ্যাট তৈরি করতে সমস্যা হয়েছে।');
             return;
         }
     }
@@ -250,6 +305,11 @@ async function saveChatHistory(message, sender) {
 
         console.log('Fetching current chat document to update metadata');
         const chatDoc = await db.collection('chats').doc(currentChatId).get();
+        if (!chatDoc.exists) {
+            console.error('Chat document does not exist:', currentChatId);
+            showErrorMessage('চ্যাট ডকুমেন্ট পাওয়া যায়নি।');
+            return;
+        }
         const chatData = chatDoc.data();
         console.log('Current chat data:', chatData);
 
@@ -263,7 +323,7 @@ async function saveChatHistory(message, sender) {
         }
 
         const lastMessage = message.length > 50 ? message.substring(0, 50) + '...' : message;
-        console.log('Updating chat metadata:', { chatName, lastMessage });
+        console.log('Updating chat metadata with:', { chatName, lastMessage });
         await db.collection('chats').doc(currentChatId).update({
             name: chatName,
             last_message: lastMessage,
@@ -272,19 +332,25 @@ async function saveChatHistory(message, sender) {
         console.log('Chat metadata updated successfully');
 
         console.log('Reloading chat history after saving message');
-        loadChatHistory();
+        await loadChatHistory();
     } catch (error) {
         console.error('Error saving chat history:', error);
-        showErrorMessage("চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে: " + error.message);
+        showErrorMessage('চ্যাট হিস্ট্রি সেভ করতে সমস্যা হয়েছে: ' + error.message);
     }
 }
 
 // Load Chat History List with UID Filter
 async function loadChatHistory(searchQuery = '') {
-    console.log('loadChatHistory called with query:', searchQuery, 'UID:', currentUserUid);
+    console.log('loadChatHistory called with:', { searchQuery, currentUserUid });
     if (!currentUserUid) {
-        console.error("currentUserUid is null, cannot load chat history.");
+        console.error('currentUserUid is null, cannot load chat history');
         showErrorMessage('ইউজার লগইন করেননি। দয়া করে লগইন করুন।');
+        return;
+    }
+
+    if (!historyList) {
+        console.error('historyList element not found');
+        showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে।');
         return;
     }
 
@@ -299,11 +365,11 @@ async function loadChatHistory(searchQuery = '') {
         console.log('Chats retrieved, count:', snapshot.size);
 
         historyList.innerHTML = '';
-        console.log('Cleared loading state');
+        console.log('Cleared loading state from historyList');
 
         if (snapshot.empty) {
+            console.log('No chat history found for user');
             historyList.innerHTML = '<div>কোনো চ্যাট হিস্ট্রি পাওয়া যায়নি।</div>';
-            console.log('No chat history found');
             return;
         }
 
@@ -333,52 +399,80 @@ async function loadChatHistory(searchQuery = '') {
 
             historyItem.addEventListener('click', async (e) => {
                 if (e.target.classList.contains('rename-chat') || e.target.classList.contains('delete-chat')) {
-                    console.log('Clicked rename or delete, skipping chat load');
+                    console.log('Clicked rename or delete action, skipping chat load');
                     return;
                 }
                 console.log('Loading chat messages for chatId:', doc.id);
                 currentChatId = doc.id;
                 localStorage.setItem('currentChatId', currentChatId);
                 await loadChatMessages(currentChatId);
-                sidebar.classList.remove('open');
-                console.log('Sidebar closed after loading chat');
+                if (sidebar) {
+                    sidebar.classList.remove('open');
+                    console.log('Sidebar closed after loading chat');
+                }
             });
 
-            historyItem.querySelector('.rename-chat').addEventListener('click', () => {
-                console.log('Opening rename modal for chatId:', doc.id);
-                renameModal.setAttribute('data-chat-id', doc.id);
-                renameInput.value = chat.name || 'নতুন চ্যাট';
-                renameModal.style.display = 'block';
-            });
+            const renameButton = historyItem.querySelector('.rename-chat');
+            if (renameButton) {
+                renameButton.addEventListener('click', () => {
+                    console.log('Opening rename modal for chatId:', doc.id);
+                    if (renameModal && renameInput) {
+                        renameModal.setAttribute('data-chat-id', doc.id);
+                        renameInput.value = chat.name || 'নতুন চ্যাট';
+                        renameModal.style.display = 'block';
+                        console.log('Rename modal opened');
+                    } else {
+                        console.error('renameModal or renameInput not found');
+                    }
+                });
+            }
 
-            historyItem.querySelector('.delete-chat').addEventListener('click', () => {
-                console.log('Opening delete modal for chatId:', doc.id);
-                deleteModal.setAttribute('data-chat-id', doc.id);
-                deleteModal.style.display = 'block';
-            });
+            const deleteButton = historyItem.querySelector('.delete-chat');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', () => {
+                    console.log('Opening delete modal for chatId:', doc.id);
+                    if (deleteModal) {
+                        deleteModal.setAttribute('data-chat-id', doc.id);
+                        deleteModal.style.display = 'block';
+                        console.log('Delete modal opened');
+                    } else {
+                        console.error('deleteModal not found');
+                    }
+                });
+            }
 
             historyList.appendChild(historyItem);
             console.log('Appended history item to historyList:', doc.id);
         });
     } catch (error) {
         console.error('Error loading chat history:', error);
-        showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে।');
+        showErrorMessage('চ্যাট হিস্ট্রি লোড করতে সমস্যা হয়েছে: ' + error.message);
         historyList.innerHTML = '<div>হিস্ট্রি লোড করতে সমস্যা হয়েছে।</div>';
     }
 }
 
 // Load Messages for a Specific Chat
 async function loadChatMessages(chatId) {
-    console.log('loadChatMessages called for chatId:', chatId);
+    console.log('loadChatMessages called with chatId:', chatId);
+    if (!chatId) {
+        console.error('No chatId provided');
+        showErrorMessage('চ্যাট আইডি পাওয়া যায়নি।');
+        return;
+    }
+    if (!messagesDiv) {
+        console.error('messagesDiv not found');
+        showErrorMessage('মেসেজ প্রদর্শন এলাকা পাওয়া যায়নি।');
+        return;
+    }
     try {
-        if (!messagesDiv) {
-            console.error('messagesDiv not found');
-            return;
-        }
         messagesDiv.innerHTML = '';
         console.log('Cleared messagesDiv');
-        welcomeMessage.style.display = 'none';
-        console.log('Hid welcome message');
+        if (welcomeMessage) {
+            welcomeMessage.style.display = 'none';
+            console.log('Hid welcome message');
+        } else {
+            console.warn('welcomeMessage element not found');
+        }
 
         console.log('Querying messages for chatId:', chatId);
         const snapshot = await db.collection('chats').doc(chatId).collection('messages').orderBy('timestamp', 'asc').get();
@@ -407,9 +501,12 @@ async function loadChatMessages(chatId) {
         console.log('Submissions retrieved, count:', submissions.size);
         submissions.forEach(doc => {
             const sub = doc.data();
+            console.log('Processing submission:', { submissionId: doc.id, review_data: sub.review_data });
             if (sub.review_data && typeof displayReview === 'function') {
                 displayReview(sub.review_data);
                 console.log('Displayed review data:', sub.review_data);
+            } else {
+                console.warn('displayReview function not found or no review_data');
             }
         });
 
@@ -417,7 +514,7 @@ async function loadChatMessages(chatId) {
         console.log('Scrolled messagesDiv to bottom');
     } catch (error) {
         console.error('Error loading chat messages:', error);
-        showErrorMessage('চ্যাট মেসেজ লোড করতে সমস্যা হয়েছে।');
+        showErrorMessage('চ্যাট মেসেজ লোড করতে সমস্যা হয়েছে: ' + error.message);
     }
 }
 
@@ -442,45 +539,52 @@ async function startNewChat() {
         localStorage.setItem('currentChatId', currentChatId);
         console.log('New chat created, chatId:', currentChatId);
 
-        console.log('Initializing messages sub-collection for chatId:', currentChatId);
-        await db.collection('chats').doc(currentChatId).collection('messages').add({
+        console.log('Adding system message to messages sub-collection');
+        const systemMessageRef = await db.collection('chats').doc(currentChatId).collection('messages').add({
             message: 'Chat session started',
             sender: 'system',
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        console.log('Messages sub-collection initialized with system message');
+        console.log('System message added, messageId:', systemMessageRef.id);
 
         if (messagesDiv) {
             messagesDiv.innerHTML = '';
             console.log('Cleared messagesDiv');
+        } else {
+            console.error('messagesDiv not found');
         }
         if (welcomeMessage) {
             welcomeMessage.style.display = 'block';
             console.log('Displayed welcome message');
+        } else {
+            console.warn('welcomeMessage element not found');
         }
         console.log('Reloading chat history after new chat creation');
         await loadChatHistory();
     } catch (error) {
         console.error('Error starting new chat:', error);
-        showErrorMessage('নতুন চ্যাট শুরু করতে সমস্যা হয়েছে।');
+        showErrorMessage('নতুন চ্যাট শুরু করতে সমস্যা হয়েছে: ' + error.message);
     }
 }
 
 // Sanitize Message
 function sanitizeMessage(message) {
-    console.log('Sanitizing message:', message);
+    console.log('sanitizeMessage called with message:', message);
     const div = document.createElement('div');
     div.textContent = message;
-    return div.innerHTML;
+    const sanitized = div.innerHTML;
+    console.log('Sanitized message:', sanitized);
+    return sanitized;
 }
 
 // Fallback Error Message Display
 function showErrorMessage(message) {
-    console.log('Showing error message:', message);
+    console.log('showErrorMessage called with message:', message);
     if (typeof displayMessage === 'function') {
-        displayMessage(message, 'bot');
+        displayMessage(sanitizeMessage(message), 'bot');
         console.log('Error message displayed via displayMessage');
     } else {
+        console.warn('displayMessage function not found, using fallback');
         if (messagesDiv) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('bot-message', 'slide-in');
