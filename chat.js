@@ -384,6 +384,7 @@ function sendMessage() {
     }
 }
 
+// আপডেটেড displayReview ফাংশন
 function displayReview(reviewData) {
     const reviewCard = document.createElement('div');
     reviewCard.classList.add('review-card', 'slide-in');
@@ -422,12 +423,13 @@ function displayReview(reviewData) {
     const editBtn = document.createElement('button');
     editBtn.classList.add('edit-btn', 'ripple-btn');
     editBtn.textContent = 'Edit';
-    editBtn.addEventListener('click', () => toggleEdit(reviewCard, editBtn, reviewContent, reviewData));
 
     const confirmBtn = document.createElement('button');
     confirmBtn.classList.add('confirm-btn', 'ripple-btn');
     confirmBtn.textContent = 'Confirm';
     let isProcessing = false;
+
+    editBtn.addEventListener('click', () => toggleEdit(reviewCard, editBtn, reviewContent, confirmBtn, reviewData));
 
     confirmBtn.addEventListener('click', async () => {
         if (isProcessing) return;
@@ -435,17 +437,21 @@ function displayReview(reviewData) {
         confirmBtn.disabled = true;
 
         try {
+            if (!currentChatId) throw new Error('চ্যাট আইডি পাওয়া যায়নি।');
+            if (!currentUserUid) throw new Error('ইউজার লগইন করেননি।');
+
             const updatedData = {};
             reviewContent.querySelectorAll('.review-item').forEach(item => {
                 const key = item.getAttribute('data-key');
                 const value = item.querySelector('p')?.textContent || item.querySelector('img')?.src;
-                updatedData[key] = value;
+                if (value) updatedData[key] = value;
             });
 
             await db.collection('submissions').add({
                 review_data: updatedData,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                chat_id: currentChatId
+                chat_id: currentChatId,
+                uid: currentUserUid // UID যোগ করা
             });
 
             displayMessage('তথ্য সফলভাবে সংরক্ষিত!', 'bot');
@@ -459,7 +465,21 @@ function displayReview(reviewData) {
             buttonContainer.innerHTML = '';
             const downloadBtn = document.createElement('button');
             downloadBtn.classList.add('download-btn', 'ripple-btn');
-            buttonContainer.appendChild(downloadButton);
+            downloadBtn.textContent = 'Download PDF';
+            downloadBtn.addEventListener('click', () => {
+                const pdfUrl = reviewCard.getAttribute('data-pdf-url');
+                if (pdfUrl) {
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = decodeURIComponent(pdfUrl.split('/').pop());
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    showErrorMessage('পিডিএফ ডাউনলোডের জন্য URL পাওয়া যায়নি।');
+                }
+            });
+            buttonContainer.appendChild(downloadBtn);
         } catch (error) {
             showErrorMessage('তথ্য সংরক্ষণে সমস্যা: ' + error.message);
             confirmBtn.disabled = false;
@@ -476,9 +496,10 @@ function displayReview(reviewData) {
     elements.messagesDiv.scrollTop = elements.messagesDiv.scrollHeight;
 }
 
+// আপডেটেড toggleEdit ফাংশন
 function toggleEdit(reviewCard, editBtn, reviewContent, confirmBtn, reviewData) {
     if (reviewCard.getAttribute('data-confirmed') === 'true') {
-        showErrorMessage('Data confirmed, cannot edit.');
+        showErrorMessage('ডেটা কনফার্ম হয়ে গেছে। এডিট করা যাবে না।');
         return;
     }
 
@@ -544,11 +565,11 @@ function toggleEdit(reviewCard, editBtn, reviewContent, confirmBtn, reviewData) 
         });
         reviewCard.setAttribute('data-editable', 'false');
         editBtn.textContent = 'Edit';
-        editBtn.disabled = false;
         confirmBtn.style.display = 'inline-block';
     }
 }
 
+// আপডেটেড generatePDF ফাংশন
 function generatePDF(reviewData, reviewCard) {
     const formType = reviewData.form_type || 'generic';
     const payload = {
@@ -566,20 +587,20 @@ function generatePDF(reviewData, reviewCard) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.pdf_url) {
-            reviewCard.setAttribute('data-pdf-url', data.pdf_url);
-            displayMessage('PDF তৈরি ও আপলোড সফল!', 'bot');
-            saveChatHistory('PDF তৈরি সফল।', 'bot');
-        } else {
-            throw new Error(data.error || 'PDF generation failed');
-        }
-    })
-    .catch(error => {
-        showErrorMessage('PDF তৈরিতে সমস্যা: ' + error.message);
-        saveChatHistory('PDF error: ' + error.message, 'bot');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.pdf_url) {
+                reviewCard.setAttribute('data-pdf-url', data.pdf_url);
+                displayMessage('PDF তৈরি ও আপলোড সফল!', 'bot');
+                saveChatHistory('PDF তৈরি সফল।', 'bot');
+            } else {
+                throw new Error(data.error || 'PDF generation failed');
+            }
+        })
+        .catch(error => {
+            showErrorMessage('PDF তৈরিতে সমস্যা: ' + error.message);
+            saveChatHistory('PDF error: ' + error.message, 'bot');
+        });
 }
 
 function callRasaAPI(message, metadata = {}) {
@@ -742,9 +763,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Image Review
     elements.previewImage?.addEventListener('click', () => {
         elements.reviewImage.src = elements.previewImage.src;
-        if (elements.imageReviewModal) {
-    elements.imageReviewModal.style.display = 'block';
-}
+        elements.imageReviewModal.style.display = 'block';
     });
 
     // Image Editing
@@ -755,7 +774,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.editCanvas.width = image.width;
                 elements.editCanvas.height = image.height;
                 cropRect.width = Math.min(200, image.width);
-                cropRect.height = Math.min(200, element.image.height);
+                cropRect.height = Math.min(200, image.height);
                 drawImage();
                 elements.editModal.style.display = 'block';
             }
@@ -763,13 +782,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Canvas Controls
-    elements.editCanvas.width = e => { cropRect.x = parseInt(e.target.value); drawImage(); };
+    elements.cropX?.addEventListener('input', e => { cropRect.x = parseInt(e.target.value); drawImage(); });
     elements.cropY?.addEventListener('input', e => { cropRect.y = parseInt(e.target.value); drawImage(); });
     elements.cropWidth?.addEventListener('input', e => { cropRect.width = parseInt(e.target.value); drawImage(); });
     elements.cropHeight?.addEventListener('input', e => { cropRect.height = parseInt(e.target.value); drawImage(); });
     elements.brightness?.addEventListener('input', e => { brightnessValue = parseInt(e.target.value); drawImage(); });
     elements.contrast?.addEventListener('input', e => { contrastValue = parseInt(e.target.value); drawImage(); });
-    elements.backgroundColor?.addEventListener('change', () => { bgColor = e.target.value; drawImage(); });
+    elements.backgroundColor?.addEventListener('change', e => { bgColor = e.target.value; drawImage(); });
 
     // Apply Edit
     elements.editApplyBtn?.addEventListener('click', () => {
