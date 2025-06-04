@@ -742,7 +742,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Image Review
     elements.previewImage?.addEventListener('click', () => {
         elements.reviewImage.src = elements.previewImage.src;
-        elements.imageReviewModal?.style.display = 'block';
+        if (elements.imageReviewModal) {
+    elements.imageReviewModal.style.display = 'block';
+}
     });
 
     // Image Editing
