@@ -14,8 +14,8 @@ const saveRename = document.getElementById('saveRename');
 const renameInput = document.getElementById('renameInput');
 const messagesDiv = document.getElementById('messages');
 const welcomeMessage = document.getElementById('welcomeMessage');
-const messageForm = document.getElementById('messageForm');
-const messageInput = document.getElementById('messageInput');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
 
 console.log('DOM Elements initialized:', {
     sidebar: !!sidebar,
@@ -33,8 +33,8 @@ console.log('DOM Elements initialized:', {
     renameInput: !!renameInput,
     messagesDiv: !!messagesDiv,
     welcomeMessage: !!welcomeMessage,
-    messageForm: !!messageForm,
-    messageInput: !!messageInput
+    userInput: !!userInput,
+    sendBtn: !!sendBtn
 });
 
 // Global Variables
@@ -45,11 +45,11 @@ console.log('Initial global variables:', { currentChatId, currentUserUid });
 
 // Firebase
 const auth = firebase.auth();
-const db = window.db;
+const db = firebase.firestore();
 
 if (!db) {
-    console.error("Firestore database not initialized. Check Firebase setup in script.js.");
-    showErrorMessage("ডাটাবেজ সংযোগে সমস্যা হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।");
+    console.error("Firestore database not initialized.");
+    showErrorMessage("ডাটাবেজ সংযোগে সমস্যা হয়েছে।");
     throw new Error("Firestore db is not initialized");
 }
 console.log('Firestore database initialized successfully');
@@ -135,24 +135,24 @@ function setupChatHistoryEventHandlers() {
         console.error("saveRename element not found", { saveRename: !!saveRename });
     }
 
-    if (messageForm && messageInput) {
-        messageForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            console.log('Message form submitted');
-            const message = messageInput.value.trim();
+    if (sendBtn && userInput) {
+        sendBtn.addEventListener('click', async () => {
+            console.log('Send button clicked');
+            const message = userInput.value.trim();
             if (message) {
                 console.log('Sending message:', message);
                 await saveChatHistory(message, 'user');
-                messageInput.value = '';
-                console.log('Message input cleared');
+                userInput.value = '';
+                console.log('User input cleared');
             } else {
                 console.warn('Empty message input');
                 showErrorMessage('দয়া করে একটি মেসেজ লিখুন।');
             }
         });
-        console.log('Message form handler set up');
+        console.log('Send button handler set up');
     } else {
-        console.error('messageForm or messageInput not found', { messageForm: !!messageForm, messageInput: !!messageInput });
+        console.error('sendBtn or userInput not found', { sendBtn: !!sendBtn, userInput: !!userInput });
+        showErrorMessage('ইনপুট বা সেন্ড বাটন পাওয়া যায়নি।');
     }
 }
 
@@ -348,6 +348,15 @@ async function saveChatHistory(message, sender) {
         const messageRef = await db.collection('chats').doc(currentChatId).collection('messages').add(messageData);
         console.log('Message saved successfully, messageId:', messageRef.id);
 
+        console.log('Verifying message document:', messageRef.id);
+        const messageDoc = await db.collection('chats').doc(currentChatId).collection('messages').doc(messageRef.id).get();
+        if (!messageDoc.exists) {
+            console.error('Message document not found:', messageRef.id);
+            showErrorMessage('মেসেজ সেভ ব্যর্থ হয়েছে।');
+            return;
+        }
+        console.log('Message document verified:', messageDoc.data());
+
         console.log('Fetching current chat document to update metadata');
         const chatData = chatDoc.data();
         console.log('Current chat data:', chatData);
@@ -529,7 +538,11 @@ async function loadChatMessages(chatId) {
                     console.log('Displayed message:', msg.message);
                 } else {
                     console.error('displayMessage function not found');
-                    showErrorMessage('মেসেজ প্রদর্শনে সমস্যা হয়েছে।');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add(msg.sender === 'user' ? 'user-message' : 'bot-message');
+                    messageDiv.innerHTML = sanitizeMessage(msg.message);
+                    messagesDiv.appendChild(messageDiv);
+                    console.log('Displayed message via fallback:', msg.message);
                 }
             }
         });
