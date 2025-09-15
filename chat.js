@@ -368,7 +368,7 @@ function sendMessage() {
 
         const formData = new FormData();
         formData.append('image', selectedFile);
-        fetch('http://localhost:5000/upload-image', { method: 'POST', body: formData })
+        fetch('http://localhost:5000/upload', { method: 'POST', body: formData })
             .then(response => response.json())
             .then(data => {
                 if (data.image_url) {
@@ -843,3 +843,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
